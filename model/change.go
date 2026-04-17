@@ -20,6 +20,8 @@ type WorkitemChange struct {
 	Updated          string `json:"updated,omitempty"`
 	StoryID          string `json:"story_id,omitempty"`
 	TaskID           string `json:"task_id,omitempty"`
+	MiniItemID       string `json:"mini_item_id,omitempty"`
+	FieldChanges     string `json:"field_changes,omitempty"`
 }
 
 // BugChange 表示缺陷的变更记录

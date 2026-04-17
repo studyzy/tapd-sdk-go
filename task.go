@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // ListTasks 查询任务列表，返回强类型 Task 切片，自定义字段通过 CustomFields map 保留
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks.html
-func (c *Client) ListTasks(req *model.ListTasksRequest) ([]model.Task, error) {
-	data, err := c.doGet("/tasks", req.ToParams())
+func (c *Client) ListTasks(ctx context.Context, req *model.ListTasksRequest) ([]model.Task, error) {
+	data, err := c.doGet(ctx, "/tasks", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +21,7 @@ func (c *Client) ListTasks(req *model.ListTasksRequest) ([]model.Task, error) {
 		return nil, fmt.Errorf("failed to parse task list: %w", err)
 	}
 
-	var results []model.Task
+	results := make([]model.Task, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Task"]; ok {
 			var task model.Task
@@ -34,13 +35,13 @@ func (c *Client) ListTasks(req *model.ListTasksRequest) ([]model.Task, error) {
 
 // GetTask 获取单个任务详情，description 字段保留原始 HTML
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks.html
-func (c *Client) GetTask(workspaceID, id string) (*model.Task, error) {
+func (c *Client) GetTask(ctx context.Context, workspaceID, id string) (*model.Task, error) {
 	params := map[string]string{
 		"workspace_id": workspaceID,
 		"id":           id,
 	}
 
-	data, err := c.doGet("/tasks", params)
+	data, err := c.doGet(ctx, "/tasks", params)
 	if err != nil {
 		return nil, err
 	}
@@ -71,8 +72,8 @@ func (c *Client) GetTask(workspaceID, id string) (*model.Task, error) {
 
 // CreateTask 创建任务，返回创建后的完整 Task 对象
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/add_task.html
-func (c *Client) CreateTask(req *model.CreateTaskRequest) (*model.Task, error) {
-	data, err := c.doPost("/tasks", req.ToParams())
+func (c *Client) CreateTask(ctx context.Context, req *model.CreateTaskRequest) (*model.Task, error) {
+	data, err := c.doPost(ctx, "/tasks", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +100,8 @@ func (c *Client) CreateTask(req *model.CreateTaskRequest) (*model.Task, error) {
 
 // UpdateTask 更新任务
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/update_task.html
-func (c *Client) UpdateTask(req *model.UpdateTaskRequest) (*model.Task, error) {
-	data, err := c.doPost("/tasks", req.ToParams())
+func (c *Client) UpdateTask(ctx context.Context, req *model.UpdateTaskRequest) (*model.Task, error) {
+	data, err := c.doPost(ctx, "/tasks", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +126,8 @@ func (c *Client) UpdateTask(req *model.UpdateTaskRequest) (*model.Task, error) {
 
 // CountTasks 查询任务数量
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks_count.html
-func (c *Client) CountTasks(req *model.CountTasksRequest) (int, error) {
-	data, err := c.doGet("/tasks/count", req.ToParams())
+func (c *Client) CountTasks(ctx context.Context, req *model.CountTasksRequest) (int, error) {
+	data, err := c.doGet(ctx, "/tasks/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}

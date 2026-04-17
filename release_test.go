@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +29,7 @@ func TestCreateRelease(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	release, err := c.CreateRelease(&model.CreateReleaseRequest{
+	release, err := c.CreateRelease(context.Background(), &model.CreateReleaseRequest{
 		WorkspaceID: "11111111",
 		Name:        "v1.0",
 		Description: "first release",
@@ -66,7 +67,7 @@ func TestUpdateRelease(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	release, err := c.UpdateRelease(&model.UpdateReleaseRequest{
+	release, err := c.UpdateRelease(context.Background(), &model.UpdateReleaseRequest{
 		WorkspaceID: "11111111",
 		ID:          "1111111111001000001",
 		Name:        "v1.1",
@@ -100,7 +101,7 @@ func TestCountReleases(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountReleases(&model.WorkspaceIDRequest{WorkspaceID: "11111111"})
+	count, err := c.CountReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "11111111"})
 	if err != nil {
 		t.Fatalf("CountReleases() unexpected error: %v", err)
 	}

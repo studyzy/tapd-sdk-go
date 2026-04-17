@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // GetWorkflowTransitions 获取工作流状态流转细则，返回强类型 []model.WorkflowTransition
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_transitions.html
-func (c *Client) GetWorkflowTransitions(req *model.WorkflowRequest) ([]model.WorkflowTransition, error) {
-	data, err := c.doGet("/workflows/all_transitions", req.ToParams())
+func (c *Client) GetWorkflowTransitions(ctx context.Context, req *model.WorkflowRequest) ([]model.WorkflowTransition, error) {
+	data, err := c.doGet(ctx, "/workflows/all_transitions", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +25,8 @@ func (c *Client) GetWorkflowTransitions(req *model.WorkflowRequest) ([]model.Wor
 
 // GetWorkflowStatusMap 获取工作流状态中英文映射，返回 map[string]string（英文状态名→中文状态名）
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_status_map.html
-func (c *Client) GetWorkflowStatusMap(req *model.WorkflowRequest) (map[string]string, error) {
-	data, err := c.doGet("/workflows/status_map", req.ToParams())
+func (c *Client) GetWorkflowStatusMap(ctx context.Context, req *model.WorkflowRequest) (map[string]string, error) {
+	data, err := c.doGet(ctx, "/workflows/status_map", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +40,8 @@ func (c *Client) GetWorkflowStatusMap(req *model.WorkflowRequest) (map[string]st
 
 // GetWorkflowLastSteps 获取工作流结束状态，返回 map[string]string（英文状态名→中文状态名）
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_last_steps.html
-func (c *Client) GetWorkflowLastSteps(req *model.WorkflowRequest) (map[string]string, error) {
-	data, err := c.doGet("/workflows/last_steps", req.ToParams())
+func (c *Client) GetWorkflowLastSteps(ctx context.Context, req *model.WorkflowRequest) (map[string]string, error) {
+	data, err := c.doGet(ctx, "/workflows/last_steps", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +55,8 @@ func (c *Client) GetWorkflowLastSteps(req *model.WorkflowRequest) (map[string]st
 
 // GetWorkflowAllLastSteps 获取所有结束状态，返回 map[string]string（英文状态名→中文状态名）
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_last_steps.html
-func (c *Client) GetWorkflowAllLastSteps(req *model.WorkflowRequest) (map[string]string, error) {
-	data, err := c.doGet("/workflows/all_last_steps", req.ToParams())
+func (c *Client) GetWorkflowAllLastSteps(ctx context.Context, req *model.WorkflowRequest) (map[string]string, error) {
+	data, err := c.doGet(ctx, "/workflows/all_last_steps", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +70,8 @@ func (c *Client) GetWorkflowAllLastSteps(req *model.WorkflowRequest) (map[string
 
 // GetWorkflowFirstStep 获取工作流起始状态，返回起始状态字符串
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_first_step.html
-func (c *Client) GetWorkflowFirstStep(req *model.WorkflowRequest) (string, error) {
-	data, err := c.doGet("/workflows/first_step", req.ToParams())
+func (c *Client) GetWorkflowFirstStep(ctx context.Context, req *model.WorkflowRequest) (string, error) {
+	data, err := c.doGet(ctx, "/workflows/first_step", req.ToParams())
 	if err != nil {
 		return "", err
 	}
@@ -84,8 +85,8 @@ func (c *Client) GetWorkflowFirstStep(req *model.WorkflowRequest) (string, error
 
 // GetWorkflows 获取项目下的工作流列表，返回 json.RawMessage（结构复杂，不做强类型解析）
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflows.html
-func (c *Client) GetWorkflows(req *model.WorkflowRequest) (json.RawMessage, error) {
-	data, err := c.doGet("/workflows", req.ToParams())
+func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) (json.RawMessage, error) {
+	data, err := c.doGet(ctx, "/workflows", req.ToParams())
 	if err != nil {
 		return nil, err
 	}

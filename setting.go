@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -8,8 +9,8 @@ import (
 )
 
 // CreateModule 创建模块
-func (c *Client) CreateModule(req *model.CreateModuleRequest) (*model.Module, error) {
-	data, err := c.doPost("/modules", req.ToParams())
+func (c *Client) CreateModule(ctx context.Context, req *model.CreateModuleRequest) (*model.Module, error) {
+	data, err := c.doPost(ctx, "/modules", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +34,8 @@ func (c *Client) CreateModule(req *model.CreateModuleRequest) (*model.Module, er
 }
 
 // UpdateModule 更新模块
-func (c *Client) UpdateModule(req *model.UpdateModuleRequest) (*model.Module, error) {
-	data, err := c.doPost("/modules", req.ToParams())
+func (c *Client) UpdateModule(ctx context.Context, req *model.UpdateModuleRequest) (*model.Module, error) {
+	data, err := c.doPost(ctx, "/modules", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +59,8 @@ func (c *Client) UpdateModule(req *model.UpdateModuleRequest) (*model.Module, er
 }
 
 // GetModules 获取模块列表
-func (c *Client) GetModules(req *model.GetModulesRequest) ([]model.Module, error) {
-	data, err := c.doGet("/modules", req.ToParams())
+func (c *Client) GetModules(ctx context.Context, req *model.GetModulesRequest) ([]model.Module, error) {
+	data, err := c.doGet(ctx, "/modules", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +70,7 @@ func (c *Client) GetModules(req *model.GetModulesRequest) ([]model.Module, error
 		return nil, fmt.Errorf("failed to parse module list: %w", err)
 	}
 
-	var modules []model.Module
+	modules := make([]model.Module, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Module"]; ok {
 			var m model.Module
@@ -82,8 +83,8 @@ func (c *Client) GetModules(req *model.GetModulesRequest) ([]model.Module, error
 }
 
 // CountModules 获取模块数量
-func (c *Client) CountModules(req *model.CountModulesRequest) (int, error) {
-	data, err := c.doGet("/modules/count", req.ToParams())
+func (c *Client) CountModules(ctx context.Context, req *model.CountModulesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/modules/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -100,8 +101,8 @@ func (c *Client) CountModules(req *model.CountModulesRequest) (int, error) {
 }
 
 // CreateVersion 创建版本
-func (c *Client) CreateVersion(req *model.CreateVersionRequest) (*model.Version, error) {
-	data, err := c.doPost("/versions", req.ToParams())
+func (c *Client) CreateVersion(ctx context.Context, req *model.CreateVersionRequest) (*model.Version, error) {
+	data, err := c.doPost(ctx, "/versions", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +126,8 @@ func (c *Client) CreateVersion(req *model.CreateVersionRequest) (*model.Version,
 }
 
 // UpdateVersion 更新版本
-func (c *Client) UpdateVersion(req *model.UpdateVersionRequest) (*model.Version, error) {
-	data, err := c.doPost("/versions", req.ToParams())
+func (c *Client) UpdateVersion(ctx context.Context, req *model.UpdateVersionRequest) (*model.Version, error) {
+	data, err := c.doPost(ctx, "/versions", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +151,8 @@ func (c *Client) UpdateVersion(req *model.UpdateVersionRequest) (*model.Version,
 }
 
 // GetVersions 获取版本列表
-func (c *Client) GetVersions(req *model.GetVersionsRequest) ([]model.Version, error) {
-	data, err := c.doGet("/versions", req.ToParams())
+func (c *Client) GetVersions(ctx context.Context, req *model.GetVersionsRequest) ([]model.Version, error) {
+	data, err := c.doGet(ctx, "/versions", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +162,7 @@ func (c *Client) GetVersions(req *model.GetVersionsRequest) ([]model.Version, er
 		return nil, fmt.Errorf("failed to parse version list: %w", err)
 	}
 
-	var versions []model.Version
+	versions := make([]model.Version, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Version"]; ok {
 			var v model.Version
@@ -174,8 +175,8 @@ func (c *Client) GetVersions(req *model.GetVersionsRequest) ([]model.Version, er
 }
 
 // CountVersions 获取版本数量
-func (c *Client) CountVersions(req *model.CountVersionsRequest) (int, error) {
-	data, err := c.doGet("/versions/count", req.ToParams())
+func (c *Client) CountVersions(ctx context.Context, req *model.CountVersionsRequest) (int, error) {
+	data, err := c.doGet(ctx, "/versions/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -192,8 +193,8 @@ func (c *Client) CountVersions(req *model.CountVersionsRequest) (int, error) {
 }
 
 // CreateBaseline 创建基线
-func (c *Client) CreateBaseline(req *model.CreateBaselineRequest) (*model.Baseline, error) {
-	data, err := c.doPost("/baselines", req.ToParams())
+func (c *Client) CreateBaseline(ctx context.Context, req *model.CreateBaselineRequest) (*model.Baseline, error) {
+	data, err := c.doPost(ctx, "/baselines", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -217,8 +218,8 @@ func (c *Client) CreateBaseline(req *model.CreateBaselineRequest) (*model.Baseli
 }
 
 // UpdateBaseline 更新基线
-func (c *Client) UpdateBaseline(req *model.UpdateBaselineRequest) (*model.Baseline, error) {
-	data, err := c.doPost("/baselines", req.ToParams())
+func (c *Client) UpdateBaseline(ctx context.Context, req *model.UpdateBaselineRequest) (*model.Baseline, error) {
+	data, err := c.doPost(ctx, "/baselines", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -242,8 +243,8 @@ func (c *Client) UpdateBaseline(req *model.UpdateBaselineRequest) (*model.Baseli
 }
 
 // GetBaselines 获取基线列表
-func (c *Client) GetBaselines(req *model.GetBaselinesRequest) ([]model.Baseline, error) {
-	data, err := c.doGet("/baselines", req.ToParams())
+func (c *Client) GetBaselines(ctx context.Context, req *model.GetBaselinesRequest) ([]model.Baseline, error) {
+	data, err := c.doGet(ctx, "/baselines", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +254,7 @@ func (c *Client) GetBaselines(req *model.GetBaselinesRequest) ([]model.Baseline,
 		return nil, fmt.Errorf("failed to parse baseline list: %w", err)
 	}
 
-	var baselines []model.Baseline
+	baselines := make([]model.Baseline, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Baseline"]; ok {
 			var b model.Baseline
@@ -266,8 +267,8 @@ func (c *Client) GetBaselines(req *model.GetBaselinesRequest) ([]model.Baseline,
 }
 
 // CountBaselines 获取基线数量
-func (c *Client) CountBaselines(req *model.CountBaselinesRequest) (int, error) {
-	data, err := c.doGet("/baselines/count", req.ToParams())
+func (c *Client) CountBaselines(ctx context.Context, req *model.CountBaselinesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/baselines/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -284,8 +285,8 @@ func (c *Client) CountBaselines(req *model.CountBaselinesRequest) (int, error) {
 }
 
 // CreateFeature 创建特性
-func (c *Client) CreateFeature(req *model.CreateFeatureRequest) (*model.Feature, error) {
-	data, err := c.doPost("/features", req.ToParams())
+func (c *Client) CreateFeature(ctx context.Context, req *model.CreateFeatureRequest) (*model.Feature, error) {
+	data, err := c.doPost(ctx, "/features", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -309,8 +310,8 @@ func (c *Client) CreateFeature(req *model.CreateFeatureRequest) (*model.Feature,
 }
 
 // UpdateFeature 更新特性
-func (c *Client) UpdateFeature(req *model.UpdateFeatureRequest) (*model.Feature, error) {
-	data, err := c.doPost("/features", req.ToParams())
+func (c *Client) UpdateFeature(ctx context.Context, req *model.UpdateFeatureRequest) (*model.Feature, error) {
+	data, err := c.doPost(ctx, "/features", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -334,8 +335,8 @@ func (c *Client) UpdateFeature(req *model.UpdateFeatureRequest) (*model.Feature,
 }
 
 // GetFeatures 获取特性列表
-func (c *Client) GetFeatures(req *model.GetFeaturesRequest) ([]model.Feature, error) {
-	data, err := c.doGet("/features", req.ToParams())
+func (c *Client) GetFeatures(ctx context.Context, req *model.GetFeaturesRequest) ([]model.Feature, error) {
+	data, err := c.doGet(ctx, "/features", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +346,7 @@ func (c *Client) GetFeatures(req *model.GetFeaturesRequest) ([]model.Feature, er
 		return nil, fmt.Errorf("failed to parse feature list: %w", err)
 	}
 
-	var features []model.Feature
+	features := make([]model.Feature, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Feature"]; ok {
 			var f model.Feature
@@ -358,8 +359,8 @@ func (c *Client) GetFeatures(req *model.GetFeaturesRequest) ([]model.Feature, er
 }
 
 // CountFeatures 获取特性数量
-func (c *Client) CountFeatures(req *model.CountFeaturesRequest) (int, error) {
-	data, err := c.doGet("/features/count", req.ToParams())
+func (c *Client) CountFeatures(ctx context.Context, req *model.CountFeaturesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/features/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}

@@ -185,6 +185,105 @@ func (r *AddWorkspaceMemberRequest) ToParams() map[string]string {
 	return params
 }
 
+// CreateMiniProjectRequest 新建空间的请求参数
+type CreateMiniProjectRequest struct {
+	CompanyID   string // 必填：公司ID
+	Name        string // 必填：空间名称
+	Creator     string // 必填：创建人（必须属于当前公司）
+	Description string // 可选：空间描述
+	TemplateID  string // 可选：模板ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CreateMiniProjectRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"company_id": r.CompanyID,
+		"name":       r.Name,
+		"creator":    r.Creator,
+	}
+	setOptional(params, "description", r.Description)
+	setOptional(params, "template_id", r.TemplateID)
+	return params
+}
+
+// GetMiniProjectListRequest 获取用户所有参与空间的请求参数
+type GetMiniProjectListRequest struct {
+	User      string // 必填：用户名
+	CompanyID string // 必填：公司ID
+	CanEdit   string // 可选：是否过滤有编辑权限的空间
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetMiniProjectListRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"user":       r.User,
+		"company_id": r.CompanyID,
+	}
+	setOptional(params, "can_edit", r.CanEdit)
+	return params
+}
+
+// MiniProject 表示 Mini 空间简要信息
+type MiniProject struct {
+	ID      string `json:"id,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Status  string `json:"status,omitempty"`
+	Creator string `json:"creator,omitempty"`
+	Created string `json:"created,omitempty"`
+}
+
+// CreateMiniProjectResponse 新建空间的响应
+type CreateMiniProjectResponse struct {
+	WorkspaceID  string `json:"workspace_id,omitempty"`
+	WorkspaceURL string `json:"workspace_url,omitempty"`
+}
+
+// UploadAttachmentRequest 上传附件的请求参数（不含文件本身，文件通过 multipart 传输）
+type UploadAttachmentRequest struct {
+	WorkspaceID string // 必填：空间ID
+	Type        string // 必填：固定值 story_custom_field
+	CustomField string // 必填：自定义字段英文名
+	EntryID     string // 必填：工作项ID
+	Owner       string // 可选：附件创建者
+}
+
+// UploadImageBase64Request 上传 base64 图片的请求参数
+type UploadImageBase64Request struct {
+	WorkspaceID string // 必填：空间ID
+	Base64Data  string // 必填：base64格式的图片数据
+	Type        string // 必填：固定值 story_custom_field
+	CustomField string // 必填：自定义字段英文名
+	EntryID     string // 必填：工作项ID
+	Owner       string // 可选：附件创建者
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *UploadImageBase64Request) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"base64_data":  r.Base64Data,
+		"type":         r.Type,
+		"custom_field": r.CustomField,
+		"entry_id":     r.EntryID,
+	}
+	setOptional(params, "owner", r.Owner)
+	return params
+}
+
+// DownloadAttachmentRequest 获取单个附件下载链接的请求参数
+type DownloadAttachmentRequest struct {
+	WorkspaceID string // 必填：空间ID
+	ID          string // 必填：附件ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *DownloadAttachmentRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+	}
+}
+
 // CustomFieldConfig 表示 TAPD 自定义字段配置
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_custom_fields_settings.html
 type CustomFieldConfig struct {

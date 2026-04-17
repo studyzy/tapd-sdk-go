@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,7 +20,7 @@ func TestListTimesheets(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListTimesheets(&model.ListTimesheetsRequest{
+	results, err := c.ListTimesheets(context.Background(), &model.ListTimesheetsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -56,7 +57,7 @@ func TestListTimesheets_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListTimesheets(&model.ListTimesheetsRequest{
+	results, err := c.ListTimesheets(context.Background(), &model.ListTimesheetsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -81,7 +82,7 @@ func TestAddTimesheet(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.AddTimesheet(&model.AddTimesheetRequest{
+	result, err := c.AddTimesheet(context.Background(), &model.AddTimesheetRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
 		EntityID:    "200",
@@ -113,7 +114,7 @@ func TestUpdateTimesheet_Wrapped(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateTimesheet(&model.UpdateTimesheetRequest{
+	result, err := c.UpdateTimesheet(context.Background(), &model.UpdateTimesheetRequest{
 		WorkspaceID: "1",
 		ID:          "1002",
 		Timespent:   "5h",
@@ -142,7 +143,7 @@ func TestUpdateTimesheet_Direct(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateTimesheet(&model.UpdateTimesheetRequest{
+	result, err := c.UpdateTimesheet(context.Background(), &model.UpdateTimesheetRequest{
 		WorkspaceID: "1",
 		ID:          "1002",
 		Timespent:   "5h",
@@ -166,7 +167,7 @@ func TestCountTimesheets(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountTimesheets(&model.CountTimesheetsRequest{
+	count, err := c.CountTimesheets(context.Background(), &model.CountTimesheetsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -191,7 +192,7 @@ func TestDeleteTimesheets(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.DeleteTimesheets(&model.DeleteTimesheetsRequest{
+	data, err := c.DeleteTimesheets(context.Background(), &model.DeleteTimesheetsRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
 		EntityID:    "200",

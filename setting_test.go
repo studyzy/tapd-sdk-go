@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -25,7 +26,7 @@ func TestCreateModule(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	module, err := c.CreateModule(&model.CreateModuleRequest{
+	module, err := c.CreateModule(context.Background(), &model.CreateModuleRequest{
 		WorkspaceID: "11111111",
 		Name:        "核心模块",
 		Description: "核心功能模块",
@@ -58,7 +59,7 @@ func TestUpdateModule(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	module, err := c.UpdateModule(&model.UpdateModuleRequest{
+	module, err := c.UpdateModule(context.Background(), &model.UpdateModuleRequest{
 		WorkspaceID: "11111111",
 		ID:          "1001",
 		Name:        "核心模块更新",
@@ -89,7 +90,7 @@ func TestGetModules(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	modules, err := c.GetModules(&model.GetModulesRequest{
+	modules, err := c.GetModules(context.Background(), &model.GetModulesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -117,7 +118,7 @@ func TestCountModules(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountModules(&model.CountModulesRequest{
+	count, err := c.CountModules(context.Background(), &model.CountModulesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -144,7 +145,7 @@ func TestCreateVersion(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	version, err := c.CreateVersion(&model.CreateVersionRequest{
+	version, err := c.CreateVersion(context.Background(), &model.CreateVersionRequest{
 		WorkspaceID: "11111111",
 		Name:        "v1.0",
 		Description: "第一版",
@@ -174,7 +175,7 @@ func TestUpdateVersion(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	version, err := c.UpdateVersion(&model.UpdateVersionRequest{
+	version, err := c.UpdateVersion(context.Background(), &model.UpdateVersionRequest{
 		WorkspaceID: "11111111",
 		ID:          "1001",
 		Name:        "v1.1",
@@ -205,7 +206,7 @@ func TestGetVersions(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	versions, err := c.GetVersions(&model.GetVersionsRequest{
+	versions, err := c.GetVersions(context.Background(), &model.GetVersionsRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -230,7 +231,7 @@ func TestCountVersions(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountVersions(&model.CountVersionsRequest{
+	count, err := c.CountVersions(context.Background(), &model.CountVersionsRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -257,7 +258,7 @@ func TestCreateBaseline(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	baseline, err := c.CreateBaseline(&model.CreateBaselineRequest{
+	baseline, err := c.CreateBaseline(context.Background(), &model.CreateBaselineRequest{
 		WorkspaceID: "11111111",
 		Name:        "基线1",
 		Description: "第一条基线",
@@ -287,7 +288,7 @@ func TestUpdateBaseline(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	baseline, err := c.UpdateBaseline(&model.UpdateBaselineRequest{
+	baseline, err := c.UpdateBaseline(context.Background(), &model.UpdateBaselineRequest{
 		WorkspaceID: "11111111",
 		ID:          "2001",
 		Name:        "基线1更新",
@@ -318,7 +319,7 @@ func TestGetBaselines(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	baselines, err := c.GetBaselines(&model.GetBaselinesRequest{
+	baselines, err := c.GetBaselines(context.Background(), &model.GetBaselinesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -343,7 +344,7 @@ func TestCountBaselines(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountBaselines(&model.CountBaselinesRequest{
+	count, err := c.CountBaselines(context.Background(), &model.CountBaselinesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -370,7 +371,7 @@ func TestCreateFeature(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	feature, err := c.CreateFeature(&model.CreateFeatureRequest{
+	feature, err := c.CreateFeature(context.Background(), &model.CreateFeatureRequest{
 		WorkspaceID: "11111111",
 		Name:        "特性1",
 		Description: "第一个特性",
@@ -400,7 +401,7 @@ func TestUpdateFeature(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	feature, err := c.UpdateFeature(&model.UpdateFeatureRequest{
+	feature, err := c.UpdateFeature(context.Background(), &model.UpdateFeatureRequest{
 		WorkspaceID: "11111111",
 		ID:          "3001",
 		Name:        "特性1更新",
@@ -431,7 +432,7 @@ func TestGetFeatures(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	features, err := c.GetFeatures(&model.GetFeaturesRequest{
+	features, err := c.GetFeatures(context.Background(), &model.GetFeaturesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {
@@ -459,7 +460,7 @@ func TestCountFeatures(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountFeatures(&model.CountFeaturesRequest{
+	count, err := c.CountFeatures(context.Background(), &model.CountFeaturesRequest{
 		WorkspaceID: "11111111",
 	})
 	if err != nil {

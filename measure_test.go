@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +29,7 @@ func TestGetLifeTimes(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.GetLifeTimes(&model.GetLifeTimesRequest{
+	data, err := c.GetLifeTimes(context.Background(), &model.GetLifeTimesRequest{
 		WorkspaceID: "11111111",
 		System:      "story",
 		EntityID:    "2001",
@@ -52,7 +53,7 @@ func TestGetLifeTimes_APIError(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetLifeTimes(&model.GetLifeTimesRequest{
+	_, err := c.GetLifeTimes(context.Background(), &model.GetLifeTimesRequest{
 		WorkspaceID: "11111111",
 		System:      "story",
 		EntityID:    "2001",

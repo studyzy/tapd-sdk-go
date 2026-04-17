@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -20,7 +21,7 @@ func TestListTasks(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	tasks, err := c.ListTasks(&model.ListTasksRequest{
+	tasks, err := c.ListTasks(context.Background(), &model.ListTasksRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -51,7 +52,7 @@ func TestGetTask_PreservesHTML(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	task, err := c.GetTask("1", "300")
+	task, err := c.GetTask(context.Background(), "1", "300")
 	if err != nil {
 		t.Fatalf("GetTask() unexpected error: %v", err)
 	}
@@ -84,7 +85,7 @@ func TestListTasks_PreservesCustomFields(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	tasks, err := c.ListTasks(&model.ListTasksRequest{WorkspaceID: "1"})
+	tasks, err := c.ListTasks(context.Background(), &model.ListTasksRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListTasks() unexpected error: %v", err)
 	}
@@ -107,7 +108,7 @@ func TestGetTask_NotFound(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetTask("1", "999")
+	_, err := c.GetTask(context.Background(), "1", "999")
 	if err == nil {
 		t.Fatal("expected error for not found task")
 	}
@@ -130,7 +131,7 @@ func TestCreateTask(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	task, err := c.CreateTask(&model.CreateTaskRequest{
+	task, err := c.CreateTask(context.Background(), &model.CreateTaskRequest{
 		WorkspaceID: "1",
 		Name:        "New Task",
 		StoryID:     "100",
@@ -163,7 +164,7 @@ func TestUpdateTask(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	task, err := c.UpdateTask(&model.UpdateTaskRequest{
+	task, err := c.UpdateTask(context.Background(), &model.UpdateTaskRequest{
 		WorkspaceID: "1",
 		ID:          "300",
 		Name:        "Updated Task",
@@ -194,7 +195,7 @@ func TestCountTasks(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountTasks(&model.CountTasksRequest{
+	count, err := c.CountTasks(context.Background(), &model.CountTasksRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {

@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -20,7 +21,7 @@ func TestListWorkspaces(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	workspaces, err := c.ListWorkspaces()
+	workspaces, err := c.ListWorkspaces(context.Background())
 	if err != nil {
 		t.Fatalf("ListWorkspaces() unexpected error: %v", err)
 	}
@@ -49,7 +50,7 @@ func TestGetWorkspaceInfo(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	ws, err := c.GetWorkspaceInfo("10")
+	ws, err := c.GetWorkspaceInfo(context.Background(), "10")
 	if err != nil {
 		t.Fatalf("GetWorkspaceInfo() unexpected error: %v", err)
 	}
@@ -75,7 +76,7 @@ func TestGetWorkspaceInfo_NotFound(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetWorkspaceInfo("999")
+	_, err := c.GetWorkspaceInfo(context.Background(), "999")
 	if err == nil {
 		t.Fatal("GetWorkspaceInfo() expected error for empty data, got nil")
 	}
@@ -102,7 +103,7 @@ func TestGetSubWorkspaces(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	ws, err := c.GetSubWorkspaces(&model.GetSubWorkspacesRequest{
+	ws, err := c.GetSubWorkspaces(context.Background(), &model.GetSubWorkspacesRequest{
 		WorkspaceID: "10104801",
 	})
 	if err != nil {
@@ -136,7 +137,7 @@ func TestListCompanyProjects(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	projects, err := c.ListCompanyProjects(&model.ListCompanyProjectsRequest{
+	projects, err := c.ListCompanyProjects(context.Background(), &model.ListCompanyProjectsRequest{
 		CompanyID: "12345",
 	})
 	if err != nil {
@@ -170,7 +171,7 @@ func TestGetWorkspaceUsers(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	users, err := c.GetWorkspaceUsers(&model.GetWorkspaceUsersRequest{
+	users, err := c.GetWorkspaceUsers(context.Background(), &model.GetWorkspaceUsersRequest{
 		WorkspaceID: "10104801",
 	})
 	if err != nil {
@@ -210,7 +211,7 @@ func TestAddWorkspaceMember(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.AddWorkspaceMember(&model.AddWorkspaceMemberRequest{
+	result, err := c.AddWorkspaceMember(context.Background(), &model.AddWorkspaceMemberRequest{
 		WorkspaceID: "10104801",
 		Nick:        "davidning",
 	})
@@ -236,7 +237,7 @@ func TestGetRoles(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	roles, err := c.GetRoles("10104801")
+	roles, err := c.GetRoles(context.Background(), "10104801")
 	if err != nil {
 		t.Fatalf("GetRoles() unexpected error: %v", err)
 	}
@@ -251,5 +252,64 @@ func TestGetRoles(t *testing.T) {
 	}
 	if roles["1000000000000000010"] != "测试人员" {
 		t.Errorf("role 1000000000000000010 = %q, want %q", roles["1000000000000000010"], "测试人员")
+	}
+}
+
+func TestCreateMiniProject(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/create_mini_project" {
+			t.Errorf("unexpected path: %s", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"workspace_id":"12345","workspace_url":"https://www.tapd.cn/12345"},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.CreateMiniProject(context.Background(), &model.CreateMiniProjectRequest{
+		CompanyID: "1",
+		Name:      "Test Project",
+		Creator:   "admin",
+	})
+	if err != nil {
+		t.Fatalf("CreateMiniProject() unexpected error: %v", err)
+	}
+	if result.WorkspaceID != "12345" {
+		t.Errorf("workspace_id = %q, want %q", result.WorkspaceID, "12345")
+	}
+	if result.WorkspaceURL != "https://www.tapd.cn/12345" {
+		t.Errorf("workspace_url = %q, want %q", result.WorkspaceURL, "https://www.tapd.cn/12345")
+	}
+}
+
+func TestGetMiniProjectList(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workspaces/get_mini_project_list_with_permission" {
+			t.Errorf("unexpected path: %s", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"id":"100","name":"Space1","status":"normal","creator":"admin"},{"id":"101","name":"Space2","status":"normal","creator":"user1"}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	projects, err := c.GetMiniProjectList(context.Background(), &model.GetMiniProjectListRequest{
+		User:      "admin",
+		CompanyID: "1",
+	})
+	if err != nil {
+		t.Fatalf("GetMiniProjectList() unexpected error: %v", err)
+	}
+	if len(projects) != 2 {
+		t.Fatalf("expected 2 projects, got %d", len(projects))
+	}
+	if projects[0].ID != "100" {
+		t.Errorf("first project id = %q, want %q", projects[0].ID, "100")
+	}
+	if projects[1].Name != "Space2" {
+		t.Errorf("second project name = %q, want %q", projects[1].Name, "Space2")
 	}
 }

@@ -2,6 +2,8 @@
 package tapd
 
 import (
+	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -61,21 +63,21 @@ func NewClientWithBaseURL(apiURL, webURL, accessToken, apiUser, apiPassword stri
 	apiURL = strings.TrimRight(apiURL, "/")
 	webURL = strings.TrimRight(webURL, "/")
 
-	var authHeader string
-	if accessToken != "" {
-		authHeader = "Bearer " + accessToken
-	} else {
-		encoded := base64.StdEncoding.EncodeToString([]byte(apiUser + ":" + apiPassword))
-		authHeader = "Basic " + encoded
-	}
-	c := &Client{
+	return &Client{
 		baseURL:    apiURL,
 		webURL:     webURL,
 		httpClient: &http.Client{},
-		authHeader: authHeader,
+		authHeader: buildAuthHeader(accessToken, apiUser, apiPassword),
 	}
+}
 
-	return c
+// buildAuthHeader 根据凭据类型构建 Authorization 请求头值
+func buildAuthHeader(accessToken, apiUser, apiPassword string) string {
+	if accessToken != "" {
+		return "Bearer " + accessToken
+	}
+	encoded := base64.StdEncoding.EncodeToString([]byte(apiUser + ":" + apiPassword))
+	return "Basic " + encoded
 }
 
 // WebURL 返回前端页面的基础地址
@@ -84,31 +86,37 @@ func (c *Client) WebURL() string {
 }
 
 // FetchNick 通过 /users/info 接口获取当前用户昵称（Bearer Token 认证时使用）
-func (c *Client) FetchNick() {
-	data, err := c.doGet("/users/info", nil)
+func (c *Client) FetchNick(ctx context.Context) error {
+	data, err := c.doGet(ctx, "/users/info", nil)
 	if err != nil {
-		return
+		return err
 	}
 
-	var result map[string]interface{}
+	var result struct {
+		Nick string `json:"nick"`
+	}
 	if err := json.Unmarshal(data, &result); err != nil {
-		return
+		return fmt.Errorf("failed to parse user info: %w", err)
 	}
 
-	if nick, ok := result["nick"].(string); ok {
-		c.Nick = nick
-	}
+	c.Nick = result.Nick
+	return nil
 }
 
 // TestAuth 通过调用 /quickstart/testauth 接口验证凭据是否有效。
 // 返回 nil 表示认证成功，否则返回错误信息。
-func (c *Client) TestAuth() error {
-	_, err := c.doGet("/quickstart/testauth", nil)
+func (c *Client) TestAuth(ctx context.Context) error {
+	_, err := c.doGet(ctx, "/quickstart/testauth", nil)
 	return err
 }
 
+// applyAuth 为请求设置 Authorization 头
+func (c *Client) applyAuth(req *http.Request) {
+	req.Header.Set("Authorization", c.authHeader)
+}
+
 // doGet 发送 GET 请求到指定端点，解析 TAPD 统一响应格式并返回 data 字段
-func (c *Client) doGet(endpoint string, params map[string]string) (json.RawMessage, error) {
+func (c *Client) doGet(ctx context.Context, endpoint string, params map[string]string) (json.RawMessage, error) {
 	reqURL, err := url.Parse(c.baseURL + endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)
@@ -122,28 +130,33 @@ func (c *Client) doGet(endpoint string, params map[string]string) (json.RawMessa
 		reqURL.RawQuery = q.Encode()
 	}
 
-	req, err := http.NewRequest(http.MethodGet, reqURL.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-	req.Header.Set("Authorization", c.authHeader)
+	c.applyAuth(req)
 	req.Header.Set("Content-Type", "application/json")
 
 	return c.doRequest(req)
 }
 
 // doPost 发送 POST 请求到指定端点，使用 form-urlencoded 编码请求体
-func (c *Client) doPost(endpoint string, body map[string]string) (json.RawMessage, error) {
+func (c *Client) doPost(ctx context.Context, endpoint string, body map[string]string) (json.RawMessage, error) {
 	form := url.Values{}
 	for k, v := range body {
 		form.Set(k, v)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, c.baseURL+endpoint, strings.NewReader(form.Encode()))
+	reqURL, err := url.Parse(c.baseURL + endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL.String(), strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
-	req.Header.Set("Authorization", c.authHeader)
+	c.applyAuth(req)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	return c.doRequest(req)
@@ -169,7 +182,7 @@ func (c *Client) doRequest(req *http.Request) (json.RawMessage, error) {
 		}
 		return nil, &TAPDError{
 			HTTPStatus: resp.StatusCode,
-			ExitCode:   c.mapHTTPError(resp.StatusCode),
+			ExitCode:   mapHTTPError(resp.StatusCode),
 			Message:    fmt.Sprintf("HTTP %d: %s", resp.StatusCode, snippet),
 		}
 	}
@@ -191,8 +204,8 @@ func (c *Client) doRequest(req *http.Request) (json.RawMessage, error) {
 }
 
 // doPostJSON 发送 JSON 格式的 POST 请求到指定 URL（用于企业微信等外部 API）
-func (c *Client) doPostJSON(url string, body []byte) error {
-	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(string(body)))
+func (c *Client) doPostJSON(ctx context.Context, rawURL string, body []byte) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, rawURL, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
@@ -205,9 +218,11 @@ func (c *Client) doPostJSON(url string, body []byte) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		bodyBytes, _ := io.ReadAll(resp.Body)
+		bodyBytes, readErr := io.ReadAll(resp.Body)
 		snippet := string(bodyBytes)
-		if len(snippet) > 200 {
+		if readErr != nil {
+			snippet = "(failed to read response body)"
+		} else if len(snippet) > 200 {
 			snippet = snippet[:200]
 		}
 		return fmt.Errorf("HTTP %d: %s", resp.StatusCode, snippet)
@@ -216,7 +231,7 @@ func (c *Client) doPostJSON(url string, body []byte) error {
 }
 
 // mapHTTPError 将 HTTP 状态码映射到退出码
-func (c *Client) mapHTTPError(statusCode int) int {
+func mapHTTPError(statusCode int) int {
 	switch statusCode {
 	case 401:
 		return 1
@@ -224,8 +239,6 @@ func (c *Client) mapHTTPError(statusCode int) int {
 		return 2
 	case 422:
 		return 3
-	case 429, 500, 502:
-		return 4
 	default:
 		return 4
 	}

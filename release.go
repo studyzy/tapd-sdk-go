@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // CreateRelease 创建发布计划
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/add_release.html
-func (c *Client) CreateRelease(req *model.CreateReleaseRequest) (*model.Release, error) {
-	data, err := c.doPost("/releases", req.ToParams())
+func (c *Client) CreateRelease(ctx context.Context, req *model.CreateReleaseRequest) (*model.Release, error) {
+	data, err := c.doPost(ctx, "/releases", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +35,8 @@ func (c *Client) CreateRelease(req *model.CreateReleaseRequest) (*model.Release,
 
 // UpdateRelease 更新发布计划
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/update_release.html
-func (c *Client) UpdateRelease(req *model.UpdateReleaseRequest) (*model.Release, error) {
-	data, err := c.doPost("/releases", req.ToParams())
+func (c *Client) UpdateRelease(ctx context.Context, req *model.UpdateReleaseRequest) (*model.Release, error) {
+	data, err := c.doPost(ctx, "/releases", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +60,8 @@ func (c *Client) UpdateRelease(req *model.UpdateReleaseRequest) (*model.Release,
 
 // CountReleases 获取发布计划数量
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_releases_count.html
-func (c *Client) CountReleases(req *model.WorkspaceIDRequest) (int, error) {
-	data, err := c.doGet("/releases/count", req.ToParams())
+func (c *Client) CountReleases(ctx context.Context, req *model.WorkspaceIDRequest) (int, error) {
+	data, err := c.doGet(ctx, "/releases/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}

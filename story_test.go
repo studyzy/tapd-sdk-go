@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -23,7 +24,7 @@ func TestListStories(t *testing.T) {
 	req := &model.ListStoriesRequest{
 		WorkspaceID: "1",
 	}
-	stories, err := c.ListStories(req)
+	stories, err := c.ListStories(context.Background(), req)
 	if err != nil {
 		t.Fatalf("ListStories() unexpected error: %v", err)
 	}
@@ -61,7 +62,7 @@ func TestGetStory_PreservesHTML(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	story, err := c.GetStory("1", "100")
+	story, err := c.GetStory(context.Background(), "1", "100")
 	if err != nil {
 		t.Fatalf("GetStory() unexpected error: %v", err)
 	}
@@ -103,7 +104,7 @@ func TestCreateStory(t *testing.T) {
 		WorkspaceID: "1",
 		Name:        "New",
 	}
-	story, err := c.CreateStory(req)
+	story, err := c.CreateStory(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CreateStory() unexpected error: %v", err)
 	}
@@ -126,7 +127,7 @@ func TestListStories_PreservesCustomFields(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	stories, err := c.ListStories(&model.ListStoriesRequest{WorkspaceID: "1"})
+	stories, err := c.ListStories(context.Background(), &model.ListStoriesRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListStories() unexpected error: %v", err)
 	}
@@ -156,7 +157,7 @@ func TestCreateStory_WithCustomFields(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	story, err := c.CreateStory(&model.CreateStoryRequest{
+	story, err := c.CreateStory(context.Background(), &model.CreateStoryRequest{
 		WorkspaceID:  "1",
 		Name:         "New",
 		CustomFields: map[string]string{"custom_field_one": "cf1"},
@@ -183,7 +184,7 @@ func TestCountStories(t *testing.T) {
 	req := &model.CountStoriesRequest{
 		WorkspaceID: "1",
 	}
-	count, err := c.CountStories(req)
+	count, err := c.CountStories(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountStories() unexpected error: %v", err)
 	}
@@ -212,7 +213,7 @@ func TestUpdateStory(t *testing.T) {
 		Name:        "Updated",
 		Status:      "done",
 	}
-	story, err := c.UpdateStory(req)
+	story, err := c.UpdateStory(context.Background(), req)
 	if err != nil {
 		t.Fatalf("UpdateStory() unexpected error: %v", err)
 	}

@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,7 @@ func TestGetStoryChanges(t *testing.T) {
 	req := &model.GetStoryChangesRequest{
 		WorkspaceID: "10104801",
 	}
-	changes, err := c.GetStoryChanges(req)
+	changes, err := c.GetStoryChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetStoryChanges() unexpected error: %v", err)
 	}
@@ -63,7 +64,7 @@ func TestCountStoryChanges(t *testing.T) {
 	req := &model.CountStoryChangesRequest{
 		WorkspaceID: "10104801",
 	}
-	count, err := c.CountStoryChanges(req)
+	count, err := c.CountStoryChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountStoryChanges() unexpected error: %v", err)
 	}
@@ -86,7 +87,7 @@ func TestGetBugChanges(t *testing.T) {
 	req := &model.GetBugChangesRequest{
 		WorkspaceID: "10158231",
 	}
-	changes, err := c.GetBugChanges(req)
+	changes, err := c.GetBugChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetBugChanges() unexpected error: %v", err)
 	}
@@ -127,7 +128,7 @@ func TestCountBugChanges(t *testing.T) {
 	req := &model.CountBugChangesRequest{
 		WorkspaceID: "10158231",
 	}
-	count, err := c.CountBugChanges(req)
+	count, err := c.CountBugChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountBugChanges() unexpected error: %v", err)
 	}
@@ -150,7 +151,7 @@ func TestGetTaskChanges(t *testing.T) {
 	req := &model.GetTaskChangesRequest{
 		WorkspaceID: "10158231",
 	}
-	changes, err := c.GetTaskChanges(req)
+	changes, err := c.GetTaskChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetTaskChanges() unexpected error: %v", err)
 	}
@@ -191,7 +192,7 @@ func TestCountTaskChanges(t *testing.T) {
 	req := &model.CountTaskChangesRequest{
 		WorkspaceID: "10158231",
 	}
-	count, err := c.CountTaskChanges(req)
+	count, err := c.CountTaskChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountTaskChanges() unexpected error: %v", err)
 	}
@@ -215,7 +216,7 @@ func TestGetIterationChanges(t *testing.T) {
 		WorkspaceID: "20355782",
 		IterationID: "1020355782000700291",
 	}
-	changes, err := c.GetIterationChanges(req)
+	changes, err := c.GetIterationChanges(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetIterationChanges() unexpected error: %v", err)
 	}

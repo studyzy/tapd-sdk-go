@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -8,8 +9,8 @@ import (
 )
 
 // CreateBoardCard 新建看板工作项
-func (c *Client) CreateBoardCard(req *model.CreateBoardCardRequest) (*model.BoardCard, error) {
-	data, err := c.doPost("/board_cards", req.ToParams())
+func (c *Client) CreateBoardCard(ctx context.Context, req *model.CreateBoardCardRequest) (*model.BoardCard, error) {
+	data, err := c.doPost(ctx, "/board_cards", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +34,8 @@ func (c *Client) CreateBoardCard(req *model.CreateBoardCardRequest) (*model.Boar
 }
 
 // GetBoardCards 获取看板工作项列表
-func (c *Client) GetBoardCards(req *model.GetBoardCardsRequest) ([]model.BoardCard, error) {
-	data, err := c.doGet("/board_cards", req.ToParams())
+func (c *Client) GetBoardCards(ctx context.Context, req *model.GetBoardCardsRequest) ([]model.BoardCard, error) {
+	data, err := c.doGet(ctx, "/board_cards", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +45,7 @@ func (c *Client) GetBoardCards(req *model.GetBoardCardsRequest) ([]model.BoardCa
 		return nil, fmt.Errorf("failed to parse board card list: %w", err)
 	}
 
-	var results []model.BoardCard
+	results := make([]model.BoardCard, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["BoardCard"]; ok {
 			var card model.BoardCard
@@ -57,8 +58,8 @@ func (c *Client) GetBoardCards(req *model.GetBoardCardsRequest) ([]model.BoardCa
 }
 
 // UpdateBoardCard 更新看板工作项
-func (c *Client) UpdateBoardCard(req *model.UpdateBoardCardRequest) (*model.BoardCard, error) {
-	data, err := c.doPost("/board_cards", req.ToParams())
+func (c *Client) UpdateBoardCard(ctx context.Context, req *model.UpdateBoardCardRequest) (*model.BoardCard, error) {
+	data, err := c.doPost(ctx, "/board_cards", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +83,8 @@ func (c *Client) UpdateBoardCard(req *model.UpdateBoardCardRequest) (*model.Boar
 }
 
 // GetBoardColumns 获取看板板块列表
-func (c *Client) GetBoardColumns(req *model.GetBoardColumnsRequest) ([]model.BoardColumn, error) {
-	data, err := c.doGet("/board_columns", req.ToParams())
+func (c *Client) GetBoardColumns(ctx context.Context, req *model.GetBoardColumnsRequest) ([]model.BoardColumn, error) {
+	data, err := c.doGet(ctx, "/board_columns", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +94,7 @@ func (c *Client) GetBoardColumns(req *model.GetBoardColumnsRequest) ([]model.Boa
 		return nil, fmt.Errorf("failed to parse board column list: %w", err)
 	}
 
-	var results []model.BoardColumn
+	results := make([]model.BoardColumn, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["BoardColumn"]; ok {
 			var col model.BoardColumn

@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -27,7 +28,7 @@ func TestAddCodeCommitInfo(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.AddCodeCommitInfo(&model.AddCodeCommitInfoRequest{
+	data, err := c.AddCodeCommitInfo(context.Background(), &model.AddCodeCommitInfoRequest{
 		WorkspaceID: "11111111",
 		Message:     "fix bug #100",
 		Author:      "admin",
@@ -56,7 +57,7 @@ func TestGetCodeCommitInfos(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.GetCodeCommitInfos(&model.GetCodeCommitInfosRequest{
+	data, err := c.GetCodeCommitInfos(context.Background(), &model.GetCodeCommitInfosRequest{
 		WorkspaceID: "11111111",
 		Limit:       "10",
 		Page:        "1",
@@ -80,7 +81,7 @@ func TestGetCodeCommitInfos_APIError(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetCodeCommitInfos(&model.GetCodeCommitInfosRequest{
+	_, err := c.GetCodeCommitInfos(context.Background(), &model.GetCodeCommitInfosRequest{
 		WorkspaceID: "11111111",
 	})
 	if err == nil {

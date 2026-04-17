@@ -54,6 +54,7 @@ go get github.com/studyzy/tapd-sdk-go
 package main
 
 import (
+    "context"
     "fmt"
     "log"
 
@@ -76,7 +77,8 @@ func main() {
     // )
 
     // 获取用户参与的项目列表
-    workspaces, err := client.ListWorkspaces()
+    ctx := context.Background()
+    workspaces, err := client.ListWorkspaces(ctx)
     if err != nil {
         log.Fatal(err)
     }
@@ -85,10 +87,10 @@ func main() {
     }
 
     // 查询需求列表
-    stories, err := client.ListStories(&model.ListStoriesRequest{
+    stories, err := client.ListStories(ctx, &model.ListStoriesRequest{
         WorkspaceID: "12345678",
         Status:      "open",
-        Limit:       10,
+        Limit:       "10",
     })
     if err != nil {
         log.Fatal(err)

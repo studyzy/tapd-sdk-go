@@ -1,6 +1,8 @@
 package tapd
 
 import (
+	"context"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -27,7 +29,7 @@ func TestGetCommitMsg(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.GetCommitMsg(&model.GetCommitMsgRequest{
+	result, err := c.GetCommitMsg(context.Background(), &model.GetCommitMsgRequest{
 		WorkspaceID: "1",
 		ObjectID:    "100",
 		Type:        "story",
@@ -52,7 +54,7 @@ func TestListReleases(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	releases, err := c.ListReleases(&model.WorkspaceIDRequest{WorkspaceID: "1"})
+	releases, err := c.ListReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListReleases() unexpected error: %v", err)
 	}
@@ -81,7 +83,7 @@ func TestListReleases_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	releases, err := c.ListReleases(&model.WorkspaceIDRequest{WorkspaceID: "1"})
+	releases, err := c.ListReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListReleases() unexpected error: %v", err)
 	}
@@ -110,7 +112,7 @@ func TestGetTodoStories(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	stories, err := c.GetTodoStories(&model.GetTodoRequest{
+	stories, err := c.GetTodoStories(context.Background(), &model.GetTodoRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
 		Limit:       "5",
@@ -141,7 +143,7 @@ func TestGetTodoStories_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	stories, err := c.GetTodoStories(&model.GetTodoRequest{
+	stories, err := c.GetTodoStories(context.Background(), &model.GetTodoRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
 	})
@@ -164,7 +166,7 @@ func TestGetTodoTasks(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	tasks, err := c.GetTodoTasks(&model.GetTodoRequest{
+	tasks, err := c.GetTodoTasks(context.Background(), &model.GetTodoRequest{
 		WorkspaceID: "1",
 		EntityType:  "task",
 	})
@@ -193,7 +195,7 @@ func TestGetTodoBugs(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	bugs, err := c.GetTodoBugs(&model.GetTodoRequest{
+	bugs, err := c.GetTodoBugs(context.Background(), &model.GetTodoRequest{
 		WorkspaceID: "1",
 		EntityType:  "bug",
 	})
@@ -215,7 +217,7 @@ func TestGetTodoBugs(t *testing.T) {
 }
 
 func TestSendQiweiMessage(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
 		}
@@ -245,7 +247,12 @@ func TestSendQiweiMessage(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(DefaultAPIURL, DefaultWebURL, "test-token", "", "")
-	err := c.SendQiweiMessage(srv.URL, "hello world")
+	c.httpClient = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	err := c.SendQiweiMessage(context.Background(), srv.URL, "hello world")
 	if err != nil {
 		t.Fatalf("SendQiweiMessage() unexpected error: %v", err)
 	}
@@ -253,22 +260,35 @@ func TestSendQiweiMessage(t *testing.T) {
 
 func TestSendQiweiMessage_EmptyWebhook(t *testing.T) {
 	c := NewClientWithBaseURL(DefaultAPIURL, DefaultWebURL, "test-token", "", "")
-	err := c.SendQiweiMessage("", "hello")
+	err := c.SendQiweiMessage(context.Background(), "", "hello")
 	if err == nil {
 		t.Fatal("expected error for empty webhook URL")
 	}
 }
 
 func TestSendQiweiMessage_HTTPError(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("server error"))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(DefaultAPIURL, DefaultWebURL, "test-token", "", "")
-	err := c.SendQiweiMessage(srv.URL, "hello")
+	c.httpClient = &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
+	err := c.SendQiweiMessage(context.Background(), srv.URL, "hello")
 	if err == nil {
 		t.Fatal("expected error for HTTP 500")
+	}
+}
+
+func TestSendQiweiMessage_RejectHTTP(t *testing.T) {
+	c := NewClientWithBaseURL(DefaultAPIURL, DefaultWebURL, "test-token", "", "")
+	err := c.SendQiweiMessage(context.Background(), "http://example.com/webhook", "hello")
+	if err == nil {
+		t.Fatal("expected error for non-HTTPS webhook URL")
 	}
 }

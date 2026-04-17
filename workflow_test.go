@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,7 +24,7 @@ func TestGetWorkflowTransitions(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "story",
 	}
-	transitions, err := c.GetWorkflowTransitions(req)
+	transitions, err := c.GetWorkflowTransitions(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflowTransitions() unexpected error: %v", err)
 	}
@@ -56,7 +57,7 @@ func TestGetWorkflowStatusMap(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "story",
 	}
-	statusMap, err := c.GetWorkflowStatusMap(req)
+	statusMap, err := c.GetWorkflowStatusMap(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflowStatusMap() unexpected error: %v", err)
 	}
@@ -89,7 +90,7 @@ func TestGetWorkflowLastSteps(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "story",
 	}
-	lastSteps, err := c.GetWorkflowLastSteps(req)
+	lastSteps, err := c.GetWorkflowLastSteps(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflowLastSteps() unexpected error: %v", err)
 	}
@@ -119,7 +120,7 @@ func TestGetWorkflowAllLastSteps(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "bug",
 	}
-	allLastSteps, err := c.GetWorkflowAllLastSteps(req)
+	allLastSteps, err := c.GetWorkflowAllLastSteps(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflowAllLastSteps() unexpected error: %v", err)
 	}
@@ -149,7 +150,7 @@ func TestGetWorkflowFirstStep(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "story",
 	}
-	firstStep, err := c.GetWorkflowFirstStep(req)
+	firstStep, err := c.GetWorkflowFirstStep(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflowFirstStep() unexpected error: %v", err)
 	}
@@ -173,7 +174,7 @@ func TestGetWorkflows(t *testing.T) {
 		WorkspaceID: "1",
 		System:      "story",
 	}
-	data, err := c.GetWorkflows(req)
+	data, err := c.GetWorkflows(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkflows() unexpected error: %v", err)
 	}

@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -26,7 +27,7 @@ func TestGetRelatedBugs(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.GetRelatedBugs(&model.GetRelatedBugsRequest{
+	result, err := c.GetRelatedBugs(context.Background(), &model.GetRelatedBugsRequest{
 		WorkspaceID: "1",
 		StoryID:     "100",
 	})
@@ -53,7 +54,7 @@ func TestGetRelatedBugs_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.GetRelatedBugs(&model.GetRelatedBugsRequest{
+	result, err := c.GetRelatedBugs(context.Background(), &model.GetRelatedBugsRequest{
 		WorkspaceID: "1",
 		StoryID:     "100",
 	})
@@ -80,7 +81,7 @@ func TestCreateRelation(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.CreateRelation(&model.CreateRelationRequest{
+	result, err := c.CreateRelation(context.Background(), &model.CreateRelationRequest{
 		WorkspaceID: "1",
 		SourceType:  "story",
 		TargetType:  "bug",
@@ -111,7 +112,7 @@ func TestCreateRelation_APIError(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.CreateRelation(&model.CreateRelationRequest{
+	_, err := c.CreateRelation(context.Background(), &model.CreateRelationRequest{
 		WorkspaceID: "1",
 		SourceType:  "story",
 		TargetType:  "bug",

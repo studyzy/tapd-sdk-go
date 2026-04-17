@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,7 +24,7 @@ func TestGetCustomFields(t *testing.T) {
 		WorkspaceID: "1",
 		EntityType:  "stories",
 	}
-	configs, err := c.GetCustomFields(req)
+	configs, err := c.GetCustomFields(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetCustomFields() unexpected error: %v", err)
 	}
@@ -58,7 +59,7 @@ func TestGetStoryFieldsLabel(t *testing.T) {
 	req := &model.WorkspaceIDRequest{
 		WorkspaceID: "1",
 	}
-	labels, err := c.GetStoryFieldsLabel(req)
+	labels, err := c.GetStoryFieldsLabel(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetStoryFieldsLabel() unexpected error: %v", err)
 	}
@@ -93,7 +94,7 @@ func TestGetStoryFieldsInfo(t *testing.T) {
 	req := &model.WorkspaceIDRequest{
 		WorkspaceID: "1",
 	}
-	fields, err := c.GetStoryFieldsInfo(req)
+	fields, err := c.GetStoryFieldsInfo(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetStoryFieldsInfo() unexpected error: %v", err)
 	}
@@ -126,7 +127,7 @@ func TestGetWorkitemTypes(t *testing.T) {
 	req := &model.WorkspaceIDRequest{
 		WorkspaceID: "1",
 	}
-	types, err := c.GetWorkitemTypes(req)
+	types, err := c.GetWorkitemTypes(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetWorkitemTypes() unexpected error: %v", err)
 	}
@@ -158,7 +159,7 @@ func TestGetBugFieldsLabel(t *testing.T) {
 	req := &model.WorkspaceIDRequest{
 		WorkspaceID: "1",
 	}
-	labels, err := c.GetBugFieldsLabel(req)
+	labels, err := c.GetBugFieldsLabel(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetBugFieldsLabel() unexpected error: %v", err)
 	}
@@ -190,7 +191,7 @@ func TestGetBugFieldsInfo(t *testing.T) {
 	req := &model.WorkspaceIDRequest{
 		WorkspaceID: "1",
 	}
-	fields, err := c.GetBugFieldsInfo(req)
+	fields, err := c.GetBugFieldsInfo(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetBugFieldsInfo() unexpected error: %v", err)
 	}

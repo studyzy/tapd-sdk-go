@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // ListIterations 查询迭代列表，返回强类型 Iteration 切片
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iterations.html
-func (c *Client) ListIterations(req *model.ListIterationsRequest) ([]model.Iteration, error) {
-	data, err := c.doGet("/iterations", req.ToParams())
+func (c *Client) ListIterations(ctx context.Context, req *model.ListIterationsRequest) ([]model.Iteration, error) {
+	data, err := c.doGet(ctx, "/iterations", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +21,7 @@ func (c *Client) ListIterations(req *model.ListIterationsRequest) ([]model.Itera
 		return nil, fmt.Errorf("failed to parse iteration list: %w", err)
 	}
 
-	var iterations []model.Iteration
+	iterations := make([]model.Iteration, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Iteration"]; ok {
 			var iter model.Iteration
@@ -34,8 +35,8 @@ func (c *Client) ListIterations(req *model.ListIterationsRequest) ([]model.Itera
 
 // CreateIteration 创建迭代，返回创建后的完整 Iteration 对象
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/add_iteration.html
-func (c *Client) CreateIteration(req *model.CreateIterationRequest) (*model.Iteration, error) {
-	data, err := c.doPost("/iterations", req.ToParams())
+func (c *Client) CreateIteration(ctx context.Context, req *model.CreateIterationRequest) (*model.Iteration, error) {
+	data, err := c.doPost(ctx, "/iterations", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +61,8 @@ func (c *Client) CreateIteration(req *model.CreateIterationRequest) (*model.Iter
 
 // UpdateIteration 更新迭代，返回更新后的完整 Iteration 对象
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/update_iteration.html
-func (c *Client) UpdateIteration(req *model.UpdateIterationRequest) (*model.Iteration, error) {
-	data, err := c.doPost("/iterations", req.ToParams())
+func (c *Client) UpdateIteration(ctx context.Context, req *model.UpdateIterationRequest) (*model.Iteration, error) {
+	data, err := c.doPost(ctx, "/iterations", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +87,8 @@ func (c *Client) UpdateIteration(req *model.UpdateIterationRequest) (*model.Iter
 
 // CountIterations 查询迭代数量
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iterations_count.html
-func (c *Client) CountIterations(req *model.CountIterationsRequest) (int, error) {
-	data, err := c.doGet("/iterations/count", req.ToParams())
+func (c *Client) CountIterations(ctx context.Context, req *model.CountIterationsRequest) (int, error) {
+	data, err := c.doGet(ctx, "/iterations/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -104,13 +105,13 @@ func (c *Client) CountIterations(req *model.CountIterationsRequest) (int, error)
 }
 
 // LockIteration 锁定迭代
-func (c *Client) LockIteration(req *model.IterationLockRequest) error {
-	_, err := c.doPost("/iterations/lock", req.ToParams())
+func (c *Client) LockIteration(ctx context.Context, req *model.IterationLockRequest) error {
+	_, err := c.doPost(ctx, "/iterations/lock", req.ToParams())
 	return err
 }
 
 // UnlockIteration 解锁迭代
-func (c *Client) UnlockIteration(req *model.IterationLockRequest) error {
-	_, err := c.doPost("/iterations/unlock", req.ToParams())
+func (c *Client) UnlockIteration(ctx context.Context, req *model.IterationLockRequest) error {
+	_, err := c.doPost(ctx, "/iterations/unlock", req.ToParams())
 	return err
 }

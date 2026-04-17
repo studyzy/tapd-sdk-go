@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +24,7 @@ func TestListIterations(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	iterations, err := c.ListIterations(&model.ListIterationsRequest{
+	iterations, err := c.ListIterations(context.Background(), &model.ListIterationsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -64,7 +65,7 @@ func TestCreateIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	iteration, err := c.CreateIteration(&model.CreateIterationRequest{
+	iteration, err := c.CreateIteration(context.Background(), &model.CreateIterationRequest{
 		WorkspaceID: "1",
 		Name:        "Sprint 2",
 		StartDate:   "2026-04-16",
@@ -99,7 +100,7 @@ func TestUpdateIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateIteration(&model.UpdateIterationRequest{
+	result, err := c.UpdateIteration(context.Background(), &model.UpdateIterationRequest{
 		WorkspaceID: "1",
 		ID:          "3001",
 		CurrentUser: "testuser",
@@ -135,7 +136,7 @@ func TestCountIterations(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountIterations(&model.CountIterationsRequest{
+	count, err := c.CountIterations(context.Background(), &model.CountIterationsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -160,7 +161,7 @@ func TestCreateIteration_WithAllFields(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	iteration, err := c.CreateIteration(&model.CreateIterationRequest{
+	iteration, err := c.CreateIteration(context.Background(), &model.CreateIterationRequest{
 		WorkspaceID: "1",
 		Name:        "Sprint 5",
 		StartDate:   "2026-04-01",
@@ -204,7 +205,7 @@ func TestLockIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	err := c.LockIteration(&model.IterationLockRequest{
+	err := c.LockIteration(context.Background(), &model.IterationLockRequest{
 		WorkspaceID: "1",
 		ID:          "3001",
 	})
@@ -227,7 +228,7 @@ func TestUnlockIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	err := c.UnlockIteration(&model.IterationLockRequest{
+	err := c.UnlockIteration(context.Background(), &model.IterationLockRequest{
 		WorkspaceID: "1",
 		ID:          "3001",
 	})
@@ -250,7 +251,7 @@ func TestUpdateIteration_StatusChange(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateIteration(&model.UpdateIterationRequest{
+	result, err := c.UpdateIteration(context.Background(), &model.UpdateIterationRequest{
 		WorkspaceID: "1",
 		ID:          "iter_100",
 		CurrentUser: "admin",

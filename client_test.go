@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"net/http"
@@ -23,7 +24,7 @@ func TestNewClient_BearerAuth(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "my-token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err != nil {
 		t.Fatalf("TestAuth() unexpected error: %v", err)
 	}
@@ -43,7 +44,7 @@ func TestNewClient_BasicAuth(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "", "user1", "pass1")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err != nil {
 		t.Fatalf("TestAuth() unexpected error: %v", err)
 	}
@@ -64,7 +65,7 @@ func TestNewClient_AccessTokenPreferred(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "my-token", "user1", "pass1")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err != nil {
 		t.Fatalf("TestAuth() unexpected error: %v", err)
 	}
@@ -85,7 +86,7 @@ func TestTestAuth_Success(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err != nil {
 		t.Fatalf("TestAuth() expected nil error, got: %v", err)
 	}
@@ -99,7 +100,7 @@ func TestTestAuth_Failure(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "bad-token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err == nil {
 		t.Fatal("TestAuth() expected error for status=0, got nil")
 	}
@@ -120,7 +121,7 @@ func TestHTTP401_ExitCode1(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "bad-token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err == nil {
 		t.Fatal("expected error for HTTP 401")
 	}
@@ -141,7 +142,7 @@ func TestHTTP404_ExitCode2(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err == nil {
 		t.Fatal("expected error for HTTP 404")
 	}
@@ -162,7 +163,7 @@ func TestHTTP429_ExitCode4(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err == nil {
 		t.Fatal("expected error for HTTP 429")
 	}
@@ -188,7 +189,7 @@ func TestDoGet_ParsesDataCorrectly(t *testing.T) {
 	// 通过 TestAuth 验证 GET 请求能正常解析，TestAuth 内部调用 doGet
 	// 这里只验证不会报错，因为 TestAuth 不返回 data
 	c := NewClientWithBaseURL(srv.URL, "", "token", "", "")
-	err := c.TestAuth()
+	err := c.TestAuth(context.Background())
 	if err != nil {
 		t.Fatalf("expected successful GET request, got error: %v", err)
 	}
@@ -245,7 +246,7 @@ func TestFetchNick(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	c.FetchNick()
+	c.FetchNick(context.Background())
 	if c.Nick != "TestUser" {
 		t.Errorf("Nick = %q, want %q", c.Nick, "TestUser")
 	}
@@ -259,7 +260,7 @@ func TestFetchNick_Error(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	c.FetchNick()
+	c.FetchNick(context.Background())
 	if c.Nick != "" {
 		t.Errorf("Nick = %q, want empty string on error", c.Nick)
 	}

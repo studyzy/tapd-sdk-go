@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -20,7 +21,7 @@ func TestListBugs(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListBugs(&model.ListBugsRequest{WorkspaceID: "1"})
+	results, err := c.ListBugs(context.Background(), &model.ListBugsRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListBugs() unexpected error: %v", err)
 	}
@@ -56,7 +57,7 @@ func TestListBugs_PreservesCustomFields(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListBugs(&model.ListBugsRequest{WorkspaceID: "1"})
+	results, err := c.ListBugs(context.Background(), &model.ListBugsRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListBugs() unexpected error: %v", err)
 	}
@@ -92,7 +93,7 @@ func TestGetBug_PreservesHTML(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.GetBug("1", "500")
+	result, err := c.GetBug(context.Background(), "1", "500")
 	if err != nil {
 		t.Fatalf("GetBug() unexpected error: %v", err)
 	}
@@ -147,7 +148,7 @@ func TestCreateBug(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	bug, err := c.CreateBug(&model.CreateBugRequest{
+	bug, err := c.CreateBug(context.Background(), &model.CreateBugRequest{
 		WorkspaceID: "1",
 		Title:       "New Bug",
 	})
@@ -176,7 +177,7 @@ func TestCountBugs(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountBugs(&model.CountBugsRequest{WorkspaceID: "1"})
+	count, err := c.CountBugs(context.Background(), &model.CountBugsRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("CountBugs() unexpected error: %v", err)
 	}
@@ -199,7 +200,7 @@ func TestUpdateBug(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateBug(&model.UpdateBugRequest{
+	result, err := c.UpdateBug(context.Background(), &model.UpdateBugRequest{
 		WorkspaceID: "1",
 		ID:          "500",
 		Title:       "Fixed",

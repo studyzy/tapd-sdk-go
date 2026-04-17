@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // ListStories 查询需求列表，返回强类型 Story 切片，自定义字段通过 CustomFields map 保留
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories.html
-func (c *Client) ListStories(req *model.ListStoriesRequest) ([]model.Story, error) {
-	data, err := c.doGet("/stories", req.ToParams())
+func (c *Client) ListStories(ctx context.Context, req *model.ListStoriesRequest) ([]model.Story, error) {
+	data, err := c.doGet(ctx, "/stories", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +21,7 @@ func (c *Client) ListStories(req *model.ListStoriesRequest) ([]model.Story, erro
 		return nil, fmt.Errorf("failed to parse story list: %w", err)
 	}
 
-	var results []model.Story
+	results := make([]model.Story, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Story"]; ok {
 			var story model.Story
@@ -34,13 +35,13 @@ func (c *Client) ListStories(req *model.ListStoriesRequest) ([]model.Story, erro
 
 // GetStory 获取单个需求详情，description 字段保留原始 HTML
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories.html
-func (c *Client) GetStory(workspaceID, id string) (*model.Story, error) {
+func (c *Client) GetStory(ctx context.Context, workspaceID, id string) (*model.Story, error) {
 	params := map[string]string{
 		"workspace_id": workspaceID,
 		"id":           id,
 	}
 
-	data, err := c.doGet("/stories", params)
+	data, err := c.doGet(ctx, "/stories", params)
 	if err != nil {
 		return nil, err
 	}
@@ -71,8 +72,8 @@ func (c *Client) GetStory(workspaceID, id string) (*model.Story, error) {
 
 // CreateStory 创建需求，返回创建后的完整 Story 对象
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story.html
-func (c *Client) CreateStory(req *model.CreateStoryRequest) (*model.Story, error) {
-	data, err := c.doPost("/stories", req.ToParams())
+func (c *Client) CreateStory(ctx context.Context, req *model.CreateStoryRequest) (*model.Story, error) {
+	data, err := c.doPost(ctx, "/stories", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +100,8 @@ func (c *Client) CreateStory(req *model.CreateStoryRequest) (*model.Story, error
 
 // UpdateStory 更新需求
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story.html
-func (c *Client) UpdateStory(req *model.UpdateStoryRequest) (*model.Story, error) {
-	data, err := c.doPost("/stories", req.ToParams())
+func (c *Client) UpdateStory(ctx context.Context, req *model.UpdateStoryRequest) (*model.Story, error) {
+	data, err := c.doPost(ctx, "/stories", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +126,8 @@ func (c *Client) UpdateStory(req *model.UpdateStoryRequest) (*model.Story, error
 
 // CountStories 查询需求数量
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories_count.html
-func (c *Client) CountStories(req *model.CountStoriesRequest) (int, error) {
-	data, err := c.doGet("/stories/count", req.ToParams())
+func (c *Client) CountStories(ctx context.Context, req *model.CountStoriesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/stories/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}

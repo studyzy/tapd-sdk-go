@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -20,7 +21,7 @@ func TestListComments(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListComments(&model.ListCommentsRequest{
+	results, err := c.ListComments(context.Background(), &model.ListCommentsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {
@@ -51,7 +52,7 @@ func TestListComments_PreservesHTML(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	results, err := c.ListComments(&model.ListCommentsRequest{WorkspaceID: "1"})
+	results, err := c.ListComments(context.Background(), &model.ListCommentsRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListComments() unexpected error: %v", err)
 	}
@@ -81,7 +82,7 @@ func TestAddComment(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.AddComment(&model.AddCommentRequest{
+	result, err := c.AddComment(context.Background(), &model.AddCommentRequest{
 		WorkspaceID: "1",
 		EntryType:   "stories",
 		EntryID:     "200",
@@ -117,7 +118,7 @@ func TestUpdateComment(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	result, err := c.UpdateComment(&model.UpdateCommentRequest{
+	result, err := c.UpdateComment(context.Background(), &model.UpdateCommentRequest{
 		WorkspaceID: "1",
 		ID:          "102",
 		Description: "updated content",
@@ -147,7 +148,7 @@ func TestCountComments(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountComments(&model.CountCommentsRequest{
+	count, err := c.CountComments(context.Background(), &model.CountCommentsRequest{
 		WorkspaceID: "1",
 	})
 	if err != nil {

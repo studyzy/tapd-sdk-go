@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,7 @@ func TestListTCases(t *testing.T) {
 	req := &model.ListTCasesRequest{
 		WorkspaceID: "1",
 	}
-	tcases, err := c.ListTCases(req)
+	tcases, err := c.ListTCases(context.Background(), req)
 	if err != nil {
 		t.Fatalf("ListTCases() unexpected error: %v", err)
 	}
@@ -60,7 +61,7 @@ func TestCountTCases(t *testing.T) {
 	req := &model.CountTCasesRequest{
 		WorkspaceID: "1",
 	}
-	count, err := c.CountTCases(req)
+	count, err := c.CountTCases(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountTCases() unexpected error: %v", err)
 	}
@@ -87,7 +88,7 @@ func TestCreateTCase(t *testing.T) {
 		WorkspaceID: "1",
 		Name:        "New TC",
 	}
-	tc, err := c.CreateTCase(req)
+	tc, err := c.CreateTCase(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CreateTCase() unexpected error: %v", err)
 	}
@@ -117,7 +118,7 @@ func TestBatchCreateTCases(t *testing.T) {
 		WorkspaceID: "1",
 		Data:        `[{"name":"TC1"},{"name":"TC2"}]`,
 	}
-	result, err := c.BatchCreateTCases(req)
+	result, err := c.BatchCreateTCases(context.Background(), req)
 	if err != nil {
 		t.Fatalf("BatchCreateTCases() unexpected error: %v", err)
 	}

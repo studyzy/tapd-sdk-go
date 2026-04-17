@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,7 +32,7 @@ func TestCreateBoardCard(t *testing.T) {
 		Owner:       "admin",
 		Priority:    "medium",
 	}
-	card, err := c.CreateBoardCard(req)
+	card, err := c.CreateBoardCard(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CreateBoardCard() unexpected error: %v", err)
 	}
@@ -64,7 +65,7 @@ func TestGetBoardCards(t *testing.T) {
 		WorkspaceID: "11111111",
 		BoardID:     "2001",
 	}
-	cards, err := c.GetBoardCards(req)
+	cards, err := c.GetBoardCards(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetBoardCards() unexpected error: %v", err)
 	}
@@ -102,7 +103,7 @@ func TestUpdateBoardCard(t *testing.T) {
 		Name:        "已更新",
 		ColumnID:    "3002",
 	}
-	card, err := c.UpdateBoardCard(req)
+	card, err := c.UpdateBoardCard(context.Background(), req)
 	if err != nil {
 		t.Fatalf("UpdateBoardCard() unexpected error: %v", err)
 	}
@@ -132,7 +133,7 @@ func TestGetBoardColumns(t *testing.T) {
 		WorkspaceID: "11111111",
 		BoardID:     "2001",
 	}
-	cols, err := c.GetBoardColumns(req)
+	cols, err := c.GetBoardColumns(context.Background(), req)
 	if err != nil {
 		t.Fatalf("GetBoardColumns() unexpected error: %v", err)
 	}

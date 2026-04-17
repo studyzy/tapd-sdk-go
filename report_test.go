@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,7 @@ func TestGetWorkspaceReports(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.GetWorkspaceReports(&model.WorkspaceIDRequest{WorkspaceID: "11111111"})
+	data, err := c.GetWorkspaceReports(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "11111111"})
 	if err != nil {
 		t.Fatalf("GetWorkspaceReports() unexpected error: %v", err)
 	}
@@ -42,7 +43,7 @@ func TestGetWorkspaceReports_APIError(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetWorkspaceReports(&model.WorkspaceIDRequest{WorkspaceID: "11111111"})
+	_, err := c.GetWorkspaceReports(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "11111111"})
 	if err == nil {
 		t.Fatal("expected error for status=0")
 	}

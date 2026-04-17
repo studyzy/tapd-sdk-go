@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -9,8 +10,8 @@ import (
 
 // ListWikis 查询 Wiki 文档列表，返回强类型 []model.Wiki
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/get_tapd_wikis.html
-func (c *Client) ListWikis(req *model.ListWikisRequest) ([]model.Wiki, error) {
-	data, err := c.doGet("/tapd_wikis", req.ToParams())
+func (c *Client) ListWikis(ctx context.Context, req *model.ListWikisRequest) ([]model.Wiki, error) {
+	data, err := c.doGet(ctx, "/tapd_wikis", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +21,7 @@ func (c *Client) ListWikis(req *model.ListWikisRequest) ([]model.Wiki, error) {
 		return nil, fmt.Errorf("failed to parse wiki list: %w", err)
 	}
 
-	var results []model.Wiki
+	results := make([]model.Wiki, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Wiki"]; ok {
 			var wiki model.Wiki
@@ -34,13 +35,13 @@ func (c *Client) ListWikis(req *model.ListWikisRequest) ([]model.Wiki, error) {
 
 // GetWiki 获取单个 Wiki 文档详情，description 字段保留原始 HTML
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/get_tapd_wikis.html
-func (c *Client) GetWiki(workspaceID, id string) (*model.Wiki, error) {
+func (c *Client) GetWiki(ctx context.Context, workspaceID, id string) (*model.Wiki, error) {
 	params := map[string]string{
 		"workspace_id": workspaceID,
 		"id":           id,
 	}
 
-	data, err := c.doGet("/tapd_wikis", params)
+	data, err := c.doGet(ctx, "/tapd_wikis", params)
 	if err != nil {
 		return nil, err
 	}
@@ -71,8 +72,8 @@ func (c *Client) GetWiki(workspaceID, id string) (*model.Wiki, error) {
 
 // CreateWiki 创建 Wiki 文档，返回创建后的完整 Wiki 对象
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/add_tapd_wiki.html
-func (c *Client) CreateWiki(req *model.CreateWikiRequest) (*model.Wiki, error) {
-	data, err := c.doPost("/tapd_wikis", req.ToParams())
+func (c *Client) CreateWiki(ctx context.Context, req *model.CreateWikiRequest) (*model.Wiki, error) {
+	data, err := c.doPost(ctx, "/tapd_wikis", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +100,8 @@ func (c *Client) CreateWiki(req *model.CreateWikiRequest) (*model.Wiki, error) {
 
 // CountWikis 获取 Wiki 数量
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/get_tapd_wikis_count.html
-func (c *Client) CountWikis(req *model.CountWikisRequest) (int, error) {
-	data, err := c.doGet("/tapd_wikis/count", req.ToParams())
+func (c *Client) CountWikis(ctx context.Context, req *model.CountWikisRequest) (int, error) {
+	data, err := c.doGet(ctx, "/tapd_wikis/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -118,8 +119,8 @@ func (c *Client) CountWikis(req *model.CountWikisRequest) (int, error) {
 
 // UpdateWiki 更新 Wiki 文档
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/update_tapd_wiki.html
-func (c *Client) UpdateWiki(req *model.UpdateWikiRequest) (*model.Wiki, error) {
-	data, err := c.doPost("/tapd_wikis", req.ToParams())
+func (c *Client) UpdateWiki(ctx context.Context, req *model.UpdateWikiRequest) (*model.Wiki, error) {
+	data, err := c.doPost(ctx, "/tapd_wikis", req.ToParams())
 	if err != nil {
 		return nil, err
 	}

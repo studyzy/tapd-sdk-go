@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -10,8 +11,8 @@ import (
 
 // ListTimesheets 查询花费工时列表
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/get_timesheets.html
-func (c *Client) ListTimesheets(req *model.ListTimesheetsRequest) ([]model.Timesheet, error) {
-	data, err := c.doGet("/timesheets", req.ToParams())
+func (c *Client) ListTimesheets(ctx context.Context, req *model.ListTimesheetsRequest) ([]model.Timesheet, error) {
+	data, err := c.doGet(ctx, "/timesheets", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +22,7 @@ func (c *Client) ListTimesheets(req *model.ListTimesheetsRequest) ([]model.Times
 		return nil, fmt.Errorf("failed to parse timesheet list: %w", err)
 	}
 
-	var results []model.Timesheet
+	results := make([]model.Timesheet, 0, len(rawList))
 	for _, item := range rawList {
 		if raw, ok := item["Timesheet"]; ok {
 			var ts model.Timesheet
@@ -35,8 +36,8 @@ func (c *Client) ListTimesheets(req *model.ListTimesheetsRequest) ([]model.Times
 
 // AddTimesheet 填写花费工时
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/add_timesheet.html
-func (c *Client) AddTimesheet(req *model.AddTimesheetRequest) (*model.Timesheet, error) {
-	data, err := c.doPost("/timesheets", req.ToParams())
+func (c *Client) AddTimesheet(ctx context.Context, req *model.AddTimesheetRequest) (*model.Timesheet, error) {
+	data, err := c.doPost(ctx, "/timesheets", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +61,8 @@ func (c *Client) AddTimesheet(req *model.AddTimesheetRequest) (*model.Timesheet,
 
 // UpdateTimesheet 更新花费工时
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/update_timesheet.html
-func (c *Client) UpdateTimesheet(req *model.UpdateTimesheetRequest) (*model.Timesheet, error) {
-	data, err := c.doPost("/timesheets", req.ToParams())
+func (c *Client) UpdateTimesheet(ctx context.Context, req *model.UpdateTimesheetRequest) (*model.Timesheet, error) {
+	data, err := c.doPost(ctx, "/timesheets", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +92,8 @@ func (c *Client) UpdateTimesheet(req *model.UpdateTimesheetRequest) (*model.Time
 
 // CountTimesheets 获取工时花费数量
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/get_timesheets_count.html
-func (c *Client) CountTimesheets(req *model.CountTimesheetsRequest) (int, error) {
-	data, err := c.doGet("/timesheets/count", req.ToParams())
+func (c *Client) CountTimesheets(ctx context.Context, req *model.CountTimesheetsRequest) (int, error) {
+	data, err := c.doGet(ctx, "/timesheets/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -110,14 +111,14 @@ func (c *Client) CountTimesheets(req *model.CountTimesheetsRequest) (int, error)
 
 // DeleteTimesheets 删除工时花费
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/delete_timesheets.html
-func (c *Client) DeleteTimesheets(req *model.DeleteTimesheetsRequest) (json.RawMessage, error) {
+func (c *Client) DeleteTimesheets(ctx context.Context, req *model.DeleteTimesheetsRequest) (json.RawMessage, error) {
 	params := map[string]string{
 		"workspace_id": req.WorkspaceID,
 		"entity_type":  req.EntityType,
 		"entity_id":    req.EntityID,
 		"cost_ids":     strings.Join(req.CostIDs, ","),
 	}
-	data, err := c.doPost("/timesheets/delete_timesheets", params)
+	data, err := c.doPost(ctx, "/timesheets/delete_timesheets", params)
 	if err != nil {
 		return nil, err
 	}
