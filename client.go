@@ -11,6 +11,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
+	"time"
+	"unicode/utf8"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -34,16 +37,15 @@ func (e *TAPDError) Error() string {
 	return e.Message
 }
 
-// Client 是 TAPD API 的 HTTP 客户端封装
+// Client 是 TAPD API 的 HTTP 客户端封装，可安全地在多个 goroutine 间共享。
 type Client struct {
 	baseURL    string
 	webURL     string
 	httpClient *http.Client
 	authHeader string // "Bearer <token>" or "Basic <base64>"
-	// Nick 为当前用户昵称，Bearer Token 认证时通过 FetchNick() 自动获取。
-	// 注意：Client.Nick 非并发安全，如果在多个 goroutine 中共享 Client，
-	// 请避免在并发请求时调用 FetchNick()，或自行加锁。
-	Nick       string
+
+	mu   sync.RWMutex
+	nick string // 当前用户昵称，Bearer Token 认证时通过 FetchNick() 自动获取
 }
 
 // NewClient 创建一个使用默认 URL 的 TAPD API 客户端。
@@ -69,7 +71,9 @@ func NewClientWithBaseURL(apiURL, webURL, accessToken, apiUser, apiPassword stri
 	return &Client{
 		baseURL:    apiURL,
 		webURL:     webURL,
-		httpClient: &http.Client{},
+		httpClient: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 		authHeader: buildAuthHeader(accessToken, apiUser, apiPassword),
 	}
 }
@@ -88,6 +92,20 @@ func (c *Client) WebURL() string {
 	return c.webURL
 }
 
+// GetNick 返回当前用户昵称（并发安全）
+func (c *Client) GetNick() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.nick
+}
+
+// SetNick 设置当前用户昵称（并发安全）
+func (c *Client) SetNick(nick string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.nick = nick
+}
+
 // FetchNick 通过 /users/info 接口获取当前用户昵称（Bearer Token 认证时使用）
 func (c *Client) FetchNick(ctx context.Context) error {
 	data, err := c.doGet(ctx, "/users/info", nil)
@@ -102,7 +120,7 @@ func (c *Client) FetchNick(ctx context.Context) error {
 		return fmt.Errorf("failed to parse user info: %w", err)
 	}
 
-	c.Nick = result.Nick
+	c.SetNick(result.Nick)
 	return nil
 }
 
@@ -138,7 +156,6 @@ func (c *Client) doGet(ctx context.Context, endpoint string, params map[string]s
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	c.applyAuth(req)
-	req.Header.Set("Content-Type", "application/json")
 
 	return c.doRequest(req)
 }
@@ -179,10 +196,7 @@ func (c *Client) doRequest(req *http.Request) (json.RawMessage, error) {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		snippet := string(bodyBytes)
-		if len(snippet) > 200 {
-			snippet = snippet[:200]
-		}
+		snippet := truncateUTF8(string(bodyBytes), 200)
 		return nil, &TAPDError{
 			HTTPStatus: resp.StatusCode,
 			ExitCode:   mapHTTPError(resp.StatusCode),
@@ -222,15 +236,26 @@ func (c *Client) doPostJSON(ctx context.Context, rawURL string, body []byte) err
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		bodyBytes, readErr := io.ReadAll(resp.Body)
-		snippet := string(bodyBytes)
 		if readErr != nil {
-			snippet = "(failed to read response body)"
-		} else if len(snippet) > 200 {
-			snippet = snippet[:200]
+			return fmt.Errorf("HTTP %d: (failed to read response body)", resp.StatusCode)
 		}
+		snippet := truncateUTF8(string(bodyBytes), 200)
 		return fmt.Errorf("HTTP %d: %s", resp.StatusCode, snippet)
 	}
 	return nil
+}
+
+// truncateUTF8 将字符串截断到最多 maxRunes 个 Unicode 字符，确保不会在多字节字符中间截断
+func truncateUTF8(s string, maxRunes int) string {
+	if utf8.RuneCountInString(s) <= maxRunes {
+		return s
+	}
+	var size int
+	for i := 0; i < maxRunes; i++ {
+		_, runeSize := utf8.DecodeRuneInString(s[size:])
+		size += runeSize
+	}
+	return s[:size]
 }
 
 // mapHTTPError 将 HTTP 状态码映射到退出码

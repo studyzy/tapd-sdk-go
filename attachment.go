@@ -61,26 +61,40 @@ func (c *Client) UploadAttachment(ctx context.Context, req *model.UploadAttachme
 	writer := multipart.NewWriter(pw)
 
 	go func() {
-		defer pw.Close()
-		defer writer.Close()
+		var err error
+		// writer.Close() 必须先于 pw.Close() 执行，以写入 multipart 结束边界
+		defer func() {
+			if closeErr := writer.Close(); closeErr != nil && err == nil {
+				err = closeErr
+			}
+			if err != nil {
+				pw.CloseWithError(err)
+			} else {
+				pw.Close()
+			}
+		}()
 
-		writer.WriteField("workspace_id", req.WorkspaceID)
-		writer.WriteField("type", req.Type)
-		writer.WriteField("custom_field", req.CustomField)
-		writer.WriteField("entry_id", req.EntryID)
+		for _, f := range []struct{ k, v string }{
+			{"workspace_id", req.WorkspaceID},
+			{"type", req.Type},
+			{"custom_field", req.CustomField},
+			{"entry_id", req.EntryID},
+		} {
+			if err = writer.WriteField(f.k, f.v); err != nil {
+				return
+			}
+		}
 		if req.Owner != "" {
-			writer.WriteField("owner", req.Owner)
+			if err = writer.WriteField("owner", req.Owner); err != nil {
+				return
+			}
 		}
 
-		part, err := writer.CreateFormFile("file", filename)
-		if err != nil {
-			pw.CloseWithError(err)
+		var part io.Writer
+		if part, err = writer.CreateFormFile("file", filename); err != nil {
 			return
 		}
-		if _, err := io.Copy(part, fileReader); err != nil {
-			pw.CloseWithError(err)
-			return
-		}
+		_, err = io.Copy(part, fileReader)
 	}()
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/files/upload_attachment", pr)

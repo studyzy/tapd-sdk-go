@@ -247,8 +247,8 @@ func TestFetchNick(t *testing.T) {
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	c.FetchNick(context.Background())
-	if c.Nick != "TestUser" {
-		t.Errorf("Nick = %q, want %q", c.Nick, "TestUser")
+	if c.GetNick() != "TestUser" {
+		t.Errorf("GetNick() = %q, want %q", c.GetNick(), "TestUser")
 	}
 }
 
@@ -261,8 +261,8 @@ func TestFetchNick_Error(t *testing.T) {
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	c.FetchNick(context.Background())
-	if c.Nick != "" {
-		t.Errorf("Nick = %q, want empty string on error", c.Nick)
+	if c.GetNick() != "" {
+		t.Errorf("GetNick() = %q, want empty string on error", c.GetNick())
 	}
 }
 

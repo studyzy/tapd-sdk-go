@@ -7,20 +7,23 @@ import (
 
 // parseList 解析 TAPD 列表响应格式 [{"Key": {...}}, ...]
 // key 为 TAPD 响应中的包裹键名，如 "Story"、"Bug" 等。
-// 注意：如果列表中的单个条目反序列化失败，该条目会被静默跳过。
+// 不含指定 key 的条目会被跳过；含指定 key 但反序列化失败的条目会返回错误。
 func parseList[T any](data json.RawMessage, key string) ([]T, error) {
 	var rawList []map[string]json.RawMessage
 	if err := json.Unmarshal(data, &rawList); err != nil {
 		return nil, fmt.Errorf("failed to parse list response: %w", err)
 	}
 	results := make([]T, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item[key]; ok {
-			var v T
-			if err := json.Unmarshal(raw, &v); err == nil {
-				results = append(results, v)
-			}
+	for i, item := range rawList {
+		raw, ok := item[key]
+		if !ok {
+			continue
 		}
+		var v T
+		if err := json.Unmarshal(raw, &v); err != nil {
+			return nil, fmt.Errorf("failed to parse %s at index %d: %w", key, i, err)
+		}
+		results = append(results, v)
 	}
 	return results, nil
 }

@@ -12,8 +12,8 @@ import (
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/user_participant_projects.html
 func (c *Client) ListWorkspaces(ctx context.Context) ([]model.Workspace, error) {
 	params := map[string]string{}
-	if c.Nick != "" {
-		params["nick"] = c.Nick
+	if nick := c.GetNick(); nick != "" {
+		params["nick"] = nick
 	}
 	data, err := c.doGet(ctx, "/workspaces/user_participant_projects", params)
 	if err != nil {

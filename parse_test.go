@@ -57,6 +57,30 @@ func TestParseList_InvalidJSON(t *testing.T) {
 	}
 }
 
+func TestParseList_ItemUnmarshalError(t *testing.T) {
+	// key 匹配但值不是合法的 testItem JSON，应返回错误而非静默跳过
+	data := json.RawMessage(`[{"Item":{"id":"1","name":"A"}},{"Item":"bad"}]`)
+	_, err := parseList[testItem](data, "Item")
+	if err == nil {
+		t.Fatal("expected error for invalid item, got nil")
+	}
+}
+
+func TestParseList_MixedKeys(t *testing.T) {
+	// 不含目标 key 的条目应被正常跳过
+	data := json.RawMessage(`[{"Item":{"id":"1","name":"A"}},{"Other":{"id":"2"}}]`)
+	items, err := parseList[testItem](data, "Item")
+	if err != nil {
+		t.Fatalf("parseList() unexpected error: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+	if items[0].ID != "1" {
+		t.Errorf("item.ID = %q, want %q", items[0].ID, "1")
+	}
+}
+
 func TestParseOne(t *testing.T) {
 	data := json.RawMessage(`{"Item":{"id":"1","name":"A"}}`)
 	item, err := parseOne[testItem](data, "Item")

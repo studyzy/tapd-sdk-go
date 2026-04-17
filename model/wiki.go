@@ -143,7 +143,8 @@ func setOptional(params map[string]string, key, value string) {
 	}
 }
 
-// setOptionalInt 当值大于0时添加到参数 map
+// setOptionalInt 当值大于 0 时添加到参数 map。
+// 零值不会被发送，表示使用 API 的默认值（如 Limit 默认 30，Page 默认 1）。
 func setOptionalInt(params map[string]string, key string, value int) {
 	if value > 0 {
 		params[key] = strconv.Itoa(value)
