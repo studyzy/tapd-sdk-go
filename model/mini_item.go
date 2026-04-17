@@ -197,8 +197,8 @@ type ListMiniItemsRequest struct {
 	ParentID       string // 可选：父工作项
 	ChildrenID     string // 可选：子工作项
 	Description    string // 可选：详细描述，支持模糊匹配
-	Limit          string // 可选：每页数量，默认30，最大200
-	Page           string // 可选：页码，默认1
+	Limit int // 可选：每页数量，默认30，最大200
+	Page int // 可选：页码，默认1
 	Order          string // 可选：排序规则
 	Fields         string // 可选：返回字段，逗号分隔
 }
@@ -226,8 +226,8 @@ func (r *ListMiniItemsRequest) ToParams() map[string]string {
 	setOptional(params, "parent_id", r.ParentID)
 	setOptional(params, "children_id", r.ChildrenID)
 	setOptional(params, "description", r.Description)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -320,8 +320,8 @@ type ListMiniItemCategoriesRequest struct {
 	Name        string // 可选：分组名称，支持模糊匹配
 	Created     string // 可选：创建时间，支持时间查询
 	Modified    string // 可选：最后修改时间，支持时间查询
-	Limit       string // 可选：每页数量，默认30，最大200
-	Page        string // 可选：页码，默认1
+	Limit int // 可选：每页数量，默认30，最大200
+	Page int // 可选：页码，默认1
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段，逗号分隔
 }
@@ -335,8 +335,8 @@ func (r *ListMiniItemCategoriesRequest) ToParams() map[string]string {
 	setOptional(params, "name", r.Name)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "modified", r.Modified)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -376,8 +376,8 @@ type GetMiniItemChangesRequest struct {
 	Comment          string // 可选：评论
 	ChangeField      string // 可选：指定变更字段
 	NeedParseChanges string // 可选：是否返回field_changes，默认1
-	Limit            string // 可选：每页数量，默认30，最大100
-	Page             string // 可选：页码，默认1
+	Limit int // 可选：每页数量，默认30，最大100
+	Page int // 可选：页码，默认1
 	Order            string // 可选：排序规则
 	Fields           string // 可选：返回字段，逗号分隔
 }
@@ -396,8 +396,8 @@ func (r *GetMiniItemChangesRequest) ToParams() map[string]string {
 	setOptional(params, "comment", r.Comment)
 	setOptional(params, "change_field", r.ChangeField)
 	setOptional(params, "need_parse_changes", r.NeedParseChanges)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -501,8 +501,8 @@ type GetRemovedMiniItemsRequest struct {
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
 	Deleted     string // 可选：删除时间
-	Limit       string // 可选：每页数量，默认30
-	Page        string // 可选：页码，默认1
+	Limit int // 可选：每页数量，默认30
+	Page int // 可选：页码，默认1
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -514,7 +514,7 @@ func (r *GetRemovedMiniItemsRequest) ToParams() map[string]string {
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "deleted", r.Deleted)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }

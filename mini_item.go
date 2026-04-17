@@ -16,22 +16,7 @@ func (c *Client) CreateMiniItem(ctx context.Context, req *model.CreateMiniItemRe
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create response: %w", err)
-	}
-
-	raw, ok := wrapper["MiniItem"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var item model.MiniItem
-	if err := json.Unmarshal(raw, &item); err != nil {
-		return nil, fmt.Errorf("failed to parse created mini item: %w", err)
-	}
-
-	return &item, nil
+	return parseOne[model.MiniItem](data, "MiniItem")
 }
 
 // UpdateMiniItem 更新工作项
@@ -42,22 +27,7 @@ func (c *Client) UpdateMiniItem(ctx context.Context, req *model.UpdateMiniItemRe
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update response: %w", err)
-	}
-
-	raw, ok := wrapper["MiniItem"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var item model.MiniItem
-	if err := json.Unmarshal(raw, &item); err != nil {
-		return nil, fmt.Errorf("failed to parse updated mini item: %w", err)
-	}
-
-	return &item, nil
+	return parseOne[model.MiniItem](data, "MiniItem")
 }
 
 // ListMiniItems 查询工作项列表
@@ -68,21 +38,7 @@ func (c *Client) ListMiniItems(ctx context.Context, req *model.ListMiniItemsRequ
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse mini item list: %w", err)
-	}
-
-	results := make([]model.MiniItem, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["MiniItem"]; ok {
-			var miniItem model.MiniItem
-			if err := json.Unmarshal(raw, &miniItem); err == nil {
-				results = append(results, miniItem)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.MiniItem](data, "MiniItem")
 }
 
 // GetMiniItem 获取单个工作项详情
@@ -98,26 +54,16 @@ func (c *Client) GetMiniItem(ctx context.Context, workspaceID, id string) (*mode
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+	items, err := parseList[model.MiniItem](data, "MiniItem")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(rawList) == 0 {
+	if len(items) == 0 {
 		return nil, &TAPDError{ExitCode: 2, Message: fmt.Sprintf("mini item %s not found", id)}
 	}
 
-	raw, ok := rawList[0]["MiniItem"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var item model.MiniItem
-	if err := json.Unmarshal(raw, &item); err != nil {
-		return nil, fmt.Errorf("failed to parse mini item: %w", err)
-	}
-
-	return &item, nil
+	return &items[0], nil
 }
 
 // CountMiniItems 查询工作项数量
@@ -128,15 +74,7 @@ func (c *Client) CountMiniItems(ctx context.Context, req *model.CountMiniItemsRe
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // CreateMiniItemCategory 创建工作项分组
@@ -147,22 +85,7 @@ func (c *Client) CreateMiniItemCategory(ctx context.Context, req *model.CreateMi
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create response: %w", err)
-	}
-
-	raw, ok := wrapper["Category"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var category model.Category
-	if err := json.Unmarshal(raw, &category); err != nil {
-		return nil, fmt.Errorf("failed to parse created category: %w", err)
-	}
-
-	return &category, nil
+	return parseOne[model.Category](data, "Category")
 }
 
 // UpdateMiniItemCategory 更新工作项分组
@@ -173,22 +96,7 @@ func (c *Client) UpdateMiniItemCategory(ctx context.Context, req *model.UpdateMi
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update response: %w", err)
-	}
-
-	raw, ok := wrapper["Category"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var category model.Category
-	if err := json.Unmarshal(raw, &category); err != nil {
-		return nil, fmt.Errorf("failed to parse updated category: %w", err)
-	}
-
-	return &category, nil
+	return parseOne[model.Category](data, "Category")
 }
 
 // ListMiniItemCategories 查询工作项分组列表
@@ -199,21 +107,7 @@ func (c *Client) ListMiniItemCategories(ctx context.Context, req *model.ListMini
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse category list: %w", err)
-	}
-
-	results := make([]model.Category, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Category"]; ok {
-			var category model.Category
-			if err := json.Unmarshal(raw, &category); err == nil {
-				results = append(results, category)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Category](data, "Category")
 }
 
 // CountMiniItemCategories 查询工作项分组数量
@@ -224,15 +118,7 @@ func (c *Client) CountMiniItemCategories(ctx context.Context, req *model.CountMi
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // GetMiniItemChanges 查询工作项动态列表
@@ -243,21 +129,7 @@ func (c *Client) GetMiniItemChanges(ctx context.Context, req *model.GetMiniItemC
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse mini item changes list: %w", err)
-	}
-
-	results := make([]model.WorkitemChange, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["WorkitemChange"]; ok {
-			var change model.WorkitemChange
-			if err := json.Unmarshal(raw, &change); err == nil {
-				results = append(results, change)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.WorkitemChange](data, "WorkitemChange")
 }
 
 // CountMiniItemChanges 查询工作项动态数量
@@ -268,15 +140,7 @@ func (c *Client) CountMiniItemChanges(ctx context.Context, req *model.CountMiniI
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // GetMiniItemCustomFields 获取工作项自定义字段配置
@@ -287,21 +151,7 @@ func (c *Client) GetMiniItemCustomFields(ctx context.Context, req *model.Workspa
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse custom fields: %w", err)
-	}
-
-	results := make([]model.CustomFieldConfig, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["CustomFieldConfig"]; ok {
-			var cfg model.CustomFieldConfig
-			if err := json.Unmarshal(raw, &cfg); err == nil {
-				results = append(results, cfg)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
 }
 
 // GetMiniItemFieldsLabel 获取工作项所有字段的中英文名
@@ -389,19 +239,5 @@ func (c *Client) GetRemovedMiniItems(ctx context.Context, req *model.GetRemovedM
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse removed mini items: %w", err)
-	}
-
-	results := make([]model.RemovedMiniItem, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["RemovedMiniItem"]; ok {
-			var removed model.RemovedMiniItem
-			if err := json.Unmarshal(raw, &removed); err == nil {
-				results = append(results, removed)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.RemovedMiniItem](data, "RemovedMiniItem")
 }

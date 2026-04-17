@@ -21,17 +21,15 @@ func (c *Client) ListWorkspaces(ctx context.Context) ([]model.Workspace, error) 
 	}
 
 	// TAPD 返回格式: [{"Workspace": {...}}, ...]
-	var rawList []map[string]model.Workspace
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse workspace list: %w", err)
+	all, err := parseList[model.Workspace](data, "Workspace")
+	if err != nil {
+		return nil, err
 	}
 
-	workspaces := make([]model.Workspace, 0, len(rawList))
-	for _, item := range rawList {
-		if ws, ok := item["Workspace"]; ok {
-			if ws.Category != "organization" {
-				workspaces = append(workspaces, ws)
-			}
+	workspaces := make([]model.Workspace, 0, len(all))
+	for _, ws := range all {
+		if ws.Category != "organization" {
+			workspaces = append(workspaces, ws)
 		}
 	}
 	return workspaces, nil
@@ -99,18 +97,7 @@ func (c *Client) ListCompanyProjects(ctx context.Context, req *model.ListCompany
 	}
 
 	// TAPD 返回格式: [{"Workspace": {...}}, ...]
-	var rawList []map[string]model.Workspace
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse company projects: %w", err)
-	}
-
-	workspaces := make([]model.Workspace, 0, len(rawList))
-	for _, item := range rawList {
-		if ws, ok := item["Workspace"]; ok {
-			workspaces = append(workspaces, ws)
-		}
-	}
-	return workspaces, nil
+	return parseList[model.Workspace](data, "Workspace")
 }
 
 // GetWorkspaceUsers 获取指定项目成员
@@ -122,18 +109,7 @@ func (c *Client) GetWorkspaceUsers(ctx context.Context, req *model.GetWorkspaceU
 	}
 
 	// TAPD 返回格式: [{"UserWorkspace": {...}}, ...]
-	var rawList []map[string]model.UserWorkspace
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse workspace users: %w", err)
-	}
-
-	users := make([]model.UserWorkspace, 0, len(rawList))
-	for _, item := range rawList {
-		if u, ok := item["UserWorkspace"]; ok {
-			users = append(users, u)
-		}
-	}
-	return users, nil
+	return parseList[model.UserWorkspace](data, "UserWorkspace")
 }
 
 // AddWorkspaceMember 添加项目成员

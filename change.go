@@ -2,8 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,21 +14,7 @@ func (c *Client) GetStoryChanges(ctx context.Context, req *model.GetStoryChanges
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse story changes list: %w", err)
-	}
-
-	results := make([]model.WorkitemChange, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["WorkitemChange"]; ok {
-			var change model.WorkitemChange
-			if err := json.Unmarshal(raw, &change); err == nil {
-				results = append(results, change)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.WorkitemChange](data, "WorkitemChange")
 }
 
 // CountStoryChanges 查询需求变更数量
@@ -41,15 +25,7 @@ func (c *Client) CountStoryChanges(ctx context.Context, req *model.CountStoryCha
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // GetBugChanges 查询缺陷变更历史列表
@@ -60,21 +36,7 @@ func (c *Client) GetBugChanges(ctx context.Context, req *model.GetBugChangesRequ
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse bug changes list: %w", err)
-	}
-
-	results := make([]model.BugChange, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["BugChange"]; ok {
-			var change model.BugChange
-			if err := json.Unmarshal(raw, &change); err == nil {
-				results = append(results, change)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.BugChange](data, "BugChange")
 }
 
 // CountBugChanges 查询缺陷变更数量
@@ -85,15 +47,7 @@ func (c *Client) CountBugChanges(ctx context.Context, req *model.CountBugChanges
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // GetTaskChanges 查询任务变更历史列表
@@ -104,21 +58,7 @@ func (c *Client) GetTaskChanges(ctx context.Context, req *model.GetTaskChangesRe
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse task changes list: %w", err)
-	}
-
-	results := make([]model.WorkitemChange, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["WorkitemChange"]; ok {
-			var change model.WorkitemChange
-			if err := json.Unmarshal(raw, &change); err == nil {
-				results = append(results, change)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.WorkitemChange](data, "WorkitemChange")
 }
 
 // CountTaskChanges 查询任务变更数量
@@ -129,15 +69,7 @@ func (c *Client) CountTaskChanges(ctx context.Context, req *model.CountTaskChang
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // GetIterationChanges 查询迭代变更历史列表
@@ -148,19 +80,5 @@ func (c *Client) GetIterationChanges(ctx context.Context, req *model.GetIteratio
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse iteration changes list: %w", err)
-	}
-
-	results := make([]model.IterationChange, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["IterationChange"]; ok {
-			var change model.IterationChange
-			if err := json.Unmarshal(raw, &change); err == nil {
-				results = append(results, change)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.IterationChange](data, "IterationChange")
 }

@@ -90,7 +90,7 @@ func main() {
     stories, err := client.ListStories(ctx, &model.ListStoriesRequest{
         WorkspaceID: "12345678",
         Status:      "open",
-        Limit:       "10",
+        Limit:       10,
     })
     if err != nil {
         log.Fatal(err)

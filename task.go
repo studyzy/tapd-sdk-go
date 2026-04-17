@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -16,21 +15,7 @@ func (c *Client) ListTasks(ctx context.Context, req *model.ListTasksRequest) ([]
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse task list: %w", err)
-	}
-
-	results := make([]model.Task, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Task"]; ok {
-			var task model.Task
-			if err := json.Unmarshal(raw, &task); err == nil {
-				results = append(results, task)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Task](data, "Task")
 }
 
 // GetTask 获取单个任务详情，description 字段保留原始 HTML
@@ -46,25 +31,16 @@ func (c *Client) GetTask(ctx context.Context, workspaceID, id string) (*model.Ta
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+	tasks, err := parseList[model.Task](data, "Task")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(rawList) == 0 {
+	if len(tasks) == 0 {
 		return nil, &TAPDError{ExitCode: 2, Message: fmt.Sprintf("task %s not found", id)}
 	}
 
-	raw, ok := rawList[0]["Task"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var task model.Task
-	if err := json.Unmarshal(raw, &task); err != nil {
-		return nil, fmt.Errorf("failed to parse task: %w", err)
-	}
-
+	task := tasks[0]
 	task.URL = fmt.Sprintf("%s/%s/prong/tasks/view/%s", c.webURL, workspaceID, id)
 
 	return &task, nil
@@ -78,24 +54,14 @@ func (c *Client) CreateTask(ctx context.Context, req *model.CreateTaskRequest) (
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create response: %w", err)
-	}
-
-	raw, ok := wrapper["Task"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var task model.Task
-	if err := json.Unmarshal(raw, &task); err != nil {
-		return nil, fmt.Errorf("failed to parse created task: %w", err)
+	task, err := parseOne[model.Task](data, "Task")
+	if err != nil {
+		return nil, err
 	}
 
 	task.URL = fmt.Sprintf("%s/%s/prong/tasks/view/%s", c.webURL, req.WorkspaceID, task.ID)
 
-	return &task, nil
+	return task, nil
 }
 
 // UpdateTask 更新任务
@@ -106,22 +72,7 @@ func (c *Client) UpdateTask(ctx context.Context, req *model.UpdateTaskRequest) (
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update response: %w", err)
-	}
-
-	raw, ok := wrapper["Task"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var task model.Task
-	if err := json.Unmarshal(raw, &task); err != nil {
-		return nil, fmt.Errorf("failed to parse updated task: %w", err)
-	}
-
-	return &task, nil
+	return parseOne[model.Task](data, "Task")
 }
 
 // CountTasks 查询任务数量
@@ -132,13 +83,5 @@ func (c *Client) CountTasks(ctx context.Context, req *model.CountTasksRequest) (
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }

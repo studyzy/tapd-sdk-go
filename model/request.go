@@ -67,8 +67,8 @@ func (r *GetCommitMsgRequest) ToParams() map[string]string {
 type GetTodoRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	EntityType  string // 必填：对象类型（story/bug/task）
-	Limit       string // 可选：返回数量限制（默认 30，最大 200）
-	Page        string // 可选：页码（默认 1）
+	Limit int // 可选：返回数量限制（默认 30，最大 200）
+	Page int // 可选：页码（默认 1）
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表（逗号分隔）
 }
@@ -78,8 +78,8 @@ func (r *GetTodoRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -403,8 +403,8 @@ func (r *AddCodeCommitInfoRequest) ToParams() map[string]string {
 // GetCodeCommitInfosRequest 获取 GIT 关联提交数据的请求参数
 type GetCodeCommitInfosRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Created     string // 可选：创建时间
 }
 
@@ -413,8 +413,8 @@ func (r *GetCodeCommitInfosRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "created", r.Created)
 	return params
 }

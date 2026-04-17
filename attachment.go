@@ -19,21 +19,7 @@ func (c *Client) GetImage(ctx context.Context, req *model.GetImageRequest) (*mod
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse image response: %w", err)
-	}
-
-	raw, ok := wrapper["Attachment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var img model.ImageInfo
-	if err := json.Unmarshal(raw, &img); err != nil {
-		return nil, fmt.Errorf("failed to parse image info: %w", err)
-	}
-	return &img, nil
+	return parseOne[model.ImageInfo](data, "Attachment")
 }
 
 // GetAttachments 获取附件列表（含下载链接）
@@ -44,21 +30,7 @@ func (c *Client) GetAttachments(ctx context.Context, req *model.GetAttachmentsRe
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse attachment list: %w", err)
-	}
-
-	results := make([]model.Attachment, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Attachment"]; ok {
-			var att model.Attachment
-			if err := json.Unmarshal(raw, &att); err == nil {
-				results = append(results, att)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Attachment](data, "Attachment")
 }
 
 // GetOneAttachment 获取单个附件下载链接
@@ -69,21 +41,7 @@ func (c *Client) GetOneAttachment(ctx context.Context, req *model.GetOneAttachme
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse attachment response: %w", err)
-	}
-
-	raw, ok := wrapper["Attachment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var att model.Attachment
-	if err := json.Unmarshal(raw, &att); err != nil {
-		return nil, fmt.Errorf("failed to parse attachment: %w", err)
-	}
-	return &att, nil
+	return parseOne[model.Attachment](data, "Attachment")
 }
 
 // DownloadDocument 获取单个文档下载链接
@@ -137,21 +95,7 @@ func (c *Client) UploadAttachment(ctx context.Context, req *model.UploadAttachme
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse upload response: %w", err)
-	}
-
-	raw, ok := wrapper["Attachment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var att model.Attachment
-	if err := json.Unmarshal(raw, &att); err != nil {
-		return nil, fmt.Errorf("failed to parse uploaded attachment: %w", err)
-	}
-	return &att, nil
+	return parseOne[model.Attachment](data, "Attachment")
 }
 
 // UploadImageBase64 上传 base64 图片
@@ -162,21 +106,7 @@ func (c *Client) UploadImageBase64(ctx context.Context, req *model.UploadImageBa
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse upload response: %w", err)
-	}
-
-	raw, ok := wrapper["Attachment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var att model.Attachment
-	if err := json.Unmarshal(raw, &att); err != nil {
-		return nil, fmt.Errorf("failed to parse uploaded attachment: %w", err)
-	}
-	return &att, nil
+	return parseOne[model.Attachment](data, "Attachment")
 }
 
 // DownloadAttachment 获取单个附件下载链接
@@ -187,19 +117,5 @@ func (c *Client) DownloadAttachment(ctx context.Context, req *model.DownloadAtta
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse attachment response: %w", err)
-	}
-
-	raw, ok := wrapper["Attachment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var att model.Attachment
-	if err := json.Unmarshal(raw, &att); err != nil {
-		return nil, fmt.Errorf("failed to parse attachment: %w", err)
-	}
-	return &att, nil
+	return parseOne[model.Attachment](data, "Attachment")
 }

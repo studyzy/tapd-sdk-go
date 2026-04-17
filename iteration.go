@@ -2,8 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,21 +14,7 @@ func (c *Client) ListIterations(ctx context.Context, req *model.ListIterationsRe
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse iteration list: %w", err)
-	}
-
-	iterations := make([]model.Iteration, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Iteration"]; ok {
-			var iter model.Iteration
-			if err := json.Unmarshal(raw, &iter); err == nil {
-				iterations = append(iterations, iter)
-			}
-		}
-	}
-	return iterations, nil
+	return parseList[model.Iteration](data, "Iteration")
 }
 
 // CreateIteration 创建迭代，返回创建后的完整 Iteration 对象
@@ -41,22 +25,7 @@ func (c *Client) CreateIteration(ctx context.Context, req *model.CreateIteration
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create iteration response: %w", err)
-	}
-
-	raw, ok := wrapper["Iteration"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var iteration model.Iteration
-	if err := json.Unmarshal(raw, &iteration); err != nil {
-		return nil, fmt.Errorf("failed to parse created iteration: %w", err)
-	}
-
-	return &iteration, nil
+	return parseOne[model.Iteration](data, "Iteration")
 }
 
 // UpdateIteration 更新迭代，返回更新后的完整 Iteration 对象
@@ -67,22 +36,7 @@ func (c *Client) UpdateIteration(ctx context.Context, req *model.UpdateIteration
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update iteration response: %w", err)
-	}
-
-	raw, ok := wrapper["Iteration"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var iteration model.Iteration
-	if err := json.Unmarshal(raw, &iteration); err != nil {
-		return nil, fmt.Errorf("failed to parse updated iteration: %w", err)
-	}
-
-	return &iteration, nil
+	return parseOne[model.Iteration](data, "Iteration")
 }
 
 // CountIterations 查询迭代数量
@@ -93,15 +47,7 @@ func (c *Client) CountIterations(ctx context.Context, req *model.CountIterations
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // LockIteration 锁定迭代

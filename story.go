@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -16,21 +15,7 @@ func (c *Client) ListStories(ctx context.Context, req *model.ListStoriesRequest)
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse story list: %w", err)
-	}
-
-	results := make([]model.Story, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Story"]; ok {
-			var story model.Story
-			if err := json.Unmarshal(raw, &story); err == nil {
-				results = append(results, story)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Story](data, "Story")
 }
 
 // GetStory 获取单个需求详情，description 字段保留原始 HTML
@@ -46,25 +31,16 @@ func (c *Client) GetStory(ctx context.Context, workspaceID, id string) (*model.S
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+	stories, err := parseList[model.Story](data, "Story")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(rawList) == 0 {
+	if len(stories) == 0 {
 		return nil, &TAPDError{ExitCode: 2, Message: fmt.Sprintf("story %s not found", id)}
 	}
 
-	raw, ok := rawList[0]["Story"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var story model.Story
-	if err := json.Unmarshal(raw, &story); err != nil {
-		return nil, fmt.Errorf("failed to parse story: %w", err)
-	}
-
+	story := stories[0]
 	story.URL = fmt.Sprintf("%s/%s/prong/stories/view/%s", c.webURL, workspaceID, id)
 
 	return &story, nil
@@ -78,24 +54,14 @@ func (c *Client) CreateStory(ctx context.Context, req *model.CreateStoryRequest)
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create response: %w", err)
-	}
-
-	raw, ok := wrapper["Story"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var story model.Story
-	if err := json.Unmarshal(raw, &story); err != nil {
-		return nil, fmt.Errorf("failed to parse created story: %w", err)
+	story, err := parseOne[model.Story](data, "Story")
+	if err != nil {
+		return nil, err
 	}
 
 	story.URL = fmt.Sprintf("%s/%s/prong/stories/view/%s", c.webURL, req.WorkspaceID, story.ID)
 
-	return &story, nil
+	return story, nil
 }
 
 // UpdateStory 更新需求
@@ -106,22 +72,7 @@ func (c *Client) UpdateStory(ctx context.Context, req *model.UpdateStoryRequest)
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update response: %w", err)
-	}
-
-	raw, ok := wrapper["Story"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var story model.Story
-	if err := json.Unmarshal(raw, &story); err != nil {
-		return nil, fmt.Errorf("failed to parse updated story: %w", err)
-	}
-
-	return &story, nil
+	return parseOne[model.Story](data, "Story")
 }
 
 // CountStories 查询需求数量
@@ -132,13 +83,5 @@ func (c *Client) CountStories(ctx context.Context, req *model.CountStoriesReques
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }

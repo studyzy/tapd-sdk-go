@@ -61,8 +61,8 @@ type GetStoryChangesRequest struct {
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
 	ChangeType  string // 可选：变更类型
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -76,8 +76,8 @@ func (r *GetStoryChangesRequest) ToParams() map[string]string {
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "change_type", r.ChangeType)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -110,8 +110,8 @@ type GetBugChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -125,8 +125,8 @@ func (r *GetBugChangesRequest) ToParams() map[string]string {
 	setOptional(params, "author", r.Author)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "field", r.Field)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -160,8 +160,8 @@ type GetTaskChangesRequest struct {
 	TaskID      string // 可选：任务 ID
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -174,8 +174,8 @@ func (r *GetTaskChangesRequest) ToParams() map[string]string {
 	setOptional(params, "task_id", r.TaskID)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
@@ -208,8 +208,8 @@ type GetIterationChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Fields      string // 可选：返回字段列表
 }
 
@@ -222,8 +222,8 @@ func (r *GetIterationChangesRequest) ToParams() map[string]string {
 	setOptional(params, "author", r.Author)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "field", r.Field)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "fields", r.Fields)
 	return params
 }

@@ -51,8 +51,8 @@ func (r *UpdateModuleRequest) ToParams() map[string]string {
 // GetModulesRequest 获取模块列表的请求参数
 type GetModulesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -60,8 +60,8 @@ func (r *GetModulesRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }
 
@@ -127,8 +127,8 @@ func (r *UpdateVersionRequest) ToParams() map[string]string {
 // GetVersionsRequest 获取版本列表的请求参数
 type GetVersionsRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -136,8 +136,8 @@ func (r *GetVersionsRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }
 
@@ -203,8 +203,8 @@ func (r *UpdateBaselineRequest) ToParams() map[string]string {
 // GetBaselinesRequest 获取基线列表的请求参数
 type GetBaselinesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -212,8 +212,8 @@ func (r *GetBaselinesRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }
 
@@ -279,8 +279,8 @@ func (r *UpdateFeatureRequest) ToParams() map[string]string {
 // GetFeaturesRequest 获取特性列表的请求参数
 type GetFeaturesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -288,8 +288,8 @@ func (r *GetFeaturesRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }
 

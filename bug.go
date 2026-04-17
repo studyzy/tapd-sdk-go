@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -16,21 +15,7 @@ func (c *Client) ListBugs(ctx context.Context, req *model.ListBugsRequest) ([]mo
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse bug list: %w", err)
-	}
-
-	results := make([]model.Bug, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Bug"]; ok {
-			var bug model.Bug
-			if err := json.Unmarshal(raw, &bug); err == nil {
-				results = append(results, bug)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Bug](data, "Bug")
 }
 
 // GetBug 获取单个缺陷详情，description 字段保留原始 HTML
@@ -46,25 +31,16 @@ func (c *Client) GetBug(ctx context.Context, workspaceID, id string) (*model.Bug
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+	bugs, err := parseList[model.Bug](data, "Bug")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(rawList) == 0 {
+	if len(bugs) == 0 {
 		return nil, &TAPDError{ExitCode: 2, Message: fmt.Sprintf("bug %s not found", id)}
 	}
 
-	raw, ok := rawList[0]["Bug"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var bug model.Bug
-	if err := json.Unmarshal(raw, &bug); err != nil {
-		return nil, fmt.Errorf("failed to parse bug: %w", err)
-	}
-
+	bug := bugs[0]
 	bug.URL = fmt.Sprintf("%s/%s/bugtrace/bugs/view/%s", c.webURL, workspaceID, id)
 
 	return &bug, nil
@@ -78,24 +54,14 @@ func (c *Client) CreateBug(ctx context.Context, req *model.CreateBugRequest) (*m
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create response: %w", err)
-	}
-
-	raw, ok := wrapper["Bug"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var bug model.Bug
-	if err := json.Unmarshal(raw, &bug); err != nil {
-		return nil, fmt.Errorf("failed to parse created bug: %w", err)
+	bug, err := parseOne[model.Bug](data, "Bug")
+	if err != nil {
+		return nil, err
 	}
 
 	bug.URL = fmt.Sprintf("%s/%s/bugtrace/bugs/view/%s", c.webURL, req.WorkspaceID, bug.ID)
 
-	return &bug, nil
+	return bug, nil
 }
 
 // UpdateBug 更新缺陷
@@ -106,22 +72,7 @@ func (c *Client) UpdateBug(ctx context.Context, req *model.UpdateBugRequest) (*m
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update response: %w", err)
-	}
-
-	raw, ok := wrapper["Bug"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var bug model.Bug
-	if err := json.Unmarshal(raw, &bug); err != nil {
-		return nil, fmt.Errorf("failed to parse updated bug: %w", err)
-	}
-
-	return &bug, nil
+	return parseOne[model.Bug](data, "Bug")
 }
 
 // CountBugs 查询缺陷数量
@@ -132,13 +83,5 @@ func (c *Client) CountBugs(ctx context.Context, req *model.CountBugsRequest) (in
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }

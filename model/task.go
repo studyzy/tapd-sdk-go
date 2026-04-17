@@ -121,8 +121,8 @@ type ListTasksRequest struct {
 	Exceed          string // 可选：超出工时
 	Remain          string // 可选：剩余工时
 	Fields          string // 可选：返回字段列表
-	Limit           string // 可选：返回数量限制（默认 30，最大 200）
-	Page            string // 可选：页码
+	Limit int // 可选：返回数量限制（默认 30，最大 200）
+	Page int // 可选：页码
 	Order           string // 可选：排序规则
 }
 
@@ -154,8 +154,8 @@ func (r *ListTasksRequest) ToParams() map[string]string {
 	setOptional(params, "exceed", r.Exceed)
 	setOptional(params, "remain", r.Remain)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }

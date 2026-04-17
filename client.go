@@ -40,7 +40,10 @@ type Client struct {
 	webURL     string
 	httpClient *http.Client
 	authHeader string // "Bearer <token>" or "Basic <base64>"
-	Nick       string // 当前用户昵称，Bearer Token 认证时自动获取
+	// Nick 为当前用户昵称，Bearer Token 认证时通过 FetchNick() 自动获取。
+	// 注意：Client.Nick 非并发安全，如果在多个 goroutine 中共享 Client，
+	// 请避免在并发请求时调用 FetchNick()，或自行加锁。
+	Nick       string
 }
 
 // NewClient 创建一个使用默认 URL 的 TAPD API 客户端。

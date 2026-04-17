@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -16,21 +15,7 @@ func (c *Client) ListWikis(ctx context.Context, req *model.ListWikisRequest) ([]
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse wiki list: %w", err)
-	}
-
-	results := make([]model.Wiki, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Wiki"]; ok {
-			var wiki model.Wiki
-			if err := json.Unmarshal(raw, &wiki); err == nil {
-				results = append(results, wiki)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Wiki](data, "Wiki")
 }
 
 // GetWiki 获取单个 Wiki 文档详情，description 字段保留原始 HTML
@@ -46,25 +31,16 @@ func (c *Client) GetWiki(ctx context.Context, workspaceID, id string) (*model.Wi
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
+	wikis, err := parseList[model.Wiki](data, "Wiki")
+	if err != nil {
+		return nil, err
 	}
 
-	if len(rawList) == 0 {
+	if len(wikis) == 0 {
 		return nil, &TAPDError{ExitCode: 2, Message: fmt.Sprintf("wiki %s not found", id)}
 	}
 
-	raw, ok := rawList[0]["Wiki"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var wiki model.Wiki
-	if err := json.Unmarshal(raw, &wiki); err != nil {
-		return nil, fmt.Errorf("failed to parse wiki: %w", err)
-	}
-
+	wiki := wikis[0]
 	wiki.URL = fmt.Sprintf("%s/%s/markdown_wikis/view/%s", c.webURL, workspaceID, id)
 
 	return &wiki, nil
@@ -78,24 +54,14 @@ func (c *Client) CreateWiki(ctx context.Context, req *model.CreateWikiRequest) (
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create wiki response: %w", err)
-	}
-
-	raw, ok := wrapper["Wiki"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var wiki model.Wiki
-	if err := json.Unmarshal(raw, &wiki); err != nil {
-		return nil, fmt.Errorf("failed to parse created wiki: %w", err)
+	wiki, err := parseOne[model.Wiki](data, "Wiki")
+	if err != nil {
+		return nil, err
 	}
 
 	wiki.URL = fmt.Sprintf("%s/%s/markdown_wikis/view/%s", c.webURL, req.WorkspaceID, wiki.ID)
 
-	return &wiki, nil
+	return wiki, nil
 }
 
 // CountWikis 获取 Wiki 数量
@@ -106,15 +72,7 @@ func (c *Client) CountWikis(ctx context.Context, req *model.CountWikisRequest) (
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // UpdateWiki 更新 Wiki 文档
@@ -125,20 +83,5 @@ func (c *Client) UpdateWiki(ctx context.Context, req *model.UpdateWikiRequest) (
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update wiki response: %w", err)
-	}
-
-	raw, ok := wrapper["Wiki"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var wiki model.Wiki
-	if err := json.Unmarshal(raw, &wiki); err != nil {
-		return nil, fmt.Errorf("failed to parse updated wiki: %w", err)
-	}
-
-	return &wiki, nil
+	return parseOne[model.Wiki](data, "Wiki")
 }

@@ -57,8 +57,8 @@ type GetBoardCardsRequest struct {
 	BoardID     string // 可选：看板 ID
 	ColumnID    string // 可选：板块 ID
 	Owner       string // 可选：处理人
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -69,8 +69,8 @@ func (r *GetBoardCardsRequest) ToParams() map[string]string {
 	setOptional(params, "board_id", r.BoardID)
 	setOptional(params, "column_id", r.ColumnID)
 	setOptional(params, "owner", r.Owner)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }
 

@@ -3,7 +3,6 @@ package tapd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,21 +15,7 @@ func (c *Client) ListComments(ctx context.Context, req *model.ListCommentsReques
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse comment list: %w", err)
-	}
-
-	results := make([]model.Comment, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Comment"]; ok {
-			var comment model.Comment
-			if err := json.Unmarshal(raw, &comment); err == nil {
-				results = append(results, comment)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Comment](data, "Comment")
 }
 
 // AddComment 添加评论，返回新建的评论对象
@@ -41,22 +26,7 @@ func (c *Client) AddComment(ctx context.Context, req *model.AddCommentRequest) (
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create comment response: %w", err)
-	}
-
-	raw, ok := wrapper["Comment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var comment model.Comment
-	if err := json.Unmarshal(raw, &comment); err != nil {
-		return nil, fmt.Errorf("failed to parse created comment: %w", err)
-	}
-
-	return &comment, nil
+	return parseOne[model.Comment](data, "Comment")
 }
 
 // UpdateComment 更新评论，返回更新后的评论对象
@@ -74,21 +44,7 @@ func (c *Client) UpdateComment(ctx context.Context, req *model.UpdateCommentRequ
 	}
 
 	// 兼容：可能有 "Comment" 包裹层
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update comment response: %w", err)
-	}
-
-	raw, ok := wrapper["Comment"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	if err := json.Unmarshal(raw, &comment); err != nil {
-		return nil, fmt.Errorf("failed to parse updated comment: %w", err)
-	}
-
-	return &comment, nil
+	return parseOne[model.Comment](data, "Comment")
 }
 
 // CountComments 查询评论数量
@@ -99,13 +55,5 @@ func (c *Client) CountComments(ctx context.Context, req *model.CountCommentsRequ
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }

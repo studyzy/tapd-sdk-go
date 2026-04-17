@@ -2,8 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -15,22 +13,7 @@ func (c *Client) CreateModule(ctx context.Context, req *model.CreateModuleReques
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create module response: %w", err)
-	}
-
-	raw, ok := wrapper["Module"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var module model.Module
-	if err := json.Unmarshal(raw, &module); err != nil {
-		return nil, fmt.Errorf("failed to parse created module: %w", err)
-	}
-
-	return &module, nil
+	return parseOne[model.Module](data, "Module")
 }
 
 // UpdateModule 更新模块
@@ -40,22 +23,7 @@ func (c *Client) UpdateModule(ctx context.Context, req *model.UpdateModuleReques
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update module response: %w", err)
-	}
-
-	raw, ok := wrapper["Module"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var module model.Module
-	if err := json.Unmarshal(raw, &module); err != nil {
-		return nil, fmt.Errorf("failed to parse updated module: %w", err)
-	}
-
-	return &module, nil
+	return parseOne[model.Module](data, "Module")
 }
 
 // GetModules 获取模块列表
@@ -65,21 +33,7 @@ func (c *Client) GetModules(ctx context.Context, req *model.GetModulesRequest) (
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse module list: %w", err)
-	}
-
-	modules := make([]model.Module, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Module"]; ok {
-			var m model.Module
-			if err := json.Unmarshal(raw, &m); err == nil {
-				modules = append(modules, m)
-			}
-		}
-	}
-	return modules, nil
+	return parseList[model.Module](data, "Module")
 }
 
 // CountModules 获取模块数量
@@ -89,15 +43,7 @@ func (c *Client) CountModules(ctx context.Context, req *model.CountModulesReques
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // CreateVersion 创建版本
@@ -107,22 +53,7 @@ func (c *Client) CreateVersion(ctx context.Context, req *model.CreateVersionRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create version response: %w", err)
-	}
-
-	raw, ok := wrapper["Version"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var version model.Version
-	if err := json.Unmarshal(raw, &version); err != nil {
-		return nil, fmt.Errorf("failed to parse created version: %w", err)
-	}
-
-	return &version, nil
+	return parseOne[model.Version](data, "Version")
 }
 
 // UpdateVersion 更新版本
@@ -132,22 +63,7 @@ func (c *Client) UpdateVersion(ctx context.Context, req *model.UpdateVersionRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update version response: %w", err)
-	}
-
-	raw, ok := wrapper["Version"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var version model.Version
-	if err := json.Unmarshal(raw, &version); err != nil {
-		return nil, fmt.Errorf("failed to parse updated version: %w", err)
-	}
-
-	return &version, nil
+	return parseOne[model.Version](data, "Version")
 }
 
 // GetVersions 获取版本列表
@@ -157,21 +73,7 @@ func (c *Client) GetVersions(ctx context.Context, req *model.GetVersionsRequest)
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse version list: %w", err)
-	}
-
-	versions := make([]model.Version, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Version"]; ok {
-			var v model.Version
-			if err := json.Unmarshal(raw, &v); err == nil {
-				versions = append(versions, v)
-			}
-		}
-	}
-	return versions, nil
+	return parseList[model.Version](data, "Version")
 }
 
 // CountVersions 获取版本数量
@@ -181,15 +83,7 @@ func (c *Client) CountVersions(ctx context.Context, req *model.CountVersionsRequ
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // CreateBaseline 创建基线
@@ -199,22 +93,7 @@ func (c *Client) CreateBaseline(ctx context.Context, req *model.CreateBaselineRe
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create baseline response: %w", err)
-	}
-
-	raw, ok := wrapper["Baseline"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var baseline model.Baseline
-	if err := json.Unmarshal(raw, &baseline); err != nil {
-		return nil, fmt.Errorf("failed to parse created baseline: %w", err)
-	}
-
-	return &baseline, nil
+	return parseOne[model.Baseline](data, "Baseline")
 }
 
 // UpdateBaseline 更新基线
@@ -224,22 +103,7 @@ func (c *Client) UpdateBaseline(ctx context.Context, req *model.UpdateBaselineRe
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update baseline response: %w", err)
-	}
-
-	raw, ok := wrapper["Baseline"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var baseline model.Baseline
-	if err := json.Unmarshal(raw, &baseline); err != nil {
-		return nil, fmt.Errorf("failed to parse updated baseline: %w", err)
-	}
-
-	return &baseline, nil
+	return parseOne[model.Baseline](data, "Baseline")
 }
 
 // GetBaselines 获取基线列表
@@ -249,21 +113,7 @@ func (c *Client) GetBaselines(ctx context.Context, req *model.GetBaselinesReques
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse baseline list: %w", err)
-	}
-
-	baselines := make([]model.Baseline, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Baseline"]; ok {
-			var b model.Baseline
-			if err := json.Unmarshal(raw, &b); err == nil {
-				baselines = append(baselines, b)
-			}
-		}
-	}
-	return baselines, nil
+	return parseList[model.Baseline](data, "Baseline")
 }
 
 // CountBaselines 获取基线数量
@@ -273,15 +123,7 @@ func (c *Client) CountBaselines(ctx context.Context, req *model.CountBaselinesRe
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // CreateFeature 创建特性
@@ -291,22 +133,7 @@ func (c *Client) CreateFeature(ctx context.Context, req *model.CreateFeatureRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create feature response: %w", err)
-	}
-
-	raw, ok := wrapper["Feature"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var feature model.Feature
-	if err := json.Unmarshal(raw, &feature); err != nil {
-		return nil, fmt.Errorf("failed to parse created feature: %w", err)
-	}
-
-	return &feature, nil
+	return parseOne[model.Feature](data, "Feature")
 }
 
 // UpdateFeature 更新特性
@@ -316,22 +143,7 @@ func (c *Client) UpdateFeature(ctx context.Context, req *model.UpdateFeatureRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update feature response: %w", err)
-	}
-
-	raw, ok := wrapper["Feature"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var feature model.Feature
-	if err := json.Unmarshal(raw, &feature); err != nil {
-		return nil, fmt.Errorf("failed to parse updated feature: %w", err)
-	}
-
-	return &feature, nil
+	return parseOne[model.Feature](data, "Feature")
 }
 
 // GetFeatures 获取特性列表
@@ -341,21 +153,7 @@ func (c *Client) GetFeatures(ctx context.Context, req *model.GetFeaturesRequest)
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse feature list: %w", err)
-	}
-
-	features := make([]model.Feature, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Feature"]; ok {
-			var f model.Feature
-			if err := json.Unmarshal(raw, &f); err == nil {
-				features = append(features, f)
-			}
-		}
-	}
-	return features, nil
+	return parseList[model.Feature](data, "Feature")
 }
 
 // CountFeatures 获取特性数量
@@ -365,13 +163,5 @@ func (c *Client) CountFeatures(ctx context.Context, req *model.CountFeaturesRequ
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }

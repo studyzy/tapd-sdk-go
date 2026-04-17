@@ -2,8 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,21 +14,7 @@ func (c *Client) CreateRelease(ctx context.Context, req *model.CreateReleaseRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create release response: %w", err)
-	}
-
-	raw, ok := wrapper["Release"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var release model.Release
-	if err := json.Unmarshal(raw, &release); err != nil {
-		return nil, fmt.Errorf("failed to parse created release: %w", err)
-	}
-	return &release, nil
+	return parseOne[model.Release](data, "Release")
 }
 
 // UpdateRelease 更新发布计划
@@ -41,21 +25,7 @@ func (c *Client) UpdateRelease(ctx context.Context, req *model.UpdateReleaseRequ
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update release response: %w", err)
-	}
-
-	raw, ok := wrapper["Release"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var release model.Release
-	if err := json.Unmarshal(raw, &release); err != nil {
-		return nil, fmt.Errorf("failed to parse updated release: %w", err)
-	}
-	return &release, nil
+	return parseOne[model.Release](data, "Release")
 }
 
 // CountReleases 获取发布计划数量
@@ -66,11 +36,5 @@ func (c *Client) CountReleases(ctx context.Context, req *model.WorkspaceIDReques
 		return 0, err
 	}
 
-	var result struct {
-		Count int `json:"count"`
-	}
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse release count: %w", err)
-	}
-	return result.Count, nil
+	return parseCount(data)
 }

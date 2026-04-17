@@ -115,8 +115,8 @@ func TestGetTodoStories(t *testing.T) {
 	stories, err := c.GetTodoStories(context.Background(), &model.GetTodoRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
-		Limit:       "5",
-		Page:        "2",
+		Limit:       5,
+		Page:        2,
 	})
 	if err != nil {
 		t.Fatalf("GetTodoStories() unexpected error: %v", err)

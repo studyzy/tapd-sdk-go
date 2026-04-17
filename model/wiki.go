@@ -1,6 +1,8 @@
 // Package model 中的 wiki.go 定义了 TAPD Wiki 文档数据模型及请求参数结构体
 package model
 
+import "strconv"
+
 // Wiki 表示 TAPD Wiki 文档，字段覆盖 TAPD API 返回的所有常用字段
 // 使用强类型结构体反序列化可自动过滤无用字段，节约 token
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/wiki/get_tapd_wikis.html
@@ -45,8 +47,8 @@ type ListWikisRequest struct {
 	Created     string // 可选：创建时间，支持时间查询
 	Modified    string // 可选：最后修改时间，支持时间查询
 	Fields      string // 可选：返回字段列表
-	Limit       string // 可选：返回数量限制，默认 30，最大 200
-	Page        string // 可选：页码，默认 1
+	Limit       int    // 可选：返回数量限制，默认 30，最大 200
+	Page        int    // 可选：页码，默认 1
 	Order       string // 可选：排序规则，格式：字段名 ASC/DESC
 }
 
@@ -64,8 +66,8 @@ func (r *ListWikisRequest) ToParams() map[string]string {
 	setOptional(params, "created", r.Created)
 	setOptional(params, "modified", r.Modified)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }
@@ -138,5 +140,12 @@ func (r *CountWikisRequest) ToParams() map[string]string {
 func setOptional(params map[string]string, key, value string) {
 	if value != "" {
 		params[key] = value
+	}
+}
+
+// setOptionalInt 当值大于0时添加到参数 map
+func setOptionalInt(params map[string]string, key string, value int) {
+	if value > 0 {
+		params[key] = strconv.Itoa(value)
 	}
 }

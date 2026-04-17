@@ -2,8 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,19 +14,5 @@ func (c *Client) ListCategories(ctx context.Context, params map[string]string) (
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse category list: %w", err)
-	}
-
-	results := make([]model.Category, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Category"]; ok {
-			var cat model.Category
-			if err := json.Unmarshal(raw, &cat); err == nil {
-				results = append(results, cat)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Category](data, "Category")
 }

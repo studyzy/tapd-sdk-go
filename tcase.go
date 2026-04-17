@@ -3,7 +3,6 @@ package tapd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -16,21 +15,7 @@ func (c *Client) ListTCases(ctx context.Context, req *model.ListTCasesRequest) (
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse tcase list: %w", err)
-	}
-
-	results := make([]model.TCase, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Tcase"]; ok {
-			var tc model.TCase
-			if err := json.Unmarshal(raw, &tc); err == nil {
-				results = append(results, tc)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.TCase](data, "Tcase")
 }
 
 // CountTCases 查询测试用例数量
@@ -41,15 +26,7 @@ func (c *Client) CountTCases(ctx context.Context, req *model.CountTCasesRequest)
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse tcase count: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // CreateTCase 创建测试用例
@@ -60,21 +37,7 @@ func (c *Client) CreateTCase(ctx context.Context, req *model.CreateTCaseRequest)
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse create tcase response: %w", err)
-	}
-
-	raw, ok := wrapper["Tcase"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var tc model.TCase
-	if err := json.Unmarshal(raw, &tc); err != nil {
-		return nil, fmt.Errorf("failed to parse created tcase: %w", err)
-	}
-	return &tc, nil
+	return parseOne[model.TCase](data, "Tcase")
 }
 
 // BatchCreateTCases 批量创建测试用例

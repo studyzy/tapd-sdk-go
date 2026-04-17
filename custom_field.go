@@ -21,21 +21,7 @@ func (c *Client) GetCustomFields(ctx context.Context, req *model.GetCustomFields
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse custom fields: %w", err)
-	}
-
-	results := make([]model.CustomFieldConfig, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["CustomFieldConfig"]; ok {
-			var cfg model.CustomFieldConfig
-			if err := json.Unmarshal(raw, &cfg); err == nil {
-				results = append(results, cfg)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
 }
 
 // GetStoryFieldsLabel 获取需求所有字段的中英文名，返回 map[string]string（字段英文名→中文名）
@@ -106,19 +92,5 @@ func (c *Client) GetWorkitemTypes(ctx context.Context, req *model.WorkspaceIDReq
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse workitem types: %w", err)
-	}
-
-	results := make([]model.WorkitemType, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["WorkitemType"]; ok {
-			var wt model.WorkitemType
-			if err := json.Unmarshal(raw, &wt); err == nil {
-				results = append(results, wt)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.WorkitemType](data, "WorkitemType")
 }

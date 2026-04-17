@@ -34,8 +34,8 @@ type ListTimesheetsRequest struct {
 	Memo                         string // 可选：花费描述
 	IsDelete                     string // 可选：是否已删除，默认 0 不返回已删除记录，1 返回已删除记录
 	Fields                       string // 可选：返回字段列表，多个字段间以逗号隔开
-	Limit                        string // 可选：返回数量限制，默认 30
-	Page                         string // 可选：页码，默认 1
+	Limit int // 可选：返回数量限制，默认 30
+	Page int // 可选：页码，默认 1
 	Order                        string // 可选：排序规则，如 created desc
 }
 
@@ -56,8 +56,8 @@ func (r *ListTimesheetsRequest) ToParams() map[string]string {
 	setOptional(params, "memo", r.Memo)
 	setOptional(params, "is_delete", r.IsDelete)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }

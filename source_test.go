@@ -59,8 +59,8 @@ func TestGetCodeCommitInfos(t *testing.T) {
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	data, err := c.GetCodeCommitInfos(context.Background(), &model.GetCodeCommitInfosRequest{
 		WorkspaceID: "11111111",
-		Limit:       "10",
-		Page:        "1",
+		Limit:       10,
+		Page:        1,
 	})
 	if err != nil {
 		t.Fatalf("GetCodeCommitInfos() unexpected error: %v", err)

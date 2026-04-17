@@ -39,8 +39,8 @@ type ListTCasesRequest struct {
 	Precondition string // 可选：前置条件
 	Expectation  string // 可选：预期结果
 	Fields       string // 可选：返回字段列表，多个字段间以半角逗号隔开
-	Limit        string // 可选：返回数量限制，默认为 30
-	Page         string // 可选：页码，默认为 1
+	Limit int // 可选：返回数量限制，默认为 30
+	Page int // 可选：页码，默认为 1
 	Order        string // 可选：排序规则，如 created desc
 }
 
@@ -63,8 +63,8 @@ func (r *ListTCasesRequest) ToParams() map[string]string {
 	setOptional(params, "precondition", r.Precondition)
 	setOptional(params, "expectation", r.Expectation)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }

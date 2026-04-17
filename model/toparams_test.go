@@ -120,7 +120,7 @@ func TestListBugsRequest_ToParams(t *testing.T) {
 		Title:         "crash",
 		PriorityLabel: "urgent",
 		Severity:      "fatal",
-		Limit:         "50",
+		Limit:         50,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "10" {
@@ -221,7 +221,7 @@ func TestListTasksRequest_ToParams(t *testing.T) {
 		WorkspaceID: "20",
 		Status:      "open",
 		Owner:       "bob",
-		Limit:       "100",
+		Limit:       100,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "20" {
@@ -592,7 +592,7 @@ func TestListWikisRequest_ToParams(t *testing.T) {
 	req := &ListWikisRequest{
 		WorkspaceID: "60",
 		Creator:     "dave",
-		Limit:       "20",
+		Limit:       20,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "60" {
@@ -760,7 +760,7 @@ func TestGetAttachmentsRequest_ToParams(t *testing.T) {
 		WorkspaceID: "80",
 		Type:        "story",
 		EntryID:     "1001",
-		Limit:       "10",
+		Limit:       10,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "80" {
@@ -859,8 +859,8 @@ func TestGetTodoRequest_ToParams(t *testing.T) {
 	req := &GetTodoRequest{
 		WorkspaceID: "90",
 		EntityType:  "story",
-		Limit:       "50",
-		Page:        "2",
+		Limit:       50,
+		Page:        2,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "90" {
@@ -931,7 +931,7 @@ func TestGetStoryChangesRequest_ToParams(t *testing.T) {
 		StoryID:     "s1",
 		Creator:     "alice",
 		ChangeType:  "update",
-		Limit:       "30",
+		Limit:       30,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -984,7 +984,7 @@ func TestGetBugChangesRequest_ToParams(t *testing.T) {
 		BugID:       "b1",
 		Author:      "bob",
 		Field:       "severity",
-		Limit:       "50",
+		Limit:       50,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "200" {
@@ -1039,8 +1039,8 @@ func TestGetTaskChangesRequest_ToParams(t *testing.T) {
 		WorkspaceID: "300",
 		TaskID:      "t1",
 		Creator:     "charlie",
-		Limit:       "20",
-		Page:        "2",
+		Limit:       20,
+		Page:        2,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "300" {
@@ -1089,7 +1089,7 @@ func TestGetIterationChangesRequest_ToParams(t *testing.T) {
 		IterationID: "i1",
 		Author:      "dave",
 		Field:       "name",
-		Limit:       "10",
+		Limit:       10,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "400" {
@@ -1154,7 +1154,7 @@ func TestGetBoardCardsRequest_ToParams(t *testing.T) {
 	req := &GetBoardCardsRequest{
 		WorkspaceID: "100",
 		BoardID:     "2001",
-		Limit:       "20",
+		Limit:       20,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1404,8 +1404,8 @@ func TestAddCodeCommitInfoRequest_ToParams(t *testing.T) {
 func TestGetCodeCommitInfosRequest_ToParams(t *testing.T) {
 	req := &GetCodeCommitInfosRequest{
 		WorkspaceID: "100",
-		Limit:       "20",
-		Page:        "2",
+		Limit:       20,
+		Page:        2,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1552,8 +1552,8 @@ func TestUpdateModuleRequest_ToParams(t *testing.T) {
 func TestGetModulesRequest_ToParams(t *testing.T) {
 	req := &GetModulesRequest{
 		WorkspaceID: "100",
-		Limit:       "20",
-		Page:        "2",
+		Limit:       20,
+		Page:        2,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1620,7 +1620,7 @@ func TestUpdateVersionRequest_ToParams(t *testing.T) {
 func TestGetVersionsRequest_ToParams(t *testing.T) {
 	req := &GetVersionsRequest{
 		WorkspaceID: "100",
-		Limit:       "10",
+		Limit:       10,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1687,8 +1687,8 @@ func TestUpdateBaselineRequest_ToParams(t *testing.T) {
 func TestGetBaselinesRequest_ToParams(t *testing.T) {
 	req := &GetBaselinesRequest{
 		WorkspaceID: "100",
-		Limit:       "30",
-		Page:        "1",
+		Limit:       30,
+		Page:        1,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1755,7 +1755,7 @@ func TestUpdateFeatureRequest_ToParams(t *testing.T) {
 func TestGetFeaturesRequest_ToParams(t *testing.T) {
 	req := &GetFeaturesRequest{
 		WorkspaceID: "100",
-		Limit:       "50",
+		Limit:       50,
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {

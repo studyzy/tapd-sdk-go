@@ -52,8 +52,8 @@ type ListIterationsRequest struct {
 	Completed      string // 可选：完成时间
 	Locker         string // 可选：锁定人
 	Fields         string // 可选：返回字段列表
-	Limit          string // 可选：返回数量限制
-	Page           string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 	Order          string // 可选：排序规则
 }
 
@@ -76,8 +76,8 @@ func (r *ListIterationsRequest) ToParams() map[string]string {
 	setOptional(params, "completed", r.Completed)
 	setOptional(params, "locker", r.Locker)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }

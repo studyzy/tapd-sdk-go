@@ -31,21 +31,7 @@ func (c *Client) ListReleases(ctx context.Context, req *model.WorkspaceIDRequest
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse release list: %w", err)
-	}
-
-	results := make([]model.Release, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Release"]; ok {
-			var r model.Release
-			if err := json.Unmarshal(raw, &r); err == nil {
-				results = append(results, r)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Release](data, "Release")
 }
 
 // GetTodoStories 获取用户待办需求，返回强类型 Story 切片
@@ -55,21 +41,7 @@ func (c *Client) GetTodoStories(ctx context.Context, req *model.GetTodoRequest) 
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse todo story list: %w", err)
-	}
-
-	results := make([]model.Story, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Story"]; ok {
-			var story model.Story
-			if err := json.Unmarshal(raw, &story); err == nil {
-				results = append(results, story)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Story](data, "Story")
 }
 
 // GetTodoTasks 获取用户待办任务，返回强类型 Task 切片
@@ -79,21 +51,7 @@ func (c *Client) GetTodoTasks(ctx context.Context, req *model.GetTodoRequest) ([
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse todo task list: %w", err)
-	}
-
-	results := make([]model.Task, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Task"]; ok {
-			var task model.Task
-			if err := json.Unmarshal(raw, &task); err == nil {
-				results = append(results, task)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Task](data, "Task")
 }
 
 // GetTodoBugs 获取用户待办缺陷，返回强类型 Bug 切片
@@ -103,21 +61,7 @@ func (c *Client) GetTodoBugs(ctx context.Context, req *model.GetTodoRequest) ([]
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse todo bug list: %w", err)
-	}
-
-	results := make([]model.Bug, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Bug"]; ok {
-			var bug model.Bug
-			if err := json.Unmarshal(raw, &bug); err == nil {
-				results = append(results, bug)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Bug](data, "Bug")
 }
 
 // SendQiweiMessage 发送消息到企业微信群

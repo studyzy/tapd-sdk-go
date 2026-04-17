@@ -3,7 +3,6 @@ package tapd
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -17,21 +16,7 @@ func (c *Client) ListTimesheets(ctx context.Context, req *model.ListTimesheetsRe
 		return nil, err
 	}
 
-	var rawList []map[string]json.RawMessage
-	if err := json.Unmarshal(data, &rawList); err != nil {
-		return nil, fmt.Errorf("failed to parse timesheet list: %w", err)
-	}
-
-	results := make([]model.Timesheet, 0, len(rawList))
-	for _, item := range rawList {
-		if raw, ok := item["Timesheet"]; ok {
-			var ts model.Timesheet
-			if err := json.Unmarshal(raw, &ts); err == nil {
-				results = append(results, ts)
-			}
-		}
-	}
-	return results, nil
+	return parseList[model.Timesheet](data, "Timesheet")
 }
 
 // AddTimesheet 填写花费工时
@@ -42,21 +27,7 @@ func (c *Client) AddTimesheet(ctx context.Context, req *model.AddTimesheetReques
 		return nil, err
 	}
 
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse add timesheet response: %w", err)
-	}
-
-	raw, ok := wrapper["Timesheet"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	var ts model.Timesheet
-	if err := json.Unmarshal(raw, &ts); err != nil {
-		return nil, fmt.Errorf("failed to parse created timesheet: %w", err)
-	}
-	return &ts, nil
+	return parseOne[model.Timesheet](data, "Timesheet")
 }
 
 // UpdateTimesheet 更新花费工时
@@ -74,20 +45,7 @@ func (c *Client) UpdateTimesheet(ctx context.Context, req *model.UpdateTimesheet
 	}
 
 	// 兼容 "Timesheet" 包裹
-	var wrapper map[string]json.RawMessage
-	if err := json.Unmarshal(data, &wrapper); err != nil {
-		return nil, fmt.Errorf("failed to parse update timesheet response: %w", err)
-	}
-
-	raw, ok := wrapper["Timesheet"]
-	if !ok {
-		return nil, fmt.Errorf("unexpected response format")
-	}
-
-	if err := json.Unmarshal(raw, &ts); err != nil {
-		return nil, fmt.Errorf("failed to parse updated timesheet: %w", err)
-	}
-	return &ts, nil
+	return parseOne[model.Timesheet](data, "Timesheet")
 }
 
 // CountTimesheets 获取工时花费数量
@@ -98,15 +56,7 @@ func (c *Client) CountTimesheets(ctx context.Context, req *model.CountTimesheets
 		return 0, err
 	}
 
-	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil {
-		return 0, fmt.Errorf("failed to parse timesheet count response: %w", err)
-	}
-
-	if count, ok := result["count"]; ok {
-		return count, nil
-	}
-	return 0, nil
+	return parseCount(data)
 }
 
 // DeleteTimesheets 删除工时花费

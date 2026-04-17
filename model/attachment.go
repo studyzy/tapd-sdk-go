@@ -45,8 +45,8 @@ type GetAttachmentsRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Type        string // 可选：对象类型
 	EntryID     string // 可选：条目 ID
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit int // 可选：返回数量限制
+	Page int // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -56,7 +56,7 @@ func (r *GetAttachmentsRequest) ToParams() map[string]string {
 	}
 	setOptional(params, "type", r.Type)
 	setOptional(params, "entry_id", r.EntryID)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	return params
 }

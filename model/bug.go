@@ -218,8 +218,8 @@ type ListBugsRequest struct {
 
 	// 分页与排序
 	Fields string // 可选：返回字段列表，多个字段以逗号分隔
-	Limit  string // 可选：返回数量限制，默认 30，最大 200
-	Page   string // 可选：页码，默认 1
+	Limit int // 可选：返回数量限制，默认 30，最大 200
+	Page int // 可选：页码，默认 1
 	Order  string // 可选：排序规则，如 created desc
 }
 
@@ -284,8 +284,8 @@ func (r *ListBugsRequest) ToParams() map[string]string {
 	setOptional(params, "sourcephase", r.SourcePhase)
 	setOptional(params, "estimate", r.Estimate)
 	setOptional(params, "fields", r.Fields)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	return params
 }
