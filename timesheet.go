@@ -3,6 +3,7 @@ package tapd
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -86,4 +87,39 @@ func (c *Client) UpdateTimesheet(req *model.UpdateTimesheetRequest) (*model.Time
 		return nil, fmt.Errorf("failed to parse updated timesheet: %w", err)
 	}
 	return &ts, nil
+}
+
+// CountTimesheets 获取工时花费数量
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/get_timesheets_count.html
+func (c *Client) CountTimesheets(req *model.CountTimesheetsRequest) (int, error) {
+	data, err := c.doGet("/timesheets/count", req.ToParams())
+	if err != nil {
+		return 0, err
+	}
+
+	var result map[string]int
+	if err := json.Unmarshal(data, &result); err != nil {
+		return 0, fmt.Errorf("failed to parse timesheet count response: %w", err)
+	}
+
+	if count, ok := result["count"]; ok {
+		return count, nil
+	}
+	return 0, nil
+}
+
+// DeleteTimesheets 删除工时花费
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/delete_timesheets.html
+func (c *Client) DeleteTimesheets(req *model.DeleteTimesheetsRequest) (json.RawMessage, error) {
+	params := map[string]string{
+		"workspace_id": req.WorkspaceID,
+		"entity_type":  req.EntityType,
+		"entity_id":    req.EntityID,
+		"cost_ids":     strings.Join(req.CostIDs, ","),
+	}
+	data, err := c.doPost("/timesheets/delete_timesheets", params)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

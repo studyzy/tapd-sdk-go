@@ -102,3 +102,15 @@ func (c *Client) CountIterations(req *model.CountIterationsRequest) (int, error)
 	}
 	return 0, nil
 }
+
+// LockIteration 锁定迭代
+func (c *Client) LockIteration(req *model.IterationLockRequest) error {
+	_, err := c.doPost("/iterations/lock", req.ToParams())
+	return err
+}
+
+// UnlockIteration 解锁迭代
+func (c *Client) UnlockIteration(req *model.IterationLockRequest) error {
+	_, err := c.doPost("/iterations/unlock", req.ToParams())
+	return err
+}

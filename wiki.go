@@ -97,6 +97,25 @@ func (c *Client) CreateWiki(req *model.CreateWikiRequest) (*model.Wiki, error) {
 	return &wiki, nil
 }
 
+// CountWikis 获取 Wiki 数量
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/get_tapd_wikis_count.html
+func (c *Client) CountWikis(req *model.CountWikisRequest) (int, error) {
+	data, err := c.doGet("/tapd_wikis/count", req.ToParams())
+	if err != nil {
+		return 0, err
+	}
+
+	var result map[string]int
+	if err := json.Unmarshal(data, &result); err != nil {
+		return 0, fmt.Errorf("failed to parse count response: %w", err)
+	}
+
+	if count, ok := result["count"]; ok {
+		return count, nil
+	}
+	return 0, nil
+}
+
 // UpdateWiki 更新 Wiki 文档
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/wiki/update_tapd_wiki.html
 func (c *Client) UpdateWiki(req *model.UpdateWikiRequest) (*model.Wiki, error) {

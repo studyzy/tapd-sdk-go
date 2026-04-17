@@ -143,3 +143,68 @@ func TestGetWorkitemTypes(t *testing.T) {
 		t.Errorf("entity_type = %q, want %q", types[0].EntityType, "story")
 	}
 }
+
+func TestGetBugFieldsLabel(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/bugs/get_fields_lable" {
+			t.Errorf("unexpected path: %s, want /bugs/get_fields_lable", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"id":"ID","title":"标题","priority":"优先级","severity":"严重程度","status":"状态","current_owner":"处理人"},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.WorkspaceIDRequest{
+		WorkspaceID: "1",
+	}
+	labels, err := c.GetBugFieldsLabel(req)
+	if err != nil {
+		t.Fatalf("GetBugFieldsLabel() unexpected error: %v", err)
+	}
+	if len(labels) != 6 {
+		t.Fatalf("expected 6 entries, got %d", len(labels))
+	}
+	if labels["id"] != "ID" {
+		t.Errorf("id = %q, want %q", labels["id"], "ID")
+	}
+	if labels["title"] != "标题" {
+		t.Errorf("title = %q, want %q", labels["title"], "标题")
+	}
+	if labels["severity"] != "严重程度" {
+		t.Errorf("severity = %q, want %q", labels["severity"], "严重程度")
+	}
+}
+
+func TestGetBugFieldsInfo(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/bugs/get_fields_info" {
+			t.Errorf("unexpected path: %s, want /bugs/get_fields_info", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"status":{"name":"status","label":"状态","html_type":"select"}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.WorkspaceIDRequest{
+		WorkspaceID: "1",
+	}
+	fields, err := c.GetBugFieldsInfo(req)
+	if err != nil {
+		t.Fatalf("GetBugFieldsInfo() unexpected error: %v", err)
+	}
+	info, ok := fields["status"]
+	if !ok {
+		t.Fatal("expected 'status' key in fields")
+	}
+	if info.Name != "status" {
+		t.Errorf("name = %q, want %q", info.Name, "status")
+	}
+	if info.Label != "状态" {
+		t.Errorf("label = %q, want %q", info.Label, "状态")
+	}
+	if info.HTMLType != "select" {
+		t.Errorf("html_type = %q, want %q", info.HTMLType, "select")
+	}
+}

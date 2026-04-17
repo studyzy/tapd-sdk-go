@@ -190,6 +190,52 @@ func TestCreateIteration_WithAllFields(t *testing.T) {
 	}
 }
 
+func TestLockIteration(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/iterations/lock" {
+			t.Errorf("unexpected path: %s, want /iterations/lock", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":"success","info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.LockIteration(&model.IterationLockRequest{
+		WorkspaceID: "1",
+		ID:          "3001",
+	})
+	if err != nil {
+		t.Fatalf("LockIteration() unexpected error: %v", err)
+	}
+}
+
+func TestUnlockIteration(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/iterations/unlock" {
+			t.Errorf("unexpected path: %s, want /iterations/unlock", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":"success","info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.UnlockIteration(&model.IterationLockRequest{
+		WorkspaceID: "1",
+		ID:          "3001",
+	})
+	if err != nil {
+		t.Fatalf("UnlockIteration() unexpected error: %v", err)
+	}
+}
+
 func TestUpdateIteration_StatusChange(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

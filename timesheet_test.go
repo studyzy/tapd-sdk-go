@@ -154,3 +154,56 @@ func TestUpdateTimesheet_Direct(t *testing.T) {
 		t.Errorf("timesheet id = %q, want %q", result.ID, "1002")
 	}
 }
+
+func TestCountTimesheets(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/timesheets/count" {
+			t.Errorf("unexpected path: %s, want /timesheets/count", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"count":14},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	count, err := c.CountTimesheets(&model.CountTimesheetsRequest{
+		WorkspaceID: "1",
+	})
+	if err != nil {
+		t.Fatalf("CountTimesheets() unexpected error: %v", err)
+	}
+	if count != 14 {
+		t.Errorf("count = %d, want 14", count)
+	}
+}
+
+func TestDeleteTimesheets(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/timesheets/delete_timesheets" {
+			t.Errorf("unexpected path: %s, want /timesheets/delete_timesheets", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"msg":"delete completed","data":{"success":{"cost_ids":["1148464494001000111"],"msg":"delete success"}}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	data, err := c.DeleteTimesheets(&model.DeleteTimesheetsRequest{
+		WorkspaceID: "1",
+		EntityType:  "story",
+		EntityID:    "200",
+		CostIDs:     []string{"1148464494001000111"},
+	})
+	if err != nil {
+		t.Fatalf("DeleteTimesheets() unexpected error: %v", err)
+	}
+	if data == nil {
+		t.Fatal("expected non-nil data")
+	}
+	if string(data) == "" {
+		t.Error("expected non-empty data")
+	}
+}

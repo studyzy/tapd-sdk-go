@@ -63,6 +63,36 @@ func (c *Client) GetStoryFieldsInfo(req *model.WorkspaceIDRequest) (map[string]m
 	return fields, nil
 }
 
+// GetBugFieldsLabel 获取缺陷所有字段的中英文名，返回 map[string]string（字段英文名→中文名）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bug_fields_lable.html
+func (c *Client) GetBugFieldsLabel(req *model.WorkspaceIDRequest) (map[string]string, error) {
+	data, err := c.doGet("/bugs/get_fields_lable", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var labels map[string]string
+	if err := json.Unmarshal(data, &labels); err != nil {
+		return nil, fmt.Errorf("failed to parse bug fields label: %w", err)
+	}
+	return labels, nil
+}
+
+// GetBugFieldsInfo 获取缺陷所有字段及候选值，返回 map[string]model.FieldInfo
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bug_fields_info.html
+func (c *Client) GetBugFieldsInfo(req *model.WorkspaceIDRequest) (map[string]model.FieldInfo, error) {
+	data, err := c.doGet("/bugs/get_fields_info", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var fields map[string]model.FieldInfo
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return nil, fmt.Errorf("failed to parse bug fields info: %w", err)
+	}
+	return fields, nil
+}
+
 // GetWorkitemTypes 获取需求类别列表，返回强类型 []model.WorkitemType
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_workitem_types.html
 func (c *Client) GetWorkitemTypes(req *model.WorkspaceIDRequest) ([]model.WorkitemType, error) {

@@ -103,3 +103,84 @@ func TestGetWorkflowLastSteps(t *testing.T) {
 		t.Errorf("rejected = %q, want %q", lastSteps["rejected"], "已拒绝")
 	}
 }
+
+func TestGetWorkflowAllLastSteps(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workflows/all_last_steps" {
+			t.Errorf("unexpected path: %s, want /workflows/all_last_steps", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"closed":"已关闭","rejected":"已拒绝"},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.WorkflowRequest{
+		WorkspaceID: "1",
+		System:      "bug",
+	}
+	allLastSteps, err := c.GetWorkflowAllLastSteps(req)
+	if err != nil {
+		t.Fatalf("GetWorkflowAllLastSteps() unexpected error: %v", err)
+	}
+	if len(allLastSteps) != 2 {
+		t.Fatalf("expected 2 entries, got %d", len(allLastSteps))
+	}
+	if allLastSteps["closed"] != "已关闭" {
+		t.Errorf("closed = %q, want %q", allLastSteps["closed"], "已关闭")
+	}
+	if allLastSteps["rejected"] != "已拒绝" {
+		t.Errorf("rejected = %q, want %q", allLastSteps["rejected"], "已拒绝")
+	}
+}
+
+func TestGetWorkflowFirstStep(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workflows/first_step" {
+			t.Errorf("unexpected path: %s, want /workflows/first_step", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":"open","info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.WorkflowRequest{
+		WorkspaceID: "1",
+		System:      "story",
+	}
+	firstStep, err := c.GetWorkflowFirstStep(req)
+	if err != nil {
+		t.Fatalf("GetWorkflowFirstStep() unexpected error: %v", err)
+	}
+	if firstStep != "open" {
+		t.Errorf("first step = %q, want %q", firstStep, "open")
+	}
+}
+
+func TestGetWorkflows(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workflows" {
+			t.Errorf("unexpected path: %s, want /workflows", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"Workflow":{"id":"1","name":"默认工作流","system":"story"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.WorkflowRequest{
+		WorkspaceID: "1",
+		System:      "story",
+	}
+	data, err := c.GetWorkflows(req)
+	if err != nil {
+		t.Fatalf("GetWorkflows() unexpected error: %v", err)
+	}
+	if data == nil {
+		t.Fatal("expected non-nil data")
+	}
+	if string(data) == "" {
+		t.Error("expected non-empty data")
+	}
+}

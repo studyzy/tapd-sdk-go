@@ -122,6 +122,18 @@ func (r *UpdateWikiRequest) ToParams() map[string]string {
 	return params
 }
 
+// CountWikisRequest 获取 Wiki 数量的请求参数
+type CountWikisRequest struct {
+	WorkspaceID string // 必填：项目 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CountWikisRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+}
+
 // setOptional 当值非空时添加到参数 map
 func setOptional(params map[string]string, key, value string) {
 	if value != "" {

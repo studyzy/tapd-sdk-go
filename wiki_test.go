@@ -112,6 +112,29 @@ func TestCreateWiki(t *testing.T) {
 	}
 }
 
+func TestCountWikis(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tapd_wikis/count" {
+			t.Errorf("unexpected path: %s, want /tapd_wikis/count", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"count":10},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	req := &model.CountWikisRequest{
+		WorkspaceID: "51081496",
+	}
+	count, err := c.CountWikis(req)
+	if err != nil {
+		t.Fatalf("CountWikis() unexpected error: %v", err)
+	}
+	if count != 10 {
+		t.Errorf("count = %d, want 10", count)
+	}
+}
+
 func TestUpdateWiki(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

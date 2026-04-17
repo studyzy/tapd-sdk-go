@@ -51,3 +51,43 @@ func (c *Client) GetWorkflowLastSteps(req *model.WorkflowRequest) (map[string]st
 	}
 	return lastSteps, nil
 }
+
+// GetWorkflowAllLastSteps 获取所有结束状态，返回 map[string]string（英文状态名→中文状态名）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_last_steps.html
+func (c *Client) GetWorkflowAllLastSteps(req *model.WorkflowRequest) (map[string]string, error) {
+	data, err := c.doGet("/workflows/all_last_steps", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var allLastSteps map[string]string
+	if err := json.Unmarshal(data, &allLastSteps); err != nil {
+		return nil, fmt.Errorf("failed to parse workflow all last steps: %w", err)
+	}
+	return allLastSteps, nil
+}
+
+// GetWorkflowFirstStep 获取工作流起始状态，返回起始状态字符串
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_first_step.html
+func (c *Client) GetWorkflowFirstStep(req *model.WorkflowRequest) (string, error) {
+	data, err := c.doGet("/workflows/first_step", req.ToParams())
+	if err != nil {
+		return "", err
+	}
+
+	var firstStep string
+	if err := json.Unmarshal(data, &firstStep); err != nil {
+		return "", fmt.Errorf("failed to parse workflow first step: %w", err)
+	}
+	return firstStep, nil
+}
+
+// GetWorkflows 获取项目下的工作流列表，返回 json.RawMessage（结构复杂，不做强类型解析）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflows.html
+func (c *Client) GetWorkflows(req *model.WorkflowRequest) (json.RawMessage, error) {
+	data, err := c.doGet("/workflows", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

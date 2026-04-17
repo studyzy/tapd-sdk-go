@@ -56,3 +56,38 @@ func (c *Client) GetAttachments(req *model.GetAttachmentsRequest) ([]model.Attac
 	}
 	return results, nil
 }
+
+// GetOneAttachment 获取单个附件下载链接
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/get_one_attachment.html
+func (c *Client) GetOneAttachment(req *model.GetOneAttachmentRequest) (*model.Attachment, error) {
+	data, err := c.doGet("/files/get_one_attachment", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var wrapper map[string]json.RawMessage
+	if err := json.Unmarshal(data, &wrapper); err != nil {
+		return nil, fmt.Errorf("failed to parse attachment response: %w", err)
+	}
+
+	raw, ok := wrapper["Attachment"]
+	if !ok {
+		return nil, fmt.Errorf("unexpected response format")
+	}
+
+	var att model.Attachment
+	if err := json.Unmarshal(raw, &att); err != nil {
+		return nil, fmt.Errorf("failed to parse attachment: %w", err)
+	}
+	return &att, nil
+}
+
+// DownloadDocument 获取单个文档下载链接
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/download_document.html
+func (c *Client) DownloadDocument(req *model.DownloadDocumentRequest) (json.RawMessage, error) {
+	data, err := c.doGet("/documents/down", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

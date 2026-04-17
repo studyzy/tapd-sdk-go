@@ -119,6 +119,72 @@ func (r *CreateRelationRequest) ToParams() map[string]string {
 	}
 }
 
+// GetSubWorkspacesRequest 获取子项目信息的请求参数
+type GetSubWorkspacesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	TemplateID  string // 可选：模板 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetSubWorkspacesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "template_id", r.TemplateID)
+	return params
+}
+
+// ListCompanyProjectsRequest 获取公司项目列表的请求参数
+type ListCompanyProjectsRequest struct {
+	CompanyID   string // 必填：公司 ID
+	Category    string // 可选：项目类别
+	WithExtends string // 可选：是否返回扩展信息
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *ListCompanyProjectsRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"company_id": r.CompanyID,
+	}
+	setOptional(params, "category", r.Category)
+	setOptional(params, "with_extends", r.WithExtends)
+	return params
+}
+
+// GetWorkspaceUsersRequest 获取指定项目成员的请求参数
+type GetWorkspaceUsersRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Fields      string // 可选：返回字段列表（逗号分隔）
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetWorkspaceUsersRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "fields", r.Fields)
+	return params
+}
+
+// AddWorkspaceMemberRequest 添加项目成员的请求参数
+type AddWorkspaceMemberRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Nick        string // 必填：用户昵称
+	CompanyID   string // 可选：公司 ID
+	RoleIDs     string // 可选：用户组 ID（逗号分隔）
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *AddWorkspaceMemberRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"nick":         r.Nick,
+	}
+	setOptional(params, "company_id", r.CompanyID)
+	setOptional(params, "role_ids", r.RoleIDs)
+	return params
+}
+
 // CustomFieldConfig 表示 TAPD 自定义字段配置
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_custom_fields_settings.html
 type CustomFieldConfig struct {
@@ -196,4 +262,119 @@ type StoryBugRelation struct {
 	WorkspaceID int    `json:"workspace_id,omitempty"` // 项目 ID
 	StoryID     string `json:"story_id,omitempty"`     // 需求 ID
 	BugID       string `json:"bug_id,omitempty"`       // 缺陷 ID
+}
+
+// GetLifeTimesRequest 获取状态流转时间的请求参数
+type GetLifeTimesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	System      string // 必填：系统名（story/bug/task）
+	EntityID    string // 必填：实体 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetLifeTimesRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"system":       r.System,
+		"entity_id":    r.EntityID,
+	}
+}
+
+// AddCodeCommitInfoRequest 保存 Commit 提交数据的请求参数
+type AddCodeCommitInfoRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Message     string // 必填：提交信息
+	Author      string // 必填：提交作者
+	HookURL     string // 可选：Hook URL
+	Ref         string // 可选：分支引用
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *AddCodeCommitInfoRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"message":      r.Message,
+		"author":       r.Author,
+	}
+	setOptional(params, "hook_url", r.HookURL)
+	setOptional(params, "ref", r.Ref)
+	return params
+}
+
+// GetCodeCommitInfosRequest 获取 GIT 关联提交数据的请求参数
+type GetCodeCommitInfosRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Limit       string // 可选：返回数量限制
+	Page        string // 可选：页码
+	Created     string // 可选：创建时间
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetCodeCommitInfosRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "limit", r.Limit)
+	setOptional(params, "page", r.Page)
+	setOptional(params, "created", r.Created)
+	return params
+}
+
+// GetOneAttachmentRequest 获取单个附件下载链接的请求参数
+type GetOneAttachmentRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 必填：附件 ID
+	FileName    string // 可选：文件名
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetOneAttachmentRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+	}
+	setOptional(params, "file_name", r.FileName)
+	return params
+}
+
+// DownloadDocumentRequest 获取单个文档下载链接的请求参数
+type DownloadDocumentRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 必填：文档 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *DownloadDocumentRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+	}
+}
+
+// Report 表示 TAPD 项目报告
+type Report struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Created     string `json:"created,omitempty"`
+}
+
+// LifeTime 表示状态流转时间
+type LifeTime struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	EntityID    string `json:"entity_id,omitempty"`
+	Status      string `json:"status,omitempty"`
+	TimeIn      string `json:"time_in,omitempty"`
+	TimeOut     string `json:"time_out,omitempty"`
+	Duration    string `json:"duration,omitempty"`
+}
+
+// CodeCommitInfo 表示 GIT 提交信息
+type CodeCommitInfo struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	Message     string `json:"message,omitempty"`
+	Author      string `json:"author,omitempty"`
+	Created     string `json:"created,omitempty"`
 }

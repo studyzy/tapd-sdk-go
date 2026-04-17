@@ -111,3 +111,36 @@ func (r *UpdateTimesheetRequest) ToParams() map[string]string {
 	setOptional(params, "memo", r.Memo)
 	return params
 }
+
+// CountTimesheetsRequest 获取工时花费数量的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/get_timesheets_count.html
+type CountTimesheetsRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	EntityType  string // 可选：对象类型（story/task/bug）
+	EntityID    string // 可选：对象 ID
+	Owner       string // 可选：花费创建人
+	Spentdate   string // 可选：花费日期，支持时间查询
+	Created     string // 可选：创建时间，支持时间查询
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CountTimesheetsRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "entity_type", r.EntityType)
+	setOptional(params, "entity_id", r.EntityID)
+	setOptional(params, "owner", r.Owner)
+	setOptional(params, "spentdate", r.Spentdate)
+	setOptional(params, "created", r.Created)
+	return params
+}
+
+// DeleteTimesheetsRequest 删除工时花费的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/delete_timesheets.html
+type DeleteTimesheetsRequest struct {
+	WorkspaceID string   // 必填：项目 ID
+	EntityType  string   // 必填：对象类型（story/task/bug）
+	EntityID    string   // 必填：对象 ID
+	CostIDs     []string // 必填：工时记录 ID 列表
+}

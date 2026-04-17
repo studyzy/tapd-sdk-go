@@ -28,6 +28,18 @@ type Workspace struct {
 	CompanyID         string `json:"company_id,omitempty"`
 }
 
+// UserWorkspace 表示项目成员信息
+type UserWorkspace struct {
+	User            string   `json:"user,omitempty"`
+	RoleID          []string `json:"role_id,omitempty"`
+	Name            string   `json:"name,omitempty"`
+	Email           string   `json:"email,omitempty"`
+	JoinProjectTime string   `json:"join_project_time,omitempty"`
+	RealJoinTime    string   `json:"real_join_time,omitempty"`
+	Status          string   `json:"status,omitempty"`
+	Allocation      string   `json:"allocation,omitempty"`
+}
+
 // ListResponse 表示列表查询的通用响应结构
 type ListResponse struct {
 	Items   interface{} `json:"items"`
