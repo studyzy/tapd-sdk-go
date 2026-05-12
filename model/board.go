@@ -3,18 +3,19 @@ package model
 
 // BoardCard 表示 TAPD 看板工作项
 type BoardCard struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	BoardID     string `json:"board_id,omitempty"`
-	ColumnID    string `json:"column_id,omitempty"`
-	Description string `json:"description,omitempty"`
-	Owner       string `json:"owner,omitempty"`
-	Priority    string `json:"priority,omitempty"`
-	Status      string `json:"status,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	BoardID             string `json:"board_id,omitempty"`
+	ColumnID            string `json:"column_id,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	Owner               string `json:"owner,omitempty"`
+	Priority            string `json:"priority,omitempty"`
+	Status              string `json:"status,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }
 
 // BoardColumn 表示 TAPD 看板板块
@@ -57,8 +58,8 @@ type GetBoardCardsRequest struct {
 	BoardID     string // 可选：看板 ID
 	ColumnID    string // 可选：板块 ID
 	Owner       string // 可选：处理人
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map

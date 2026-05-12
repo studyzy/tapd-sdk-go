@@ -3,13 +3,14 @@ package model
 
 // Category 表示 TAPD 需求分类
 type Category struct {
-	ID          string `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	ParentID    string `json:"parent_id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Modifier    string `json:"modifier,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	ParentID            string `json:"parent_id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Modifier            string `json:"modifier,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }

@@ -8,15 +8,16 @@ import "encoding/json"
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/bug.html
 type Bug struct {
 	// 基本信息
-	ID          string `json:"id,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Status      string `json:"status,omitempty"`
-	BugType     string `json:"bugtype,omitempty"`
-	Source      string `json:"source,omitempty"`
-	Resolution  string `json:"resolution,omitempty"`
-	Flows       string `json:"flows,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Title               string `json:"title,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Status              string `json:"status,omitempty"`
+	BugType             string `json:"bugtype,omitempty"`
+	Source              string `json:"source,omitempty"`
+	Resolution          string `json:"resolution,omitempty"`
+	Flows               string `json:"flows,omitempty"`
 
 	// 优先级与严重程度
 	Priority      string `json:"priority,omitempty"`
@@ -218,8 +219,8 @@ type ListBugsRequest struct {
 
 	// 分页与排序
 	Fields string // 可选：返回字段列表，多个字段以逗号分隔
-	Limit int // 可选：返回数量限制，默认 30，最大 200
-	Page int // 可选：页码，默认 1
+	Limit  int    // 可选：返回数量限制，默认 30，最大 200
+	Page   int    // 可选：页码，默认 1
 	Order  string // 可选：排序规则，如 created desc
 }
 

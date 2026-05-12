@@ -67,8 +67,8 @@ func (r *GetCommitMsgRequest) ToParams() map[string]string {
 type GetTodoRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	EntityType  string // 必填：对象类型（story/bug/task）
-	Limit int // 可选：返回数量限制（默认 30，最大 200）
-	Page int // 可选：页码（默认 1）
+	Limit       int    // 可选：返回数量限制（默认 30，最大 200）
+	Page        int    // 可选：页码（默认 1）
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表（逗号分隔）
 }
@@ -337,22 +337,22 @@ type WorkitemType struct {
 	ID             string `json:"id,omitempty"`
 	WorkspaceID    string `json:"workspace_id,omitempty"`
 	AppID          string `json:"app_id,omitempty"`
-	EntityType     string `json:"entity_type,omitempty"`       // 类别别名
-	Name           string `json:"name,omitempty"`              // 类别名称
-	EnglishName    string `json:"english_name,omitempty"`      // 英文名称
-	Status         string `json:"status,omitempty"`            // 状态（1=未完成，2=未启用，3=已启用）
-	Color          string `json:"color,omitempty"`             // 颜色
-	WorkflowID     string `json:"workflow_id,omitempty"`       // 关联工作流 ID
-	ChildrenIDs    string `json:"children_ids,omitempty"`      // 允许的子需求类别
-	ParentIDs      string `json:"parent_ids,omitempty"`        // 允许的父需求类别
-	Icon           string `json:"icon,omitempty"`              // 图标路径
-	IconSmall      string `json:"icon_small,omitempty"`        // 小图标路径
-	Creator        string `json:"creator,omitempty"`           // 创建人
-	Created        string `json:"created,omitempty"`           // 创建时间
-	ModifiedBy     string `json:"modified_by,omitempty"`       // 最后修改人
-	Modified       string `json:"modified,omitempty"`          // 最后修改时间
-	IconViper      string `json:"icon_viper,omitempty"`        // 图标完整 URL
-	IconSmallViper string `json:"icon_small_viper,omitempty"`  // 小图标完整 URL
+	EntityType     string `json:"entity_type,omitempty"`      // 类别别名
+	Name           string `json:"name,omitempty"`             // 类别名称
+	EnglishName    string `json:"english_name,omitempty"`     // 英文名称
+	Status         string `json:"status,omitempty"`           // 状态（1=未完成，2=未启用，3=已启用）
+	Color          string `json:"color,omitempty"`            // 颜色
+	WorkflowID     string `json:"workflow_id,omitempty"`      // 关联工作流 ID
+	ChildrenIDs    string `json:"children_ids,omitempty"`     // 允许的子需求类别
+	ParentIDs      string `json:"parent_ids,omitempty"`       // 允许的父需求类别
+	Icon           string `json:"icon,omitempty"`             // 图标路径
+	IconSmall      string `json:"icon_small,omitempty"`       // 小图标路径
+	Creator        string `json:"creator,omitempty"`          // 创建人
+	Created        string `json:"created,omitempty"`          // 创建时间
+	ModifiedBy     string `json:"modified_by,omitempty"`      // 最后修改人
+	Modified       string `json:"modified,omitempty"`         // 最后修改时间
+	IconViper      string `json:"icon_viper,omitempty"`       // 图标完整 URL
+	IconSmallViper string `json:"icon_small_viper,omitempty"` // 小图标完整 URL
 }
 
 // StoryBugRelation 表示需求与缺陷的关联关系
@@ -403,8 +403,8 @@ func (r *AddCodeCommitInfoRequest) ToParams() map[string]string {
 // GetCodeCommitInfosRequest 获取 GIT 关联提交数据的请求参数
 type GetCodeCommitInfosRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Created     string // 可选：创建时间
 }
 

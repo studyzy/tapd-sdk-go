@@ -5,13 +5,14 @@ package model
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iterations.html
 type Iteration struct {
 	// 基本信息
-	ID             string `json:"id,omitempty"`
-	Name           string `json:"name,omitempty"`
-	Description    string `json:"description,omitempty"`
-	WorkspaceID    string `json:"workspace_id,omitempty"`
-	Status         string `json:"status,omitempty"`
-	EntityType     string `json:"entity_type,omitempty"`
-	WorkitemTypeID string `json:"workitem_type_id,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Status              string `json:"status,omitempty"`
+	EntityType          string `json:"entity_type,omitempty"`
+	WorkitemTypeID      string `json:"workitem_type_id,omitempty"`
 
 	// 人员相关
 	Creator string `json:"creator,omitempty"`
@@ -52,8 +53,8 @@ type ListIterationsRequest struct {
 	Completed      string // 可选：完成时间
 	Locker         string // 可选：锁定人
 	Fields         string // 可选：返回字段列表
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit          int    // 可选：返回数量限制
+	Page           int    // 可选：页码
 	Order          string // 可选：排序规则
 }
 

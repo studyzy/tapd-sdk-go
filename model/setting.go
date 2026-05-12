@@ -3,13 +3,14 @@ package model
 
 // Module 表示 TAPD 模块
 type Module struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }
 
 // CreateModuleRequest 创建模块的请求参数
@@ -51,8 +52,8 @@ func (r *UpdateModuleRequest) ToParams() map[string]string {
 // GetModulesRequest 获取模块列表的请求参数
 type GetModulesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -79,13 +80,14 @@ func (r *CountModulesRequest) ToParams() map[string]string {
 
 // Version 表示 TAPD 版本
 type Version struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }
 
 // CreateVersionRequest 创建版本的请求参数
@@ -127,8 +129,8 @@ func (r *UpdateVersionRequest) ToParams() map[string]string {
 // GetVersionsRequest 获取版本列表的请求参数
 type GetVersionsRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -155,13 +157,14 @@ func (r *CountVersionsRequest) ToParams() map[string]string {
 
 // Baseline 表示 TAPD 基线
 type Baseline struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }
 
 // CreateBaselineRequest 创建基线的请求参数
@@ -203,8 +206,8 @@ func (r *UpdateBaselineRequest) ToParams() map[string]string {
 // GetBaselinesRequest 获取基线列表的请求参数
 type GetBaselinesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -231,13 +234,14 @@ func (r *CountBaselinesRequest) ToParams() map[string]string {
 
 // Feature 表示 TAPD 特性
 type Feature struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	Creator             string `json:"creator,omitempty"`
+	Created             string `json:"created,omitempty"`
+	Modified            string `json:"modified,omitempty"`
 }
 
 // CreateFeatureRequest 创建特性的请求参数
@@ -279,8 +283,8 @@ func (r *UpdateFeatureRequest) ToParams() map[string]string {
 // GetFeaturesRequest 获取特性列表的请求参数
 type GetFeaturesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map

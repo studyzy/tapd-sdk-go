@@ -6,10 +6,11 @@ package model
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/comment/get_comments.html
 type Comment struct {
 	// 基本信息
-	ID          string `json:"id,omitempty"`
-	Title       string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Title               string `json:"title,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
 
 	// 关联信息
 	EntryType string `json:"entry_type,omitempty"`
@@ -42,8 +43,8 @@ type ListCommentsRequest struct {
 	Created     string // 可选：创建时间，支持时间查询
 	Modified    string // 可选：最后更改时间，支持时间查询
 	Fields      string // 可选：返回字段列表，多个字段间以逗号隔开
-	Limit int // 可选：返回数量限制，默认 30，最大 200
-	Page int // 可选：页码，默认 1
+	Limit       int    // 可选：返回数量限制，默认 30，最大 200
+	Page        int    // 可选：页码，默认 1
 	Order       string // 可选：排序规则，如 created desc
 }
 

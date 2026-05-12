@@ -61,8 +61,8 @@ type GetStoryChangesRequest struct {
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
 	ChangeType  string // 可选：变更类型
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -110,8 +110,8 @@ type GetBugChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -160,8 +160,8 @@ type GetTaskChangesRequest struct {
 	TaskID      string // 可选：任务 ID
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -208,8 +208,8 @@ type GetIterationChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Fields      string // 可选：返回字段列表
 }
 

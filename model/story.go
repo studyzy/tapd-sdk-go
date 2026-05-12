@@ -8,18 +8,19 @@ import "encoding/json"
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/story.html
 type Story struct {
 	// 基本信息
-	ID             string `json:"id,omitempty"`
-	Name           string `json:"name,omitempty"`
-	Description    string `json:"description,omitempty"`
-	WorkspaceID    string `json:"workspace_id,omitempty"`
-	Status         string `json:"status,omitempty"`
-	Step           string `json:"step,omitempty"`
-	Type           string `json:"type,omitempty"`
-	Source         string `json:"source,omitempty"`
-	Flows          string `json:"flows,omitempty"`
-	CreatedFrom    string `json:"created_from,omitempty"`
-	WorkitemTypeID string `json:"workitem_type_id,omitempty"`
-	TemplatedID    string `json:"templated_id,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Status              string `json:"status,omitempty"`
+	Step                string `json:"step,omitempty"`
+	Type                string `json:"type,omitempty"`
+	Source              string `json:"source,omitempty"`
+	Flows               string `json:"flows,omitempty"`
+	CreatedFrom         string `json:"created_from,omitempty"`
+	WorkitemTypeID      string `json:"workitem_type_id,omitempty"`
+	TemplatedID         string `json:"templated_id,omitempty"`
 
 	// 优先级
 	Priority      string `json:"priority,omitempty"`
@@ -134,8 +135,8 @@ type ListStoriesRequest struct {
 	CategoryID    string // 可选：需求分类
 	Label         string // 可选：标签
 	Fields        string // 可选：返回字段列表
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit         int    // 可选：返回数量限制
+	Page          int    // 可选：页码
 	Order         string // 可选：排序规则
 }
 

@@ -104,19 +104,19 @@ type RemovedMiniItem struct {
 
 // CreateMiniItemRequest 创建工作项的请求参数
 type CreateMiniItemRequest struct {
-	WorkspaceID    string            // 必填：空间ID
-	Name           string            // 必填：标题
-	Priority       string            // 可选：优先级
-	Owner          string            // 可选：处理人
-	Creator        string            // 可选：创建人
-	IsArchived     string            // 可选：是否归档
-	Begin          string            // 可选：预计开始
-	Due            string            // 可选：预计结束
-	ParentID       string            // 可选：父工作项ID
-	CategoryID     string            // 可选：分组
-	Description    string            // 可选：详细描述
-	Label          string            // 可选：标签，多个用|分隔
-	CustomFields   map[string]string // 可选：自定义字段
+	WorkspaceID  string            // 必填：空间ID
+	Name         string            // 必填：标题
+	Priority     string            // 可选：优先级
+	Owner        string            // 可选：处理人
+	Creator      string            // 可选：创建人
+	IsArchived   string            // 可选：是否归档
+	Begin        string            // 可选：预计开始
+	Due          string            // 可选：预计结束
+	ParentID     string            // 可选：父工作项ID
+	CategoryID   string            // 可选：分组
+	Description  string            // 可选：详细描述
+	Label        string            // 可选：标签，多个用|分隔
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -197,8 +197,8 @@ type ListMiniItemsRequest struct {
 	ParentID       string // 可选：父工作项
 	ChildrenID     string // 可选：子工作项
 	Description    string // 可选：详细描述，支持模糊匹配
-	Limit int // 可选：每页数量，默认30，最大200
-	Page int // 可选：页码，默认1
+	Limit          int    // 可选：每页数量，默认30，最大200
+	Page           int    // 可选：页码，默认1
 	Order          string // 可选：排序规则
 	Fields         string // 可选：返回字段，逗号分隔
 }
@@ -320,8 +320,8 @@ type ListMiniItemCategoriesRequest struct {
 	Name        string // 可选：分组名称，支持模糊匹配
 	Created     string // 可选：创建时间，支持时间查询
 	Modified    string // 可选：最后修改时间，支持时间查询
-	Limit int // 可选：每页数量，默认30，最大200
-	Page int // 可选：页码，默认1
+	Limit       int    // 可选：每页数量，默认30，最大200
+	Page        int    // 可选：页码，默认1
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段，逗号分隔
 }
@@ -376,8 +376,8 @@ type GetMiniItemChangesRequest struct {
 	Comment          string // 可选：评论
 	ChangeField      string // 可选：指定变更字段
 	NeedParseChanges string // 可选：是否返回field_changes，默认1
-	Limit int // 可选：每页数量，默认30，最大100
-	Page int // 可选：页码，默认1
+	Limit            int    // 可选：每页数量，默认30，最大100
+	Page             int    // 可选：页码，默认1
 	Order            string // 可选：排序规则
 	Fields           string // 可选：返回字段，逗号分隔
 }
@@ -501,8 +501,8 @@ type GetRemovedMiniItemsRequest struct {
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
 	Deleted     string // 可选：删除时间
-	Limit int // 可选：每页数量，默认30
-	Page int // 可选：页码，默认1
+	Limit       int    // 可选：每页数量，默认30
+	Page        int    // 可选：页码，默认1
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map

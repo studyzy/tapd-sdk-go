@@ -3,16 +3,17 @@ package model
 
 // Attachment 表示 TAPD 附件
 type Attachment struct {
-	ID          string `json:"id,omitempty"`
-	Type        string `json:"type,omitempty"`
-	EntryID     string `json:"entry_id,omitempty"`
-	Filename    string `json:"filename,omitempty"`
-	Description string `json:"description,omitempty"`
-	ContentType string `json:"content_type,omitempty"`
-	Created     string `json:"created,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Owner       string `json:"owner,omitempty"`
-	DownloadURL string `json:"download_url,omitempty"`
+	ID                  string `json:"id,omitempty"`
+	Type                string `json:"type,omitempty"`
+	EntryID             string `json:"entry_id,omitempty"`
+	Filename            string `json:"filename,omitempty"`
+	Description         string `json:"description,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	ContentType         string `json:"content_type,omitempty"`
+	Created             string `json:"created,omitempty"`
+	WorkspaceID         string `json:"workspace_id,omitempty"`
+	Owner               string `json:"owner,omitempty"`
+	DownloadURL         string `json:"download_url,omitempty"`
 }
 
 // ImageInfo 表示 TAPD 图片下载信息
@@ -45,8 +46,8 @@ type GetAttachmentsRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Type        string // 可选：对象类型
 	EntryID     string // 可选：条目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
