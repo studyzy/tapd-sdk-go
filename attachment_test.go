@@ -42,6 +42,37 @@ func TestGetImage(t *testing.T) {
 	}
 }
 
+// TestGetImage_NumericWorkspaceID 复现 TAPD 实际生产环境的响应形态：
+// /files/get_image 接口返回的 workspace_id 是 JSON 数字，而不是带引号的字符串。
+// 此前 ImageInfo.WorkspaceID 直接声明为 string，导致解码报错：
+//   "cannot unmarshal number into Go struct field ImageInfo.workspace_id of type string"
+func TestGetImage_NumericWorkspaceID(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		// 关键：workspace_id 是数字 61692131，没有引号
+		w.Write([]byte(`{"status":1,"data":{"Attachment":{"type":"image","value":"abc.png","workspace_id":61692131,"filename":"abc.png","download_url":"https://example.com/abc.png"}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.GetImage(context.Background(), &model.GetImageRequest{
+		WorkspaceID: "61692131",
+		ImagePath:   "/tfl/pictures/abc.png",
+	})
+	if err != nil {
+		t.Fatalf("GetImage() unexpected error: %v", err)
+	}
+	if result.WorkspaceID != "61692131" {
+		t.Errorf("workspace_id = %q, want %q", result.WorkspaceID, "61692131")
+	}
+	if result.Filename != "abc.png" {
+		t.Errorf("filename = %q, want %q", result.Filename, "abc.png")
+	}
+	if result.DownloadURL != "https://example.com/abc.png" {
+		t.Errorf("download_url = %q, want %q", result.DownloadURL, "https://example.com/abc.png")
+	}
+}
+
 func TestGetImage_MissingAttachment(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
