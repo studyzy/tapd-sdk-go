@@ -1,0 +1,82 @@
+# 获取缺陷变更次数
+
+> Source: https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_changes_count.html
+
+# 说明
+
+计算符合查询条件的缺陷变更历史数量并返回
+
+## SDK 方法名
+
+nodeJs:
+
+[SDK使用方式 (opens new window)](https://open.tapd.cn/document/api-doc/SDK/node-README.html)
+
+[插件中使用SDK](/document/plugin-doc/learning/api-and-security/index.html)
+
+方法名::
+
+```
+getBugChangesCount
+```
+
+
+# url
+
+`https://api.tapd.cn/bug_changes/count`
+
+# 支持格式
+
+JSON/XML（默认JSON格式）
+
+# HTTP请求方式
+
+GET
+
+# 请求数限制
+
+只返回缺陷变更历史数量
+
+# 请求参数
+
+<table><thead><tr><th style="text-align:center;">字段名</th><th style="text-align:center;">必选</th><th style="text-align:center;">类型及范围</th><th style="text-align:center;">说明</th><th style="text-align:center;">特殊规则</th></tr></thead><tbody><tr><td style="text-align:center;">id</td><td style="text-align:center;">否</td><td style="text-align:center;">integer</td><td style="text-align:center;">id</td><td style="text-align:center;">支持多ID查询</td></tr><tr><td style="text-align:center;">bug_id</td><td style="text-align:center;">否</td><td style="text-align:center;">integer</td><td style="text-align:center;">缺陷ID</td><td style="text-align:center;">支持多ID查询</td></tr><tr><td style="text-align:center;">author</td><td style="text-align:center;">否</td><td style="text-align:center;">string</td><td style="text-align:center;">变更人</td><td style="text-align:center;"></td></tr><tr><td style="text-align:center;">field</td><td style="text-align:center;">否</td><td style="text-align:center;">string</td><td style="text-align:center;">变更字段</td><td style="text-align:center;"></td></tr><tr><td style="text-align:center;">old_value</td><td style="text-align:center;">否</td><td style="text-align:center;">string</td><td style="text-align:center;">变更前</td><td style="text-align:center;"></td></tr><tr><td style="text-align:center;">new_value</td><td style="text-align:center;">否</td><td style="text-align:center;">string</td><td style="text-align:center;">变更后</td><td style="text-align:center;"></td></tr><tr><td style="text-align:center;">memo</td><td style="text-align:center;">否</td><td style="text-align:center;">string</td><td style="text-align:center;">备注</td><td style="text-align:center;"></td></tr><tr><td style="text-align:center;">created</td><td style="text-align:center;">否</td><td style="text-align:center;">datetime</td><td style="text-align:center;">创建时间</td><td style="text-align:center;">支持时间查询</td></tr><tr><td style="text-align:center;">workspace_id</td><td style="text-align:center;"><code>是</code></td><td style="text-align:center;">integer</td><td style="text-align:center;">项目ID</td><td style="text-align:center;"></td></tr></tbody></table>
+
+# 调用示例及返回结果
+
+## 获取项目下缺陷变更次数
+
+### curl 使用 Basic Auth 鉴权调用示例
+
+`curl -u 'api_user:api_password' 'https://api.tapd.cn/bug_changes/count?workspace_id=10158231'`
+
+### 返回结果
+
+```
+{
+    "status": 1,
+    "data": {
+        "count": 7
+    },
+    "info": "success"
+}
+```
+
+
+## 获取缺陷ID为 1010158231500628815 的变更次数
+
+### curl 使用 Basic Auth 鉴权调用示例
+
+`curl -u 'api_user:api_password' 'https://api.tapd.cn/bug_changes/count?workspace_id=10158231&bug_id=1010158231500628815'`
+
+### 返回结果
+
+```
+{
+    "status": 1,
+    "data": {
+        "count": 6
+    },
+    "info": "success"
+}
+```
+
