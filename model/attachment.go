@@ -77,10 +77,13 @@ func (r *GetImageRequest) ToParams() map[string]string {
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/get_attachments.html
 type GetAttachmentsRequest struct {
 	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：附件 ID
 	Type        string // 可选：对象类型
 	EntryID     string // 可选：条目 ID
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Filename    string // 可选：附件名称
+	Owner       string // 可选：上传人
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -88,8 +91,11 @@ func (r *GetAttachmentsRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+	setOptional(params, "id", r.ID)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "entry_id", r.EntryID)
+	setOptional(params, "filename", r.Filename)
+	setOptional(params, "owner", r.Owner)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	return params

@@ -5,12 +5,12 @@ package model
 // WorkflowTransition 表示工作流状态流转规则
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_transitions.html
 type WorkflowTransition struct {
-	Name           string                    `json:"Name,omitempty"`           // 流转名称（格式：前状态-后状态）
-	StepPrevious   string                    `json:"StepPrevious,omitempty"`   // 当前状态
-	StepNext       string                    `json:"StepNext,omitempty"`       // 目标状态
-	Inform         []WorkflowInform          `json:"Inform,omitempty"`         // 通知配置
-	Appendfield    []WorkflowAppendField     `json:"Appendfield,omitempty"`    // 流转时需补充的附加字段
-	AuthorizedUser interface{}               `json:"AuthorizedUser,omitempty"` // 流转权限设置
+	Name           string                `json:"Name,omitempty"`           // 流转名称（格式：前状态-后状态）
+	StepPrevious   string                `json:"StepPrevious,omitempty"`   // 当前状态
+	StepNext       string                `json:"StepNext,omitempty"`       // 目标状态
+	Inform         []WorkflowInform      `json:"Inform,omitempty"`         // 通知配置
+	Appendfield    []WorkflowAppendField `json:"Appendfield,omitempty"`    // 流转时需补充的附加字段
+	AuthorizedUser interface{}           `json:"AuthorizedUser,omitempty"` // 流转权限设置
 }
 
 // WorkflowInform 表示工作流流转通知配置
@@ -21,11 +21,11 @@ type WorkflowInform struct {
 
 // WorkflowAppendField 表示工作流流转时需补充的附加字段
 type WorkflowAppendField struct {
-	DBModel      string                        `json:"DBModel,omitempty"`      // 数据模型（如 Bug、Story）
-	FieldName    string                        `json:"FieldName,omitempty"`    // 字段名称
-	Notnull      string                        `json:"Notnull,omitempty"`      // 是否必填（yes/no）
-	Sort         string                        `json:"Sort,omitempty"`         // 显示排序号
-	DefaultValue []WorkflowFieldDefaultValue   `json:"DefaultValue,omitempty"` // 默认值设置
+	DBModel      string                      `json:"DBModel,omitempty"`      // 数据模型（如 Bug、Story）
+	FieldName    string                      `json:"FieldName,omitempty"`    // 字段名称
+	Notnull      string                      `json:"Notnull,omitempty"`      // 是否必填（yes/no）
+	Sort         string                      `json:"Sort,omitempty"`         // 显示排序号
+	DefaultValue []WorkflowFieldDefaultValue `json:"DefaultValue,omitempty"` // 默认值设置
 }
 
 // WorkflowFieldDefaultValue 表示附加字段的默认值设置

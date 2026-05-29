@@ -51,13 +51,15 @@ func (c *Client) CountIterations(ctx context.Context, req *model.CountIterations
 }
 
 // LockIteration 锁定迭代
-func (c *Client) LockIteration(ctx context.Context, req *model.IterationLockRequest) error {
-	_, err := c.doPost(ctx, "/iterations/lock", req.ToParams())
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/lock_iteration.html
+func (c *Client) LockIteration(ctx context.Context, req *model.LockIterationRequest) error {
+	_, err := c.doPost(ctx, "/iterations/lock_iteration", req.ToParams())
 	return err
 }
 
 // UnlockIteration 解锁迭代
-func (c *Client) UnlockIteration(ctx context.Context, req *model.IterationLockRequest) error {
-	_, err := c.doPost(ctx, "/iterations/unlock", req.ToParams())
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/unlock_iteration.html
+func (c *Client) UnlockIteration(ctx context.Context, req *model.UnlockIterationRequest) error {
+	_, err := c.doPost(ctx, "/iterations/unlock_iteration", req.ToParams())
 	return err
 }

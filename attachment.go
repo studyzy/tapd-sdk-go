@@ -33,8 +33,8 @@ func (c *Client) GetAttachments(ctx context.Context, req *model.GetAttachmentsRe
 	return parseList[model.Attachment](data, "Attachment")
 }
 
-// GetOneAttachment 获取单个附件下载链接
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/get_one_attachment.html
+// GetOneAttachment 获取单个附件下载链接（mini_api 版本，路径 /files/get_one_attachment）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/mini_api_reference/attachment/get_one_attachment.html
 func (c *Client) GetOneAttachment(ctx context.Context, req *model.GetOneAttachmentRequest) (*model.Attachment, error) {
 	data, err := c.doGet(ctx, "/files/get_one_attachment", req.ToParams())
 	if err != nil {
@@ -124,7 +124,7 @@ func (c *Client) UploadImageBase64(ctx context.Context, req *model.UploadImageBa
 }
 
 // DownloadAttachment 获取单个附件下载链接
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/mini_api_reference/attachment/get_one_attachment.html
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/get_one_attachment.html
 func (c *Client) DownloadAttachment(ctx context.Context, req *model.DownloadAttachmentRequest) (*model.Attachment, error) {
 	data, err := c.doGet(ctx, "/attachments/down", req.ToParams())
 	if err != nil {

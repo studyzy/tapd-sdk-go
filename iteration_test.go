@@ -196,8 +196,8 @@ func TestLockIteration(t *testing.T) {
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
 		}
-		if r.URL.Path != "/iterations/lock" {
-			t.Errorf("unexpected path: %s, want /iterations/lock", r.URL.Path)
+		if r.URL.Path != "/iterations/lock_iteration" {
+			t.Errorf("unexpected path: %s, want /iterations/lock_iteration", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, `{"status":1,"data":"success","info":"success"}`)
@@ -205,9 +205,9 @@ func TestLockIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	err := c.LockIteration(context.Background(), &model.IterationLockRequest{
+	err := c.LockIteration(context.Background(), &model.LockIterationRequest{
 		WorkspaceID: "1",
-		ID:          "3001",
+		IterationID: "3001",
 	})
 	if err != nil {
 		t.Fatalf("LockIteration() unexpected error: %v", err)
@@ -219,8 +219,8 @@ func TestUnlockIteration(t *testing.T) {
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
 		}
-		if r.URL.Path != "/iterations/unlock" {
-			t.Errorf("unexpected path: %s, want /iterations/unlock", r.URL.Path)
+		if r.URL.Path != "/iterations/unlock_iteration" {
+			t.Errorf("unexpected path: %s, want /iterations/unlock_iteration", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, `{"status":1,"data":"success","info":"success"}`)
@@ -228,9 +228,9 @@ func TestUnlockIteration(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	err := c.UnlockIteration(context.Background(), &model.IterationLockRequest{
+	err := c.UnlockIteration(context.Background(), &model.UnlockIterationRequest{
 		WorkspaceID: "1",
-		ID:          "3001",
+		IterationID: "3001",
 	})
 	if err != nil {
 		t.Fatalf("UnlockIteration() unexpected error: %v", err)

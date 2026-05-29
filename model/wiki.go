@@ -125,15 +125,31 @@ func (r *UpdateWikiRequest) ToParams() map[string]string {
 }
 
 // CountWikisRequest 获取 Wiki 数量的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/wiki/get_tapd_wikis_count.html
 type CountWikisRequest struct {
 	WorkspaceID string // 必填：项目 ID
+	Name        string // 可选：标题，支持模糊匹配
+	Modifier    string // 可选：修改人
+	Creator     string // 可选：创建人
+	Note        string // 可选：备注
+	ViewCount   string // 可选：浏览量
+	Created     string // 可选：创建时间，支持时间查询
+	Modified    string // 可选：最后修改时间，支持时间查询
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *CountWikisRequest) ToParams() map[string]string {
-	return map[string]string{
+	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+	setOptional(params, "name", r.Name)
+	setOptional(params, "modifier", r.Modifier)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "note", r.Note)
+	setOptional(params, "view_count", r.ViewCount)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "modified", r.Modified)
+	return params
 }
 
 // setOptional 当值非空时添加到参数 map

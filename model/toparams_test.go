@@ -1133,11 +1133,11 @@ func TestCreateBoardCardRequest_ToParams(t *testing.T) {
 	if params["name"] != "新看板项" {
 		t.Errorf("name: got %q", params["name"])
 	}
-	if params["board_id"] != "2001" {
-		t.Errorf("board_id: got %q", params["board_id"])
+	if params["b_board_id"] != "2001" {
+		t.Errorf("b_board_id: got %q", params["b_board_id"])
 	}
-	if params["column_id"] != "3001" {
-		t.Errorf("column_id: got %q", params["column_id"])
+	if params["b_column_id"] != "3001" {
+		t.Errorf("b_column_id: got %q", params["b_column_id"])
 	}
 	if params["description"] != "test" {
 		t.Errorf("description: got %q", params["description"])
@@ -1160,14 +1160,14 @@ func TestGetBoardCardsRequest_ToParams(t *testing.T) {
 	if params["workspace_id"] != "100" {
 		t.Errorf("workspace_id: got %q", params["workspace_id"])
 	}
-	if params["board_id"] != "2001" {
-		t.Errorf("board_id: got %q", params["board_id"])
+	if params["b_board_id"] != "2001" {
+		t.Errorf("b_board_id: got %q", params["b_board_id"])
 	}
 	if params["limit"] != "20" {
 		t.Errorf("limit: got %q", params["limit"])
 	}
-	if _, ok := params["column_id"]; ok {
-		t.Error("empty column_id should not be in params")
+	if _, ok := params["b_column_id"]; ok {
+		t.Error("empty b_column_id should not be in params")
 	}
 	if _, ok := params["owner"]; ok {
 		t.Error("empty owner should not be in params")
@@ -1191,8 +1191,8 @@ func TestUpdateBoardCardRequest_ToParams(t *testing.T) {
 	if params["name"] != "已更新" {
 		t.Errorf("name: got %q", params["name"])
 	}
-	if params["column_id"] != "3002" {
-		t.Errorf("column_id: got %q", params["column_id"])
+	if params["b_column_id"] != "3002" {
+		t.Errorf("b_column_id: got %q", params["b_column_id"])
 	}
 	if _, ok := params["description"]; ok {
 		t.Error("empty description should not be in params")

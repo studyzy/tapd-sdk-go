@@ -69,8 +69,8 @@ func NewClientWithBaseURL(apiURL, webURL, accessToken, apiUser, apiPassword stri
 	webURL = strings.TrimRight(webURL, "/")
 
 	return &Client{
-		baseURL:    apiURL,
-		webURL:     webURL,
+		baseURL: apiURL,
+		webURL:  webURL,
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},

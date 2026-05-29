@@ -111,7 +111,7 @@ func TestGetWorkflowAllLastSteps(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /workflows/all_last_steps", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"closed":"已关闭","rejected":"已拒绝"},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"1069990230000187079":{"closed":"已关闭"},"1069990230000131609":{"rejected":"已拒绝"}},"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -127,11 +127,11 @@ func TestGetWorkflowAllLastSteps(t *testing.T) {
 	if len(allLastSteps) != 2 {
 		t.Fatalf("expected 2 entries, got %d", len(allLastSteps))
 	}
-	if allLastSteps["closed"] != "已关闭" {
-		t.Errorf("closed = %q, want %q", allLastSteps["closed"], "已关闭")
+	if allLastSteps["1069990230000187079"]["closed"] != "已关闭" {
+		t.Errorf("closed = %q, want %q", allLastSteps["1069990230000187079"]["closed"], "已关闭")
 	}
-	if allLastSteps["rejected"] != "已拒绝" {
-		t.Errorf("rejected = %q, want %q", allLastSteps["rejected"], "已拒绝")
+	if allLastSteps["1069990230000131609"]["rejected"] != "已拒绝" {
+		t.Errorf("rejected = %q, want %q", allLastSteps["1069990230000131609"]["rejected"], "已拒绝")
 	}
 }
 
@@ -141,7 +141,7 @@ func TestGetWorkflowFirstStep(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /workflows/first_step", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":"open","info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"planning":"规划中"},"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -154,8 +154,8 @@ func TestGetWorkflowFirstStep(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetWorkflowFirstStep() unexpected error: %v", err)
 	}
-	if firstStep != "open" {
-		t.Errorf("first step = %q, want %q", firstStep, "open")
+	if firstStep["planning"] != "规划中" {
+		t.Errorf("first step planning = %q, want %q", firstStep["planning"], "规划中")
 	}
 }
 

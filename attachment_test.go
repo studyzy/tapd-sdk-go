@@ -45,7 +45,8 @@ func TestGetImage(t *testing.T) {
 // TestGetImage_NumericWorkspaceID 复现 TAPD 实际生产环境的响应形态：
 // /files/get_image 接口返回的 workspace_id 是 JSON 数字，而不是带引号的字符串。
 // 此前 ImageInfo.WorkspaceID 直接声明为 string，导致解码报错：
-//   "cannot unmarshal number into Go struct field ImageInfo.workspace_id of type string"
+//
+//	"cannot unmarshal number into Go struct field ImageInfo.workspace_id of type string"
 func TestGetImage_NumericWorkspaceID(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

@@ -44,3 +44,53 @@ func (c *Client) CreateTCase(ctx context.Context, req *model.CreateTCaseRequest)
 func (c *Client) BatchCreateTCases(ctx context.Context, req *model.BatchCreateTCasesRequest) (json.RawMessage, error) {
 	return c.doPost(ctx, "/tcases/batch_save", req.ToParams())
 }
+
+// UpdateTCase 更新测试用例
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/update_tcase.html
+func (c *Client) UpdateTCase(ctx context.Context, req *model.UpdateTCaseRequest) (*model.TCase, error) {
+	data, err := c.doPost(ctx, "/tcases", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseOne[model.TCase](data, "Tcase")
+}
+
+// ListTCaseCategories 查询测试用例目录列表
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_categories.html
+func (c *Client) ListTCaseCategories(ctx context.Context, req *model.ListTCaseCategoriesRequest) ([]model.TCaseCategory, error) {
+	data, err := c.doGet(ctx, "/tcase_categories", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseList[model.TCaseCategory](data, "TcaseCategory")
+}
+
+// CountTCaseCategories 查询测试用例目录数量
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_categories_count.html
+func (c *Client) CountTCaseCategories(ctx context.Context, req *model.ListTCaseCategoriesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/tcase_categories/count", req.ToParams())
+	if err != nil {
+		return 0, err
+	}
+
+	return parseCount(data)
+}
+
+// CreateTCaseCategory 创建测试用例目录
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/add_tcase_category.html
+func (c *Client) CreateTCaseCategory(ctx context.Context, req *model.CreateTCaseCategoryRequest) (*model.TCaseCategory, error) {
+	data, err := c.doPost(ctx, "/tcase_categories", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseOne[model.TCaseCategory](data, "TcaseCategory")
+}
+
+// GetStoryByTCaseID 获取测试用例关联的需求
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_story_by_tcase_id.html
+func (c *Client) GetStoryByTCaseID(ctx context.Context, req *model.GetStoryByTCaseIDRequest) (json.RawMessage, error) {
+	return c.doGet(ctx, "/tcases/get_story_by_tcase_id", req.ToParams())
+}

@@ -218,8 +218,8 @@ type ListBugsRequest struct {
 
 	// 分页与排序
 	Fields string // 可选：返回字段列表，多个字段以逗号分隔
-	Limit int // 可选：返回数量限制，默认 30，最大 200
-	Page int // 可选：页码，默认 1
+	Limit  int    // 可选：返回数量限制，默认 30，最大 200
+	Page   int    // 可选：页码，默认 1
 	Order  string // 可选：排序规则，如 created desc
 }
 
@@ -361,6 +361,10 @@ type CreateBugRequest struct {
 	// 工时相关
 	Effort string // 可选：预估工时
 
+	// 模板相关
+	TemplateID                  string // 可选：模板 ID
+	IsApplyTemplateDefaultValue int    // 可选：是否从模板继承默认值（=1 继承）
+
 	// 自定义字段
 	CustomFields map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
@@ -419,6 +423,8 @@ func (r *CreateBugRequest) ToParams() map[string]string {
 	setOptional(params, "sourcephase", r.SourcePhase)
 	setOptional(params, "estimate", r.Estimate)
 	setOptional(params, "effort", r.Effort)
+	setOptional(params, "template_id", r.TemplateID)
+	setOptionalInt(params, "is_apply_template_default_value", r.IsApplyTemplateDefaultValue)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }
@@ -498,6 +504,9 @@ type UpdateBugRequest struct {
 	// 工时相关
 	Effort string // 可选：预估工时
 
+	// 流转控制
+	KeepOwner int // 可选：是否保留处理人（取 1 则保留）
+
 	// 自定义字段
 	CustomFields map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
@@ -560,6 +569,7 @@ func (r *UpdateBugRequest) ToParams() map[string]string {
 	setOptional(params, "sourcephase", r.SourcePhase)
 	setOptional(params, "estimate", r.Estimate)
 	setOptional(params, "effort", r.Effort)
+	setOptionalInt(params, "keep_owner", r.KeepOwner)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

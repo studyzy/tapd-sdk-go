@@ -18,7 +18,7 @@ func TestCreateBoardCard(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_cards", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"新看板项","board_id":"2001","column_id":"3001","description":"test","owner":"admin","priority":"medium","created":"2026-01-01 10:00:00"}},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"新看板项","b_board_id":"2001","b_column_id":"3001","description":"test","owner":"admin","priority":"medium","created":"2026-01-01 10:00:00"}},"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -56,7 +56,7 @@ func TestGetBoardCards(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_cards", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":[{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"看板项1","board_id":"2001","column_id":"3001","owner":"admin","created":"2026-01-01 10:00:00"}}],"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"看板项1","b_board_id":"2001","b_column_id":"3001","owner":"admin","created":"2026-01-01 10:00:00"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -92,7 +92,7 @@ func TestUpdateBoardCard(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_cards", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"已更新","column_id":"3002"}},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"已更新","b_column_id":"3002"}},"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -124,7 +124,7 @@ func TestGetBoardColumns(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_columns", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":[{"BoardColumn":{"id":"3001","workspace_id":"11111111","board_id":"2001","name":"待处理","sort":"1"}},{"BoardColumn":{"id":"3002","workspace_id":"11111111","board_id":"2001","name":"进行中","sort":"2"}}],"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"Column":{"id":"3001","workspace_id":"11111111","board_id":"2001","name":"待处理","sort":"1"}},{"Column":{"id":"3002","workspace_id":"11111111","board_id":"2001","name":"进行中","sort":"2"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 

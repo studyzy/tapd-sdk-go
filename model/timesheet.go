@@ -21,22 +21,24 @@ type Timesheet struct {
 // ListTimesheetsRequest 查询工时列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/get_timesheets.html
 type ListTimesheetsRequest struct {
-	WorkspaceID                  string // 必填：项目 ID
-	ID                           string // 可选：工时记录 ID，支持多 ID 查询
-	EntityType                   string // 可选：对象类型（story/task/bug）
-	EntityID                     string // 可选：对象 ID
-	Timespent                    string // 可选：花费工时
-	Spentdate                    string // 可选：花费日期，支持时间查询
-	Modified                     string // 可选：最后修改时间，支持时间查询
-	Owner                        string // 可选：花费创建人
-	IncludeParentStoryTimesheet  string // 可选：值为 0 时不返回父需求的花费
-	Created                      string // 可选：创建时间，支持时间查询
-	Memo                         string // 可选：花费描述
-	IsDelete                     string // 可选：是否已删除，默认 0 不返回已删除记录，1 返回已删除记录
-	Fields                       string // 可选：返回字段列表，多个字段间以逗号隔开
-	Limit int // 可选：返回数量限制，默认 30
-	Page int // 可选：页码，默认 1
-	Order                        string // 可选：排序规则，如 created desc
+	WorkspaceID                 string // 必填：项目 ID
+	ID                          string // 可选：工时记录 ID，支持多 ID 查询
+	EntityType                  string // 可选：对象类型（story/task/bug）
+	EntityID                    string // 可选：对象 ID
+	Timespent                   string // 可选：花费工时
+	Spentdate                   string // 可选：花费日期，支持时间查询
+	Modified                    string // 可选：最后修改时间，支持时间查询
+	Owner                       string // 可选：花费创建人
+	IncludeParentStoryTimesheet string // 可选：值为 0 时不返回父需求的花费
+	Created                     string // 可选：创建时间，支持时间查询
+	Memo                        string // 可选：花费描述
+	IsDelete                    string // 可选：是否已删除，默认 0 不返回已删除记录，1 返回已删除记录
+	Fields                      string // 可选：返回字段列表，多个字段间以逗号隔开
+	WorkflowStep                string // 可选：工作流节点原名
+	RelationType                string // 可选：关联类型，entity 或 workflow
+	Limit                       int    // 可选：返回数量限制，默认 30
+	Page                        int    // 可选：页码，默认 1
+	Order                       string // 可选：排序规则，如 created desc
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -56,6 +58,8 @@ func (r *ListTimesheetsRequest) ToParams() map[string]string {
 	setOptional(params, "memo", r.Memo)
 	setOptional(params, "is_delete", r.IsDelete)
 	setOptional(params, "fields", r.Fields)
+	setOptional(params, "workflow_step", r.WorkflowStep)
+	setOptional(params, "relation_type", r.RelationType)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
@@ -116,11 +120,15 @@ func (r *UpdateTimesheetRequest) ToParams() map[string]string {
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/get_timesheets_count.html
 type CountTimesheetsRequest struct {
 	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：工时记录 ID，支持多 ID 查询
 	EntityType  string // 可选：对象类型（story/task/bug）
 	EntityID    string // 可选：对象 ID
+	Timespent   string // 可选：花费工时
 	Owner       string // 可选：花费创建人
 	Spentdate   string // 可选：花费日期，支持时间查询
 	Created     string // 可选：创建时间，支持时间查询
+	Memo        string // 可选：花费描述
+	IsDelete    string // 可选：是否已删除，默认 0 不返回已删除记录，1 返回已删除记录
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -128,11 +136,15 @@ func (r *CountTimesheetsRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+	setOptional(params, "id", r.ID)
 	setOptional(params, "entity_type", r.EntityType)
 	setOptional(params, "entity_id", r.EntityID)
+	setOptional(params, "timespent", r.Timespent)
 	setOptional(params, "owner", r.Owner)
 	setOptional(params, "spentdate", r.Spentdate)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "memo", r.Memo)
+	setOptional(params, "is_delete", r.IsDelete)
 	return params
 }
 

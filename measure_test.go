@@ -11,8 +11,8 @@ import (
 
 func TestGetLifeTimes(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/status_flows/life_times" {
-			t.Errorf("unexpected path: %s, want /status_flows/life_times", r.URL.Path)
+		if r.URL.Path != "/life_times" {
+			t.Errorf("unexpected path: %s, want /life_times", r.URL.Path)
 		}
 		if r.URL.Query().Get("workspace_id") != "11111111" {
 			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "11111111")

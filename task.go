@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -84,4 +85,43 @@ func (c *Client) CountTasks(ctx context.Context, req *model.CountTasksRequest) (
 	}
 
 	return parseCount(data)
+}
+
+// BatchUpdateTask 批量更新任务，最多 50 条，返回服务端 msg
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/batch_update_task.html
+func (c *Client) BatchUpdateTask(ctx context.Context, req *model.BatchUpdateTaskRequest) (string, error) {
+	data, err := c.doPost(ctx, "/tasks/batch_update_task", req.ToParams())
+	if err != nil {
+		return "", err
+	}
+
+	var result struct {
+		Msg string `json:"msg"`
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return "", fmt.Errorf("failed to parse batch update response: %w", err)
+	}
+	return result.Msg, nil
+}
+
+// GetRemovedTasks 获取回收站中的任务
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_removed_tasks.html
+func (c *Client) GetRemovedTasks(ctx context.Context, req *model.GetRemovedTasksRequest) ([]model.RemovedTask, error) {
+	data, err := c.doGet(ctx, "/tasks/get_removed_tasks", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseList[model.RemovedTask](data, "RemovedTask")
+}
+
+// GetTasksByViewConfID 获取视图对应的任务列表
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks_by_view_conf_id.html
+func (c *Client) GetTasksByViewConfID(ctx context.Context, req *model.GetTasksByViewConfIDRequest) ([]model.Task, error) {
+	data, err := c.doGet(ctx, "/tasks/get_tasks_by_view_conf_id", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseList[model.Task](data, "Task")
 }

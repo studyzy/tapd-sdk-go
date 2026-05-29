@@ -121,8 +121,8 @@ type ListTasksRequest struct {
 	Exceed          string // 可选：超出工时
 	Remain          string // 可选：剩余工时
 	Fields          string // 可选：返回字段列表
-	Limit int // 可选：返回数量限制（默认 30，最大 200）
-	Page int // 可选：页码
+	Limit           int    // 可选：返回数量限制（默认 30，最大 200）
+	Page            int    // 可选：页码
 	Order           string // 可选：排序规则
 }
 
@@ -163,19 +163,19 @@ func (r *ListTasksRequest) ToParams() map[string]string {
 // CreateTaskRequest 创建任务的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/add_task.html
 type CreateTaskRequest struct {
-	WorkspaceID   string // 必填：项目 ID
-	Name          string // 必填：任务标题
-	Description   string // 可选：详细描述
-	Owner         string // 可选：处理人
-	Creator       string // 可选：创建人
-	CC            string // 可选：抄送人
-	Begin         string // 可选：预计开始日期
-	Due           string // 可选：预计结束日期
-	StoryID       string // 可选：关联需求 ID
-	IterationID   string // 可选：迭代 ID
-	Priority      string // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
-	PriorityLabel string // 可选：优先级（推荐使用）
-	Effort        string // 可选：预估工时
+	WorkspaceID   string            // 必填：项目 ID
+	Name          string            // 必填：任务标题
+	Description   string            // 可选：详细描述
+	Owner         string            // 可选：处理人
+	Creator       string            // 可选：创建人
+	CC            string            // 可选：抄送人
+	Begin         string            // 可选：预计开始日期
+	Due           string            // 可选：预计结束日期
+	StoryID       string            // 可选：关联需求 ID
+	IterationID   string            // 可选：迭代 ID
+	Priority      string            // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
+	PriorityLabel string            // 可选：优先级（推荐使用）
+	Effort        string            // 可选：预估工时
 	Label         string            // 可选：标签（标签不存在时自动创建，多个以 | 分隔）
 	CustomFields  map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
@@ -205,23 +205,23 @@ func (r *CreateTaskRequest) ToParams() map[string]string {
 // UpdateTaskRequest 更新任务的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/update_task.html
 type UpdateTaskRequest struct {
-	WorkspaceID        string // 必填：项目 ID
-	ID                 string // 必填：任务 ID
-	Name               string // 可选：任务标题
-	Description        string // 可选：详细描述
-	Status             string // 可选：状态（open/progressing/done）
-	Owner              string // 可选：处理人
-	Creator            string // 可选：创建人
-	CurrentUser        string // 可选：操作人
-	CC                 string // 可选：抄送人
-	Begin              string // 可选：预计开始日期
-	Due                string // 可选：预计结束日期
-	StoryID            string // 可选：关联需求 ID
-	IterationID        string // 可选：迭代 ID
-	Priority           string // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
-	PriorityLabel      string // 可选：优先级（推荐使用）
-	Effort             string // 可选：预估工时
-	AutoCompleteEffort string // 可选：是否自动补齐工时（值为 "1" 时，状态流转到 done 时自动补齐）
+	WorkspaceID        string            // 必填：项目 ID
+	ID                 string            // 必填：任务 ID
+	Name               string            // 可选：任务标题
+	Description        string            // 可选：详细描述
+	Status             string            // 可选：状态（open/progressing/done）
+	Owner              string            // 可选：处理人
+	Creator            string            // 可选：创建人
+	CurrentUser        string            // 可选：操作人
+	CC                 string            // 可选：抄送人
+	Begin              string            // 可选：预计开始日期
+	Due                string            // 可选：预计结束日期
+	StoryID            string            // 可选：关联需求 ID
+	IterationID        string            // 可选：迭代 ID
+	Priority           string            // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
+	PriorityLabel      string            // 可选：优先级（推荐使用）
+	Effort             string            // 可选：预估工时
+	AutoCompleteEffort string            // 可选：是否自动补齐工时（值为 "1" 时，状态流转到 done 时自动补齐）
 	Label              string            // 可选：标签（标签不存在时自动创建，多个以 | 分隔）
 	CustomFields       map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
@@ -249,6 +249,90 @@ func (r *UpdateTaskRequest) ToParams() map[string]string {
 	setOptional(params, "auto_complete_effort", r.AutoCompleteEffort)
 	setOptional(params, "label", r.Label)
 	MergeCustomFields(params, r.CustomFields)
+	return params
+}
+
+// BatchUpdateTaskItem 批量更新任务时的单条数据，使用扁平 map 以兼容 cus_*、custom_field_* 等任意字段
+// 至少需要包含 id；其他字段参考 update_task.md
+type BatchUpdateTaskItem map[string]string
+
+// BatchUpdateTaskRequest 批量更新任务的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/batch_update_task.html
+type BatchUpdateTaskRequest struct {
+	WorkspaceID string                // 必填：项目 ID
+	Workitems   []BatchUpdateTaskItem // 必填：要更新的任务对象数组（每条至少包含 id），最多 50 条
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map（workitems 序列化为 JSON 字符串）
+func (r *BatchUpdateTaskRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	if len(r.Workitems) > 0 {
+		buf, _ := json.Marshal(r.Workitems)
+		params["workitems"] = string(buf)
+	}
+	return params
+}
+
+// RemovedTask 表示回收站中的任务记录
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_removed_tasks.html
+type RemovedTask struct {
+	ID            string `json:"id,omitempty"`
+	Name          string `json:"name,omitempty"`
+	Creator       string `json:"creator,omitempty"`
+	Created       string `json:"created,omitempty"`
+	OperationUser string `json:"operation_user,omitempty"` // 删除人
+	Modified      string `json:"modified,omitempty"`       // 删除时间
+}
+
+// GetRemovedTasksRequest 获取回收站任务的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_removed_tasks.html
+type GetRemovedTasksRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：任务 ID
+	Creator     string // 可选：创建人
+	Created     string // 可选：创建时间
+	Modified    string // 可选：删除时间
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetRemovedTasksRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "modified", r.Modified)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	return params
+}
+
+// GetTasksByViewConfIDRequest 获取视图对应任务列表的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_tasks_by_view_conf_id.html
+type GetTasksByViewConfIDRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ViewConfID  string // 必填：视图 ID
+	CurrentUser string // 可选：当前登录用户视图
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
+	Fields      string // 可选：返回字段列表
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetTasksByViewConfIDRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"view_conf_id": r.ViewConfID,
+	}
+	setOptional(params, "current_user", r.CurrentUser)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "fields", r.Fields)
 	return params
 }
 

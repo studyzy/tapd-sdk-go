@@ -39,8 +39,8 @@ type ListTCasesRequest struct {
 	Precondition string // 可选：前置条件
 	Expectation  string // 可选：预期结果
 	Fields       string // 可选：返回字段列表，多个字段间以半角逗号隔开
-	Limit int // 可选：返回数量限制，默认为 30
-	Page int // 可选：页码，默认为 1
+	Limit        int    // 可选：返回数量限制，默认为 30
+	Page         int    // 可选：页码，默认为 1
 	Order        string // 可选：排序规则，如 created desc
 }
 
@@ -72,21 +72,21 @@ func (r *ListTCasesRequest) ToParams() map[string]string {
 // CountTCasesRequest 查询测试用例数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases_count.html
 type CountTCasesRequest struct {
-	WorkspaceID        string // 必填：项目 ID
-	ID                 string // 可选：测试用例 ID，支持多 ID 查询
-	Name               string // 可选：用例名称，支持模糊匹配
-	Status             string // 可选：用例状态（normal|updating|abandon）
-	CategoryID         string // 可选：用例目录 ID
-	Priority           string // 可选：用例等级
-	Type               string // 可选：用例类型
-	Creator            string // 可选：创建人
-	Modifier           string // 可选：最后修改人
-	Created            string // 可选：创建时间，支持时间查询
-	Modified           string // 可选：最后修改时间，支持时间查询
-	Steps              string // 可选：用例步骤
-	Precondition       string // 可选：前置条件
-	Expectation        string // 可选：预期结果
-	TestPlanID         string // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
+	WorkspaceID  string // 必填：项目 ID
+	ID           string // 可选：测试用例 ID，支持多 ID 查询
+	Name         string // 可选：用例名称，支持模糊匹配
+	Status       string // 可选：用例状态（normal|updating|abandon）
+	CategoryID   string // 可选：用例目录 ID
+	Priority     string // 可选：用例等级
+	Type         string // 可选：用例类型
+	Creator      string // 可选：创建人
+	Modifier     string // 可选：最后修改人
+	Created      string // 可选：创建时间，支持时间查询
+	Modified     string // 可选：最后修改时间，支持时间查询
+	Steps        string // 可选：用例步骤
+	Precondition string // 可选：前置条件
+	Expectation  string // 可选：预期结果
+	TestPlanID   string // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -158,4 +158,128 @@ func (r *BatchCreateTCasesRequest) ToParams() map[string]string {
 	}
 	setOptional(params, "data", r.Data)
 	return params
+}
+
+// UpdateTCaseRequest 更新测试用例的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/update_tcase.html
+type UpdateTCaseRequest struct {
+	WorkspaceID  string // 必填：项目 ID
+	ID           string // 必填：测试用例 ID
+	Name         string // 可选：用例名称
+	CategoryID   string // 可选：用例目录 ID
+	Status       string // 可选：用例状态（normal|updating|abandon）
+	Precondition string // 可选：前置条件
+	Steps        string // 可选：用例步骤
+	Expectation  string // 可选：预期结果
+	Type         string // 可选：用例类型
+	Priority     string // 可选：用例等级
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *UpdateTCaseRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+	}
+	setOptional(params, "name", r.Name)
+	setOptional(params, "category_id", r.CategoryID)
+	setOptional(params, "status", r.Status)
+	setOptional(params, "precondition", r.Precondition)
+	setOptional(params, "steps", r.Steps)
+	setOptional(params, "expectation", r.Expectation)
+	setOptional(params, "type", r.Type)
+	setOptional(params, "priority", r.Priority)
+	return params
+}
+
+// TCaseCategory 表示 TAPD 测试用例目录
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcase_categories.html
+type TCaseCategory struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	ParentID    string `json:"parent_id,omitempty"`
+	Modified    string `json:"modified,omitempty"`
+	Created     string `json:"created,omitempty"`
+	Creator     string `json:"creator,omitempty"`
+	Modifier    string `json:"modifier,omitempty"`
+	Sorting     string `json:"sorting,omitempty"`
+}
+
+// ListTCaseCategoriesRequest 查询测试用例目录列表/数量的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcase_categories.html
+type ListTCaseCategoriesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：目录 ID，支持多 ID
+	Name        string // 可选：目录名称，支持模糊匹配
+	Description string // 可选：目录描述
+	ParentID    string // 可选：父目录 ID
+	Modified    string // 可选：最后修改时间，支持时间查询
+	Created     string // 可选：创建时间，支持时间查询
+	Creator     string // 可选：创建人
+	Modifier    string // 可选：最后修改人
+	Sorting     int    // 可选：排序序号
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
+	Order       string // 可选：排序规则
+	Fields      string // 可选：返回字段
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *ListTCaseCategoriesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "parent_id", r.ParentID)
+	setOptional(params, "modified", r.Modified)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "modifier", r.Modifier)
+	setOptionalInt(params, "sorting", r.Sorting)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
+	return params
+}
+
+// CreateTCaseCategoryRequest 创建测试用例目录的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/add_tcase_category.html
+type CreateTCaseCategoryRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Name        string // 必填：目录名称
+	Description string // 可选：目录描述
+	ParentID    string // 可选：父目录 ID
+	Creator     string // 可选：创建人
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CreateTCaseCategoryRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"name":         r.Name,
+	}
+	setOptional(params, "description", r.Description)
+	setOptional(params, "parent_id", r.ParentID)
+	setOptional(params, "creator", r.Creator)
+	return params
+}
+
+// GetStoryByTCaseIDRequest 获取测试用例关联需求的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_story_by_tcase_id.html
+type GetStoryByTCaseIDRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	TCaseIDs    string // 必填：测试用例 ID，多个用 , 隔开（最多 20）
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetStoryByTCaseIDRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"tcase_ids":    r.TCaseIDs,
+	}
 }

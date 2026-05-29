@@ -53,32 +53,33 @@ func (c *Client) GetWorkflowLastSteps(ctx context.Context, req *model.WorkflowRe
 	return lastSteps, nil
 }
 
-// GetWorkflowAllLastSteps 获取所有结束状态，返回 map[string]string（英文状态名→中文状态名）
+// GetWorkflowAllLastSteps 获取所有结束状态，返回 map[分组键]map[状态英文名]状态中文名
+// 分组键由请求参数 group_key 决定（默认 workitem_type_id，可取 workflow_id）
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_last_steps.html
-func (c *Client) GetWorkflowAllLastSteps(ctx context.Context, req *model.WorkflowRequest) (map[string]string, error) {
+func (c *Client) GetWorkflowAllLastSteps(ctx context.Context, req *model.WorkflowRequest) (map[string]map[string]string, error) {
 	data, err := c.doGet(ctx, "/workflows/all_last_steps", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
 
-	var allLastSteps map[string]string
+	var allLastSteps map[string]map[string]string
 	if err := json.Unmarshal(data, &allLastSteps); err != nil {
 		return nil, fmt.Errorf("failed to parse workflow all last steps: %w", err)
 	}
 	return allLastSteps, nil
 }
 
-// GetWorkflowFirstStep 获取工作流起始状态，返回起始状态字符串
+// GetWorkflowFirstStep 获取工作流起始状态，返回 map[英文状态名]中文状态名
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_first_step.html
-func (c *Client) GetWorkflowFirstStep(ctx context.Context, req *model.WorkflowRequest) (string, error) {
+func (c *Client) GetWorkflowFirstStep(ctx context.Context, req *model.WorkflowRequest) (map[string]string, error) {
 	data, err := c.doGet(ctx, "/workflows/first_step", req.ToParams())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	var firstStep string
+	var firstStep map[string]string
 	if err := json.Unmarshal(data, &firstStep); err != nil {
-		return "", fmt.Errorf("failed to parse workflow first step: %w", err)
+		return nil, fmt.Errorf("failed to parse workflow first step: %w", err)
 	}
 	return firstStep, nil
 }

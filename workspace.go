@@ -174,3 +174,93 @@ func (c *Client) GetMiniProjectList(ctx context.Context, req *model.GetMiniProje
 	}
 	return projects, nil
 }
+
+// EnableWorkCalendar 设置启用工作日历
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/enable_work_calendar.html
+func (c *Client) EnableWorkCalendar(ctx context.Context, req *model.EnableWorkCalendarRequest) (*model.SuccessResponse, error) {
+	data, err := c.doPost(ctx, "/workspaces/enable_work_calendar", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var result model.SuccessResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse enable work calendar response: %w", err)
+	}
+	return &result, nil
+}
+
+// GetCustomWorkCalendar 获取自定义工作日历详情
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/get_custom_work_calendar.html
+func (c *Client) GetCustomWorkCalendar(ctx context.Context, req *model.GetCustomWorkCalendarRequest) (*model.CustomWorkCalendar, error) {
+	data, err := c.doGet(ctx, "/workspaces/get_custom_work_calendar", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var result model.CustomWorkCalendar
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse custom work calendar: %w", err)
+	}
+	return &result, nil
+}
+
+// SetCustomWorkCalendar 设置自定义工作日历
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/set_custom_work_calendar.html
+func (c *Client) SetCustomWorkCalendar(ctx context.Context, req *model.SetCustomWorkCalendarRequest) (*model.SuccessResponse, error) {
+	data, err := c.doPost(ctx, "/workspaces/set_custom_work_calendar", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var result model.SuccessResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse set custom work calendar response: %w", err)
+	}
+	return &result, nil
+}
+
+// GetWorkCalendarSettings 获取工作日历设置列表及启用选项
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/get_work_calendar_settings.html
+func (c *Client) GetWorkCalendarSettings(ctx context.Context, workspaceID string) ([]model.WorkCalendarSetting, error) {
+	params := map[string]string{
+		"workspace_id": workspaceID,
+	}
+	data, err := c.doGet(ctx, "/workspaces/get_work_calendar_settings", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var settings []model.WorkCalendarSetting
+	if err := json.Unmarshal(data, &settings); err != nil {
+		return nil, fmt.Errorf("failed to parse work calendar settings: %w", err)
+	}
+	return settings, nil
+}
+
+// GetWorkitemsLongIDByShortIDs 通过工作项短 id 换长 id（也支持反向校验）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/get_workitems_long_id_by_short_ids.html
+func (c *Client) GetWorkitemsLongIDByShortIDs(ctx context.Context, req *model.GetWorkitemsLongIDByShortIDsRequest) (*model.GetWorkitemsLongIDByShortIDsResponse, error) {
+	data, err := c.doGet(ctx, "/workspaces/get_workitems_long_id_by_short_ids", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var result model.GetWorkitemsLongIDByShortIDsResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse workitems id map: %w", err)
+	}
+	return &result, nil
+}
+
+// GetWorkspaceDocuments 获取项目文档
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/get_workspace_documents.html
+func (c *Client) GetWorkspaceDocuments(ctx context.Context, req *model.GetWorkspaceDocumentsRequest) ([]model.Document, error) {
+	data, err := c.doGet(ctx, "/documents/get_workspace_documents", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	// TAPD 返回格式: [{"Document": {...}}, ...]
+	return parseList[model.Document](data, "Document")
+}

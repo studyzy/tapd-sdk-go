@@ -134,8 +134,8 @@ type ListStoriesRequest struct {
 	CategoryID    string // 可选：需求分类
 	Label         string // 可选：标签
 	Fields        string // 可选：返回字段列表
-	Limit int // 可选：返回数量限制
-	Page int // 可选：页码
+	Limit         int    // 可选：返回数量限制
+	Page          int    // 可选：页码
 	Order         string // 可选：排序规则
 }
 

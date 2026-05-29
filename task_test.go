@@ -205,3 +205,89 @@ func TestCountTasks(t *testing.T) {
 		t.Errorf("count = %d, want 15", count)
 	}
 }
+
+func TestBatchUpdateTask(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/tasks/batch_update_task" {
+			t.Errorf("unexpected path: %s, want /tasks/batch_update_task", r.URL.Path)
+		}
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("ParseForm: %v", err)
+		}
+		if r.Form.Get("workspace_id") != "1" {
+			t.Errorf("workspace_id = %q, want %q", r.Form.Get("workspace_id"), "1")
+		}
+		if !strings.Contains(r.Form.Get("workitems"), `"id":"123"`) {
+			t.Errorf("workitems = %q, want to contain id:123", r.Form.Get("workitems"))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"msg":"batch update success"},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	msg, err := c.BatchUpdateTask(context.Background(), &model.BatchUpdateTaskRequest{
+		WorkspaceID: "1",
+		Workitems: []model.BatchUpdateTaskItem{
+			{"id": "123", "name": "renamed"},
+		},
+	})
+	if err != nil {
+		t.Fatalf("BatchUpdateTask() unexpected error: %v", err)
+	}
+	if msg != "batch update success" {
+		t.Errorf("msg = %q, want %q", msg, "batch update success")
+	}
+}
+
+func TestGetRemovedTasks(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tasks/get_removed_tasks" {
+			t.Errorf("unexpected path: %s, want /tasks/get_removed_tasks", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"RemovedTask":{"id":"500","name":"deleted","creator":"u1","operation_user":"admin"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	tasks, err := c.GetRemovedTasks(context.Background(), &model.GetRemovedTasksRequest{WorkspaceID: "1"})
+	if err != nil {
+		t.Fatalf("GetRemovedTasks() unexpected error: %v", err)
+	}
+	if len(tasks) != 1 {
+		t.Fatalf("expected 1 task, got %d", len(tasks))
+	}
+	if tasks[0].ID != "500" || tasks[0].OperationUser != "admin" {
+		t.Errorf("got %+v, want id=500 op=admin", tasks[0])
+	}
+}
+
+func TestGetTasksByViewConfID(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tasks/get_tasks_by_view_conf_id" {
+			t.Errorf("unexpected path: %s, want /tasks/get_tasks_by_view_conf_id", r.URL.Path)
+		}
+		if r.URL.Query().Get("view_conf_id") != "777" {
+			t.Errorf("view_conf_id = %q, want 777", r.URL.Query().Get("view_conf_id"))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"Task":{"id":"301","name":"view task"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	tasks, err := c.GetTasksByViewConfID(context.Background(), &model.GetTasksByViewConfIDRequest{
+		WorkspaceID: "1",
+		ViewConfID:  "777",
+	})
+	if err != nil {
+		t.Fatalf("GetTasksByViewConfID() unexpected error: %v", err)
+	}
+	if len(tasks) != 1 || tasks[0].ID != "301" {
+		t.Errorf("got %+v, want one task id=301", tasks)
+	}
+}

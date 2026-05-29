@@ -2,6 +2,8 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -164,4 +166,51 @@ func (c *Client) CountFeatures(ctx context.Context, req *model.CountFeaturesRequ
 	}
 
 	return parseCount(data)
+}
+
+// AddCustomFieldConfig 创建自定义字段（需求/缺陷/任务/测试用例）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/add_custom_field_config.html
+func (c *Client) AddCustomFieldConfig(ctx context.Context, req *model.AddCustomFieldConfigRequest) (*model.CustomFieldConfig, error) {
+	data, err := c.doPost(ctx, "/custom_field_configs", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseOne[model.CustomFieldConfig](data, "CustomFieldConfig")
+}
+
+// UpdateBugSelectFieldOptions 更新缺陷下拉类型自定义字段候选值
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_bug_select_field_options.html
+func (c *Client) UpdateBugSelectFieldOptions(ctx context.Context, req *model.UpdateSelectFieldOptionsRequest) error {
+	_, err := c.doPost(ctx, "/custom_field_configs/update_bug_select_field_options", req.ToParams())
+	return err
+}
+
+// UpdateStorySelectFieldOptions 更新需求下拉类型自定义字段候选值
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_story_select_field_options.html
+func (c *Client) UpdateStorySelectFieldOptions(ctx context.Context, req *model.UpdateSelectFieldOptionsRequest) error {
+	_, err := c.doPost(ctx, "/custom_field_configs/update_story_select_field_options", req.ToParams())
+	return err
+}
+
+// UpdateCascadeFieldOptions 更新级联自定义字段候选值
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_cascade_field_options.html
+func (c *Client) UpdateCascadeFieldOptions(ctx context.Context, req *model.UpdateCascadeFieldOptionsRequest) error {
+	_, err := c.doPost(ctx, "/custom_field_configs/update_cascade_field_options", req.ToParams())
+	return err
+}
+
+// GetWorkspaceSetting 获取项目配置开关，返回原始 key/value（如 {"workspace_metrology":"day"}）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/get_workspace_setting.html
+func (c *Client) GetWorkspaceSetting(ctx context.Context, req *model.GetWorkspaceSettingRequest) (map[string]string, error) {
+	data, err := c.doGet(ctx, "/settings/get_workspace_setting", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	var result map[string]string
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse workspace setting: %w", err)
+	}
+	return result, nil
 }

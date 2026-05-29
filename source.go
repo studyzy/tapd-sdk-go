@@ -26,3 +26,13 @@ func (c *Client) GetCodeCommitInfos(ctx context.Context, req *model.GetCodeCommi
 	}
 	return data, nil
 }
+
+// GetCodeCommitObjects 获取指定 commit 关联的 TAPD 业务对象（需求、任务、缺陷）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/get_commit_objects.html
+func (c *Client) GetCodeCommitObjects(ctx context.Context, req *model.GetCodeCommitObjectsRequest) (json.RawMessage, error) {
+	data, err := c.doGet(ctx, "/code_commit_objects/workitems", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

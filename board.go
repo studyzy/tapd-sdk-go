@@ -43,5 +43,5 @@ func (c *Client) GetBoardColumns(ctx context.Context, req *model.GetBoardColumns
 		return nil, err
 	}
 
-	return parseList[model.BoardColumn](data, "BoardColumn")
+	return parseList[model.BoardColumn](data, "Column")
 }
