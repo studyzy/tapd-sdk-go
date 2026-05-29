@@ -7,9 +7,11 @@ import (
 )
 
 // IsCustomField 判断 JSON key 是否为 TAPD 自定义字段
-// 自定义字段包括 custom_field_* 和 custom_plan_field_* 两类
+// 自定义字段包括 custom_field_*、custom_plan_field_* 和 cus_*（自定义字段别名）三类
 func IsCustomField(key string) bool {
-	return strings.HasPrefix(key, "custom_field_") || strings.HasPrefix(key, "custom_plan_field_")
+	return strings.HasPrefix(key, "custom_field_") ||
+		strings.HasPrefix(key, "custom_plan_field_") ||
+		strings.HasPrefix(key, "cus_")
 }
 
 // ExtractCustomFields 从原始 JSON map 中提取所有自定义字段，返回非空值的键值对

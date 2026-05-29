@@ -1,7 +1,10 @@
 // Package model 中的 tcase.go 定义了 TAPD 测试用例数据模型
 package model
 
+import "encoding/json"
+
 // TCase 表示 TAPD 测试用例
+// 自定义字段（custom_field_*）通过 CustomFields map 保留，不会丢失
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases.html
 type TCase struct {
 	ID           string `json:"id,omitempty"`
@@ -19,29 +22,75 @@ type TCase struct {
 	Created      string `json:"created,omitempty"`
 	Modified     string `json:"modified,omitempty"`
 	URL          string `json:"url,omitempty"`
+
+	// 自定义字段，key 为 custom_field_1、custom_field_2 等
+	CustomFields map[string]string `json:"-"`
+}
+
+// UnmarshalJSON 自定义反序列化，在解析标准字段的同时收集 custom_field_* 字段
+func (t *TCase) UnmarshalJSON(data []byte) error {
+	type Alias TCase
+	var alias Alias
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	*t = TCase(alias)
+
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	t.CustomFields = ExtractCustomFields(raw)
+	return nil
+}
+
+// MarshalJSON 自定义序列化，将 CustomFields 中的键值对合并到输出 JSON
+func (t TCase) MarshalJSON() ([]byte, error) {
+	type Alias TCase
+	b, err := json.Marshal(Alias(t))
+	if err != nil {
+		return nil, err
+	}
+	if len(t.CustomFields) == 0 {
+		return b, nil
+	}
+
+	var base map[string]json.RawMessage
+	if err := json.Unmarshal(b, &base); err != nil {
+		return nil, err
+	}
+	for k, v := range t.CustomFields {
+		raw, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		base[k] = raw
+	}
+	return json.Marshal(base)
 }
 
 // ListTCasesRequest 查询测试用例列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases.html
 type ListTCasesRequest struct {
-	WorkspaceID  string // 必填：项目 ID
-	ID           string // 可选：测试用例 ID，支持多 ID 查询
-	Name         string // 可选：用例名称，支持模糊匹配
-	Status       string // 可选：用例状态（normal|updating|abandon）
-	CategoryID   string // 可选：用例目录 ID
-	Priority     string // 可选：用例等级
-	Type         string // 可选：用例类型
-	Creator      string // 可选：创建人
-	Modifier     string // 可选：最后修改人
-	Created      string // 可选：创建时间，支持时间查询
-	Modified     string // 可选：最后修改时间，支持时间查询
-	Steps        string // 可选：用例步骤
-	Precondition string // 可选：前置条件
-	Expectation  string // 可选：预期结果
-	Fields       string // 可选：返回字段列表，多个字段间以半角逗号隔开
-	Limit        int    // 可选：返回数量限制，默认为 30
-	Page         int    // 可选：页码，默认为 1
-	Order        string // 可选：排序规则，如 created desc
+	WorkspaceID  string            // 必填：项目 ID
+	ID           string            // 可选：测试用例 ID，支持多 ID 查询
+	Name         string            // 可选：用例名称，支持模糊匹配
+	Status       string            // 可选：用例状态（normal|updating|abandon）
+	CategoryID   string            // 可选：用例目录 ID
+	Priority     string            // 可选：用例等级
+	Type         string            // 可选：用例类型
+	Creator      string            // 可选：创建人
+	Modifier     string            // 可选：最后修改人
+	Created      string            // 可选：创建时间，支持时间查询
+	Modified     string            // 可选：最后修改时间，支持时间查询
+	Steps        string            // 可选：用例步骤
+	Precondition string            // 可选：前置条件
+	Expectation  string            // 可选：预期结果
+	Fields       string            // 可选：返回字段列表，多个字段间以半角逗号隔开
+	Limit        int               // 可选：返回数量限制，默认为 30
+	Page         int               // 可选：页码，默认为 1
+	Order        string            // 可选：排序规则，如 created desc
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -66,31 +115,33 @@ func (r *ListTCasesRequest) ToParams() map[string]string {
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // CountTCasesRequest 查询测试用例数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases_count.html
 type CountTCasesRequest struct {
-	WorkspaceID        string // 必填：项目 ID
-	ID                 string // 可选：测试用例 ID，支持多 ID 查询
-	Name               string // 可选：用例名称，支持模糊匹配
-	Status             string // 可选：用例状态（normal|updating|abandon）
-	CategoryID         string // 可选：用例目录 ID
-	Priority           string // 可选：用例等级
-	Type               string // 可选：用例类型
-	Creator            string // 可选：创建人
-	Modifier           string // 可选：最后修改人
-	Created            string // 可选：创建时间，支持时间查询
-	Modified           string // 可选：最后修改时间，支持时间查询
-	Steps              string // 可选：用例步骤
-	Precondition       string // 可选：前置条件
-	Expectation        string // 可选：预期结果
-	TestPlanID         string // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
-	IsAutomated        string // 可选：是否自动化
-	AutomationType     string // 可选：自动化类型
-	AutomationPlatform string // 可选：自动化平台
-	IsServing          string // 可选：是否在用
+	WorkspaceID        string            // 必填：项目 ID
+	ID                 string            // 可选：测试用例 ID，支持多 ID 查询
+	Name               string            // 可选：用例名称，支持模糊匹配
+	Status             string            // 可选：用例状态（normal|updating|abandon）
+	CategoryID         string            // 可选：用例目录 ID
+	Priority           string            // 可选：用例等级
+	Type               string            // 可选：用例类型
+	Creator            string            // 可选：创建人
+	Modifier           string            // 可选：最后修改人
+	Created            string            // 可选：创建时间，支持时间查询
+	Modified           string            // 可选：最后修改时间，支持时间查询
+	Steps              string            // 可选：用例步骤
+	Precondition       string            // 可选：前置条件
+	Expectation        string            // 可选：预期结果
+	TestPlanID         string            // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
+	IsAutomated        string            // 可选：是否自动化
+	AutomationType     string            // 可选：自动化类型
+	AutomationPlatform string            // 可选：自动化平台
+	IsServing          string            // 可选：是否在用
+	CustomFields       map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -116,23 +167,25 @@ func (r *CountTCasesRequest) ToParams() map[string]string {
 	setOptional(params, "automation_type", r.AutomationType)
 	setOptional(params, "automation_platform", r.AutomationPlatform)
 	setOptional(params, "is_serving", r.IsServing)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // CreateTCaseRequest 创建测试用例的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/add_tcase.html
 type CreateTCaseRequest struct {
-	WorkspaceID  string // 必填：项目 ID
-	Name         string // 必填：用例名称
-	ID           string // 可选：测试用例 ID
-	CategoryID   string // 可选：用例目录 ID
-	Status       string // 可选：用例状态（normal|updating|abandon）
-	Precondition string // 可选：前置条件
-	Steps        string // 可选：用例步骤
-	Expectation  string // 可选：预期结果
-	Type         string // 可选：用例类型
-	Priority     string // 可选：用例等级
-	Creator      string // 可选：创建人
+	WorkspaceID  string            // 必填：项目 ID
+	Name         string            // 必填：用例名称
+	ID           string            // 可选：测试用例 ID
+	CategoryID   string            // 可选：用例目录 ID
+	Status       string            // 可选：用例状态（normal|updating|abandon）
+	Precondition string            // 可选：前置条件
+	Steps        string            // 可选：用例步骤
+	Expectation  string            // 可选：预期结果
+	Type         string            // 可选：用例类型
+	Priority     string            // 可选：用例等级
+	Creator      string            // 可选：创建人
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -150,6 +203,7 @@ func (r *CreateTCaseRequest) ToParams() map[string]string {
 	setOptional(params, "type", r.Type)
 	setOptional(params, "priority", r.Priority)
 	setOptional(params, "creator", r.Creator)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
@@ -171,16 +225,17 @@ func (r *BatchCreateTCasesRequest) ToParams() map[string]string {
 // UpdateTCaseRequest 更新测试用例的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/update_tcase.html
 type UpdateTCaseRequest struct {
-	WorkspaceID  string // 必填：项目 ID
-	ID           string // 必填：测试用例 ID
-	Name         string // 可选：用例名称
-	CategoryID   string // 可选：用例目录 ID
-	Status       string // 可选：用例状态（normal|updating|abandon）
-	Precondition string // 可选：前置条件
-	Steps        string // 可选：用例步骤
-	Expectation  string // 可选：预期结果
-	Type         string // 可选：用例类型
-	Priority     string // 可选：用例等级
+	WorkspaceID  string            // 必填：项目 ID
+	ID           string            // 必填：测试用例 ID
+	Name         string            // 可选：用例名称
+	CategoryID   string            // 可选：用例目录 ID
+	Status       string            // 可选：用例状态（normal|updating|abandon）
+	Precondition string            // 可选：前置条件
+	Steps        string            // 可选：用例步骤
+	Expectation  string            // 可选：预期结果
+	Type         string            // 可选：用例类型
+	Priority     string            // 可选：用例等级
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -197,6 +252,7 @@ func (r *UpdateTCaseRequest) ToParams() map[string]string {
 	setOptional(params, "expectation", r.Expectation)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "priority", r.Priority)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 

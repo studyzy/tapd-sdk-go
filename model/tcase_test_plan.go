@@ -1,7 +1,10 @@
 // Package model 中的 tcase_test_plan.go 定义 TAPD 测试计划相关数据模型与请求参数
 package model
 
+import "encoding/json"
+
 // TestPlan 表示 TAPD 测试计划
+// 自定义字段（custom_field_*）通过 CustomFields map 保留，不会丢失
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_test_plans.html
 type TestPlan struct {
 	ID          string `json:"id,omitempty"`
@@ -21,6 +24,51 @@ type TestPlan struct {
 	CreatedFrom string `json:"created_from,omitempty"`
 	IterationID string `json:"iteration_id,omitempty"`
 	TemplateID  string `json:"template_id,omitempty"`
+
+	// 自定义字段，key 为 custom_field_1、custom_field_2 等
+	CustomFields map[string]string `json:"-"`
+}
+
+// UnmarshalJSON 自定义反序列化，在解析标准字段的同时收集 custom_field_* 字段
+func (tp *TestPlan) UnmarshalJSON(data []byte) error {
+	type Alias TestPlan
+	var alias Alias
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	*tp = TestPlan(alias)
+
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	tp.CustomFields = ExtractCustomFields(raw)
+	return nil
+}
+
+// MarshalJSON 自定义序列化，将 CustomFields 中的键值对合并到输出 JSON
+func (tp TestPlan) MarshalJSON() ([]byte, error) {
+	type Alias TestPlan
+	b, err := json.Marshal(Alias(tp))
+	if err != nil {
+		return nil, err
+	}
+	if len(tp.CustomFields) == 0 {
+		return b, nil
+	}
+
+	var base map[string]json.RawMessage
+	if err := json.Unmarshal(b, &base); err != nil {
+		return nil, err
+	}
+	for k, v := range tp.CustomFields {
+		raw, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		base[k] = raw
+	}
+	return json.Marshal(base)
 }
 
 // TestPlanProgress 测试计划执行进度
@@ -35,18 +83,19 @@ type TestPlanProgress struct {
 // CreateTestPlanRequest 创建测试计划的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/add_test_plan.html
 type CreateTestPlanRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	Name        string // 必填：测试计划标题
-	Description string // 可选：详细描述
-	Creator     string // 可选：创建人
-	Modifier    string // 可选：修改人
-	Owner       string // 可选：负责人
-	StartDate   string // 可选：预计开始
-	EndDate     string // 可选：预计结束
-	IterationID string // 可选：关联迭代 ID
-	Version     string // 可选：版本号
-	Type        string // 可选：测试类型
-	Status      string // 可选：状态
+	WorkspaceID  string            // 必填：项目 ID
+	Name         string            // 必填：测试计划标题
+	Description  string            // 可选：详细描述
+	Creator      string            // 可选：创建人
+	Modifier     string            // 可选：修改人
+	Owner        string            // 可选：负责人
+	StartDate    string            // 可选：预计开始
+	EndDate      string            // 可选：预计结束
+	IterationID  string            // 可选：关联迭代 ID
+	Version      string            // 可选：版本号
+	Type         string            // 可选：测试类型
+	Status       string            // 可选：状态
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -65,24 +114,26 @@ func (r *CreateTestPlanRequest) ToParams() map[string]string {
 	setOptional(params, "version", r.Version)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "status", r.Status)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // UpdateTestPlanRequest 编辑测试计划的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/update_test_plan.html
 type UpdateTestPlanRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	ID          string // 必填：测试计划 ID
-	Name        string // 可选：标题
-	Description string // 可选：详细描述
-	Modifier    string // 可选：修改人
-	Owner       string // 可选：负责人
-	StartDate   string // 可选：预计开始
-	EndDate     string // 可选：预计结束
-	Version     string // 可选：版本号
-	Type        string // 可选：测试类型
-	Status      string // 可选：状态
-	TemplateID  string // 可选：模板 ID
+	WorkspaceID  string            // 必填：项目 ID
+	ID           string            // 必填：测试计划 ID
+	Name         string            // 可选：标题
+	Description  string            // 可选：详细描述
+	Modifier     string            // 可选：修改人
+	Owner        string            // 可选：负责人
+	StartDate    string            // 可选：预计开始
+	EndDate      string            // 可选：预计结束
+	Version      string            // 可选：版本号
+	Type         string            // 可选：测试类型
+	Status       string            // 可选：状态
+	TemplateID   string            // 可选：模板 ID
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -101,6 +152,7 @@ func (r *UpdateTestPlanRequest) ToParams() map[string]string {
 	setOptional(params, "type", r.Type)
 	setOptional(params, "status", r.Status)
 	setOptional(params, "template_id", r.TemplateID)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 

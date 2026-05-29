@@ -97,33 +97,34 @@ func (t Task) MarshalJSON() ([]byte, error) {
 // ListTasksRequest 查询任务列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_tasks.html
 type ListTasksRequest struct {
-	WorkspaceID     string // 必填：项目 ID
-	ID              string // 可选：任务 ID（支持多 ID 查询）
-	Name            string // 可选：标题（支持模糊匹配）
-	Description     string // 可选：任务详细描述
-	Status          string // 可选：状态（open/progressing/done，支持枚举查询）
-	Owner           string // 可选：处理人（支持模糊匹配）
-	Creator         string // 可选：创建人（支持多人员查询）
-	CC              string // 可选：抄送人
-	StoryID         string // 可选：关联需求 ID（支持多 ID 查询）
-	IterationID     string // 可选：迭代 ID（支持枚举查询）
-	Priority        string // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
-	PriorityLabel   string // 可选：优先级（推荐使用）
-	Label           string // 可选：标签（支持枚举查询）
-	Progress        string // 可选：进度
-	Begin           string // 可选：预计开始（支持时间查询）
-	Due             string // 可选：预计结束（支持时间查询）
-	Created         string // 可选：创建时间（支持时间查询）
-	Modified        string // 可选：最后修改时间（支持时间查询）
-	Completed       string // 可选：完成时间（支持时间查询）
-	Effort          string // 可选：预估工时
-	EffortCompleted string // 可选：完成工时
-	Exceed          string // 可选：超出工时
-	Remain          string // 可选：剩余工时
-	Fields          string // 可选：返回字段列表
-	Limit           int    // 可选：返回数量限制（默认 30，最大 200）
-	Page            int    // 可选：页码
-	Order           string // 可选：排序规则
+	WorkspaceID     string            // 必填：项目 ID
+	ID              string            // 可选：任务 ID（支持多 ID 查询）
+	Name            string            // 可选：标题（支持模糊匹配）
+	Description     string            // 可选：任务详细描述
+	Status          string            // 可选：状态（open/progressing/done，支持枚举查询）
+	Owner           string            // 可选：处理人（支持模糊匹配）
+	Creator         string            // 可选：创建人（支持多人员查询）
+	CC              string            // 可选：抄送人
+	StoryID         string            // 可选：关联需求 ID（支持多 ID 查询）
+	IterationID     string            // 可选：迭代 ID（支持枚举查询）
+	Priority        string            // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
+	PriorityLabel   string            // 可选：优先级（推荐使用）
+	Label           string            // 可选：标签（支持枚举查询）
+	Progress        string            // 可选：进度
+	Begin           string            // 可选：预计开始（支持时间查询）
+	Due             string            // 可选：预计结束（支持时间查询）
+	Created         string            // 可选：创建时间（支持时间查询）
+	Modified        string            // 可选：最后修改时间（支持时间查询）
+	Completed       string            // 可选：完成时间（支持时间查询）
+	Effort          string            // 可选：预估工时
+	EffortCompleted string            // 可选：完成工时
+	Exceed          string            // 可选：超出工时
+	Remain          string            // 可选：剩余工时
+	Fields          string            // 可选：返回字段列表
+	Limit           int               // 可选：返回数量限制（默认 30，最大 200）
+	Page            int               // 可选：页码
+	Order           string            // 可选：排序规则
+	CustomFields    map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -157,6 +158,7 @@ func (r *ListTasksRequest) ToParams() map[string]string {
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
@@ -339,29 +341,30 @@ func (r *GetTasksByViewConfIDRequest) ToParams() map[string]string {
 // CountTasksRequest 查询任务数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_tasks_count.html
 type CountTasksRequest struct {
-	WorkspaceID     string // 必填：项目 ID
-	ID              string // 可选：任务 ID（支持多 ID 查询）
-	Name            string // 可选：标题（支持模糊匹配）
-	Description     string // 可选：任务详细描述
-	Status          string // 可选：状态（open/progressing/done，支持枚举查询）
-	Owner           string // 可选：处理人（支持模糊匹配）
-	Creator         string // 可选：创建人（支持多人员查询）
-	CC              string // 可选：抄送人
-	StoryID         string // 可选：关联需求 ID（支持多 ID 查询）
-	IterationID     string // 可选：迭代 ID
-	Priority        string // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
-	PriorityLabel   string // 可选：优先级（推荐使用）
-	Label           string // 可选：标签（支持枚举查询）
-	Progress        string // 可选：进度
-	Begin           string // 可选：预计开始（支持时间查询）
-	Due             string // 可选：预计结束（支持时间查询）
-	Created         string // 可选：创建时间（支持时间查询）
-	Modified        string // 可选：最后修改时间（支持时间查询）
-	Completed       string // 可选：完成时间（支持时间查询）
-	Effort          string // 可选：预估工时
-	EffortCompleted string // 可选：完成工时
-	Exceed          string // 可选：超出工时
-	Remain          string // 可选：剩余工时
+	WorkspaceID     string            // 必填：项目 ID
+	ID              string            // 可选：任务 ID（支持多 ID 查询）
+	Name            string            // 可选：标题（支持模糊匹配）
+	Description     string            // 可选：任务详细描述
+	Status          string            // 可选：状态（open/progressing/done，支持枚举查询）
+	Owner           string            // 可选：处理人（支持模糊匹配）
+	Creator         string            // 可选：创建人（支持多人员查询）
+	CC              string            // 可选：抄送人
+	StoryID         string            // 可选：关联需求 ID（支持多 ID 查询）
+	IterationID     string            // 可选：迭代 ID
+	Priority        string            // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
+	PriorityLabel   string            // 可选：优先级（推荐使用）
+	Label           string            // 可选：标签（支持枚举查询）
+	Progress        string            // 可选：进度
+	Begin           string            // 可选：预计开始（支持时间查询）
+	Due             string            // 可选：预计结束（支持时间查询）
+	Created         string            // 可选：创建时间（支持时间查询）
+	Modified        string            // 可选：最后修改时间（支持时间查询）
+	Completed       string            // 可选：完成时间（支持时间查询）
+	Effort          string            // 可选：预估工时
+	EffortCompleted string            // 可选：完成工时
+	Exceed          string            // 可选：超出工时
+	Remain          string            // 可选：剩余工时
+	CustomFields    map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -391,5 +394,6 @@ func (r *CountTasksRequest) ToParams() map[string]string {
 	setOptional(params, "effort_completed", r.EffortCompleted)
 	setOptional(params, "exceed", r.Exceed)
 	setOptional(params, "remain", r.Remain)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }

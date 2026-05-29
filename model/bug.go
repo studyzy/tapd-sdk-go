@@ -222,6 +222,8 @@ type ListBugsRequest struct {
 	Limit  int    // 可选：返回数量限制，默认 30，最大 200
 	Page   int    // 可选：页码，默认 1
 	Order  string // 可选：排序规则，如 created desc
+
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -288,6 +290,7 @@ func (r *ListBugsRequest) ToParams() map[string]string {
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
@@ -650,6 +653,8 @@ type CountBugsRequest struct {
 
 	// 工时筛选
 	Effort string // 可选：预估工时
+
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -711,5 +716,6 @@ func (r *CountBugsRequest) ToParams() map[string]string {
 	setOptional(params, "sourcephase", r.SourcePhase)
 	setOptional(params, "estimate", r.Estimate)
 	setOptional(params, "effort", r.Effort)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }

@@ -83,13 +83,51 @@ CI（`.github/workflows/ci.yml`）依次运行 gofmt 检查、`go vet ./...`、`
 
 ### 自定义字段（重要特性）
 
-`Story`、`Task`、`Bug`（及 `model/story_extras.go`、`model/bug_extras.go` 等）实现了自定义的 `UnmarshalJSON` / `MarshalJSON`，将所有以 `custom_field_` 或 `custom_plan_field_` 开头的键路由到模型的 `CustomFields map[string]string` 中，而非丢弃。辅助函数位于 `model/custom_fields.go`：
+TAPD API 中存在三类动态字段前缀，SDK 必须全部支持：
 
-- `IsCustomField(key)` — 前缀检查。
-- `ExtractCustomFields(raw)` — 在反序列化时从原始 JSON map 中提取自定义键。
-- `MergeCustomFields(params, custom)` — 将自定义字段注入回请求参数。
+| 前缀 | 说明 | 出现位置 |
+|------|------|---------|
+| `custom_field_*` | 标准自定义字段（如 `custom_field_one`、`custom_field_9`） | 请求参数（过滤）+ 响应数据 |
+| `custom_plan_field_*` | 计划自定义字段（如 `custom_plan_field_1`） | 请求参数（过滤）+ 响应数据 |
+| `cus_` | 自定义字段别名（如 `cus_myfield`） | 仅请求参数（创建/更新时设值） |
 
-新增可能携带自定义字段的实体时，遵循相同的 UnmarshalJSON/MarshalJSON 模式（参见 `model/story.go` 作为标准示例）。
+辅助函数位于 `model/custom_fields.go`：
+
+- `IsCustomField(key)` — 判断 key 是否为以上三种前缀之一。
+- `ExtractCustomFields(raw)` — 反序列化时从原始 JSON map 中提取所有自定义字段键值对。
+- `MergeCustomFields(params, custom)` — 将自定义字段 map 注入请求参数 map。
+
+#### 响应对象处理模式
+
+携带自定义字段的实体结构体必须：
+
+1. 添加 `CustomFields map[string]string` 字段，标记 `json:"-"`
+2. 实现 `UnmarshalJSON`：先用 type alias 解析已知字段，再解析原始 JSON 为 `map[string]json.RawMessage`，通过 `ExtractCustomFields` 提取动态字段
+3. 实现 `MarshalJSON`：先序列化已知字段，再将 `CustomFields` 合并进 JSON 对象
+
+标准示例参见 `model/story.go` 中的 `Story` 结构体。
+
+#### 请求对象处理模式
+
+涉及自定义字段的请求结构体（Create/Update/List/Count）必须：
+
+1. 添加 `CustomFields map[string]string` 字段
+2. 在 `ToParams()` 方法末尾调用 `MergeCustomFields(params, r.CustomFields)`
+
+调用者可通过此 map 传入 `custom_field_*`、`custom_plan_field_*`、`cus_*` 等任意动态字段。
+
+#### 需要支持自定义字段的实体
+
+以下实体的 API 文档中明确包含自定义字段，SDK 必须完整支持：
+
+- **Story** — `custom_field_*`（最多 200 个）+ `custom_plan_field_*`（最多 10 个）
+- **Bug** — `custom_field_*`（最多 100 个）+ `custom_plan_field_*`
+- **Task** — `custom_field_*`（最多 50 个）
+- **TCase** — `custom_field_*`（最多 50 个）
+- **TestPlan** — `custom_field_*`（最多 50 个）
+- **Iteration** — `custom_field_*`（最多 50 个）
+- **LaunchForm** — `custom_field_*`（最多 40 个）
+- **MiniItem** — `custom_field_*`（最多 100 个）
 
 ### 认证
 

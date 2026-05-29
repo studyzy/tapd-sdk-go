@@ -1,6 +1,8 @@
 // Package model 中的 release.go 定义了 TAPD 发布计划数据模型
 package model
 
+import "encoding/json"
+
 // Release 表示 TAPD 发布计划
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/
 type Release struct {
@@ -135,6 +137,8 @@ func (r *UpdateReleaseRequest) ToParams() map[string]string {
 }
 
 // LaunchForm 表示发布评审单
+// LaunchForm 表示 TAPD 发布评审单
+// 自定义字段（custom_field_*）通过 CustomFields map 保留，不会丢失
 type LaunchForm struct {
 	ID             string `json:"id,omitempty"`
 	Title          string `json:"title,omitempty"`
@@ -167,6 +171,51 @@ type LaunchForm struct {
 	IterationID    string `json:"iteration_id,omitempty"`
 	ReleaseID      string `json:"release_id,omitempty"`
 	Flows          string `json:"flows,omitempty"`
+
+	// 自定义字段，key 为 custom_field_one、custom_field_two 等
+	CustomFields map[string]string `json:"-"`
+}
+
+// UnmarshalJSON 自定义反序列化，在解析标准字段的同时收集 custom_field_* 字段
+func (lf *LaunchForm) UnmarshalJSON(data []byte) error {
+	type Alias LaunchForm
+	var alias Alias
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	*lf = LaunchForm(alias)
+
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	lf.CustomFields = ExtractCustomFields(raw)
+	return nil
+}
+
+// MarshalJSON 自定义序列化，将 CustomFields 中的键值对合并到输出 JSON
+func (lf LaunchForm) MarshalJSON() ([]byte, error) {
+	type Alias LaunchForm
+	b, err := json.Marshal(Alias(lf))
+	if err != nil {
+		return nil, err
+	}
+	if len(lf.CustomFields) == 0 {
+		return b, nil
+	}
+
+	var base map[string]json.RawMessage
+	if err := json.Unmarshal(b, &base); err != nil {
+		return nil, err
+	}
+	for k, v := range lf.CustomFields {
+		raw, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		base[k] = raw
+	}
+	return json.Marshal(base)
 }
 
 // GetLaunchFormsRequest 获取发布评审列表的请求参数
@@ -267,9 +316,7 @@ func (r *UpdateLaunchFormRequest) ToParams() map[string]string {
 	setOptional(params, "release_result", r.ReleaseResult)
 	setOptional(params, "release_comment", r.ReleaseComment)
 	setOptional(params, "remark", r.Remark)
-	for k, v := range r.CustomFields {
-		setOptional(params, k, v)
-	}
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
@@ -302,18 +349,19 @@ func (r *CountLaunchFormsRequest) ToParams() map[string]string {
 
 // CreateLaunchFormRequest 创建发布评审单的请求参数
 type CreateLaunchFormRequest struct {
-	WorkspaceID    string // 必填：项目 ID
-	Creator        string // 必填：创建人
-	TemplateID     string // 必填：模板 ID
-	Title          string // 可选：标题
-	VersionType    string // 可选：版本类型
-	Baseline       string // 可选：基线
-	ReleaseModel   string // 可选：发布模块
-	RoadmapVersion string // 可选：路标版本
-	ReleaseType    string // 可选：发布类型
-	SignedBy       string // 可选：签发人
-	ArchivedBy     string // 可选：归档人
-	CC             string // 可选：抄送人
+	WorkspaceID    string            // 必填：项目 ID
+	Creator        string            // 必填：创建人
+	TemplateID     string            // 必填：模板 ID
+	Title          string            // 可选：标题
+	VersionType    string            // 可选：版本类型
+	Baseline       string            // 可选：基线
+	ReleaseModel   string            // 可选：发布模块
+	RoadmapVersion string            // 可选：路标版本
+	ReleaseType    string            // 可选：发布类型
+	SignedBy       string            // 可选：签发人
+	ArchivedBy     string            // 可选：归档人
+	CC             string            // 可选：抄送人
+	CustomFields   map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -332,6 +380,7 @@ func (r *CreateLaunchFormRequest) ToParams() map[string]string {
 	setOptional(params, "signed_by", r.SignedBy)
 	setOptional(params, "archived_by", r.ArchivedBy)
 	setOptional(params, "cc", r.CC)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 

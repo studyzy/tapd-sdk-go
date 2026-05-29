@@ -1,7 +1,10 @@
 // Package model 中的 iteration.go 定义了 TAPD 迭代数据模型
 package model
 
+import "encoding/json"
+
 // Iteration 表示 TAPD 迭代
+// 自定义字段（custom_field_*）通过 CustomFields map 保留，不会丢失
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iterations.html
 type Iteration struct {
 	// 基本信息
@@ -32,29 +35,75 @@ type Iteration struct {
 
 	// 附加信息
 	LockInfo string `json:"lock_info,omitempty"`
+
+	// 自定义字段，key 为 custom_field_1、custom_field_2 等
+	CustomFields map[string]string `json:"-"`
+}
+
+// UnmarshalJSON 自定义反序列化，在解析标准字段的同时收集 custom_field_* 字段
+func (i *Iteration) UnmarshalJSON(data []byte) error {
+	type Alias Iteration
+	var alias Alias
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	*i = Iteration(alias)
+
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	i.CustomFields = ExtractCustomFields(raw)
+	return nil
+}
+
+// MarshalJSON 自定义序列化，将 CustomFields 中的键值对合并到输出 JSON
+func (i Iteration) MarshalJSON() ([]byte, error) {
+	type Alias Iteration
+	b, err := json.Marshal(Alias(i))
+	if err != nil {
+		return nil, err
+	}
+	if len(i.CustomFields) == 0 {
+		return b, nil
+	}
+
+	var base map[string]json.RawMessage
+	if err := json.Unmarshal(b, &base); err != nil {
+		return nil, err
+	}
+	for k, v := range i.CustomFields {
+		raw, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		base[k] = raw
+	}
+	return json.Marshal(base)
 }
 
 // ListIterationsRequest 查询迭代列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iterations.html
 type ListIterationsRequest struct {
-	WorkspaceID    string // 必填：项目 ID
-	ID             string // 可选：迭代 ID（支持多 ID 查询）
-	Name           string // 可选：标题（支持模糊匹配）
-	Description    string // 可选：详细描述
-	StartDate      string // 可选：开始时间（支持时间查询）
-	EndDate        string // 可选：结束时间（支持时间查询）
-	WorkitemTypeID string // 可选：迭代类别
-	PlanAppID      string // 可选：计划应用 ID
-	Status         string // 可选：状态（open/done）
-	Creator        string // 可选：创建人
-	Created        string // 可选：创建时间（支持时间查询）
-	Modified       string // 可选：最后修改时间（支持时间查询）
-	Completed      string // 可选：完成时间
-	Locker         string // 可选：锁定人
-	Fields         string // 可选：返回字段列表
-	Limit          int    // 可选：返回数量限制
-	Page           int    // 可选：页码
-	Order          string // 可选：排序规则
+	WorkspaceID    string            // 必填：项目 ID
+	ID             string            // 可选：迭代 ID（支持多 ID 查询）
+	Name           string            // 可选：标题（支持模糊匹配）
+	Description    string            // 可选：详细描述
+	StartDate      string            // 可选：开始时间（支持时间查询）
+	EndDate        string            // 可选：结束时间（支持时间查询）
+	WorkitemTypeID string            // 可选：迭代类别
+	PlanAppID      string            // 可选：计划应用 ID
+	Status         string            // 可选：状态（open/done）
+	Creator        string            // 可选：创建人
+	Created        string            // 可选：创建时间（支持时间查询）
+	Modified       string            // 可选：最后修改时间（支持时间查询）
+	Completed      string            // 可选：完成时间
+	Locker         string            // 可选：锁定人
+	Fields         string            // 可选：返回字段列表
+	Limit          int               // 可选：返回数量限制
+	Page           int               // 可选：页码
+	Order          string            // 可选：排序规则
+	CustomFields   map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -79,24 +128,26 @@ func (r *ListIterationsRequest) ToParams() map[string]string {
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // CreateIterationRequest 创建迭代的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/add_iteration.html
 type CreateIterationRequest struct {
-	WorkspaceID    string // 必填：项目 ID
-	Name           string // 必填：标题
-	StartDate      string // 必填：开始日期
-	EndDate        string // 必填：结束日期
-	Creator        string // 必填：创建人
-	WorkitemTypeID string // 可选：迭代类别 ID
-	PlanAppID      string // 可选：计划应用 ID
-	EntityType     string // 可选：实体类型（iteration/release）
-	ParentID       string // 可选：上层计划 ID
-	Description    string // 可选：详细描述
-	Status         string // 可选：状态（open/done）
-	Label          string // 可选：标签（多个以竖线分隔）
+	WorkspaceID    string            // 必填：项目 ID
+	Name           string            // 必填：标题
+	StartDate      string            // 必填：开始日期
+	EndDate        string            // 必填：结束日期
+	Creator        string            // 必填：创建人
+	WorkitemTypeID string            // 可选：迭代类别 ID
+	PlanAppID      string            // 可选：计划应用 ID
+	EntityType     string            // 可选：实体类型（iteration/release）
+	ParentID       string            // 可选：上层计划 ID
+	Description    string            // 可选：详细描述
+	Status         string            // 可选：状态（open/done）
+	Label          string            // 可选：标签（多个以竖线分隔）
+	CustomFields   map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -115,20 +166,22 @@ func (r *CreateIterationRequest) ToParams() map[string]string {
 	setOptional(params, "description", r.Description)
 	setOptional(params, "status", r.Status)
 	setOptional(params, "label", r.Label)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // UpdateIterationRequest 更新迭代的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/update_iteration.html
 type UpdateIterationRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	ID          string // 必填：迭代 ID
-	CurrentUser string // 必填：变更人
-	Name        string // 可选：标题
-	StartDate   string // 可选：开始日期
-	EndDate     string // 可选：结束日期
-	Description string // 可选：详细描述
-	Status      string // 可选：状态（open/done）
+	WorkspaceID  string            // 必填：项目 ID
+	ID           string            // 必填：迭代 ID
+	CurrentUser  string            // 必填：变更人
+	Name         string            // 可选：标题
+	StartDate    string            // 可选：开始日期
+	EndDate      string            // 可选：结束日期
+	Description  string            // 可选：详细描述
+	Status       string            // 可选：状态（open/done）
+	CustomFields map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -143,26 +196,28 @@ func (r *UpdateIterationRequest) ToParams() map[string]string {
 	setOptional(params, "enddate", r.EndDate)
 	setOptional(params, "description", r.Description)
 	setOptional(params, "status", r.Status)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // CountIterationsRequest 查询迭代数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iterations_count.html
 type CountIterationsRequest struct {
-	WorkspaceID    string // 必填：项目 ID
-	ID             string // 可选：迭代 ID（支持多 ID 查询）
-	Name           string // 可选：标题（支持模糊匹配）
-	Description    string // 可选：详细描述
-	StartDate      string // 可选：开始时间
-	EndDate        string // 可选：结束时间
-	WorkitemTypeID string // 可选：迭代类别
-	PlanAppID      string // 可选：计划应用 ID
-	Status         string // 可选：状态（open/done）
-	Creator        string // 可选：创建人
-	Created        string // 可选：创建时间（支持时间查询）
-	Modified       string // 可选：最后修改时间（支持时间查询）
-	Completed      string // 可选：完成时间
-	Locker         string // 可选：锁定人
+	WorkspaceID    string            // 必填：项目 ID
+	ID             string            // 可选：迭代 ID（支持多 ID 查询）
+	Name           string            // 可选：标题（支持模糊匹配）
+	Description    string            // 可选：详细描述
+	StartDate      string            // 可选：开始时间
+	EndDate        string            // 可选：结束时间
+	WorkitemTypeID string            // 可选：迭代类别
+	PlanAppID      string            // 可选：计划应用 ID
+	Status         string            // 可选：状态（open/done）
+	Creator        string            // 可选：创建人
+	Created        string            // 可选：创建时间（支持时间查询）
+	Modified       string            // 可选：最后修改时间（支持时间查询）
+	Completed      string            // 可选：完成时间
+	Locker         string            // 可选：锁定人
+	CustomFields   map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -183,6 +238,7 @@ func (r *CountIterationsRequest) ToParams() map[string]string {
 	setOptional(params, "modified", r.Modified)
 	setOptional(params, "completed", r.Completed)
 	setOptional(params, "locker", r.Locker)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
