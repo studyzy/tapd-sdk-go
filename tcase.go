@@ -94,3 +94,9 @@ func (c *Client) CreateTCaseCategory(ctx context.Context, req *model.CreateTCase
 func (c *Client) GetStoryByTCaseID(ctx context.Context, req *model.GetStoryByTCaseIDRequest) (json.RawMessage, error) {
 	return c.doGet(ctx, "/tcases/get_story_by_tcase_id", req.ToParams())
 }
+
+// GetTCaseFieldsInfo 获取测试用例所有字段及候选值
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_fields_info.html
+func (c *Client) GetTCaseFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
+	return c.doGet(ctx, "/tcases/get_fields_info", req.ToParams())
+}

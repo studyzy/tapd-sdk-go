@@ -26,7 +26,7 @@ func (c *Client) GetCommitMsg(ctx context.Context, req *model.GetCommitMsgReques
 // ListReleases 查询发布计划列表
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_new_releases.html
 func (c *Client) ListReleases(ctx context.Context, req *model.ListReleasesRequest) ([]model.Release, error) {
-	data, err := c.doGet(ctx, "/releases", req.ToParams())
+	data, err := c.doGet(ctx, "/new_releases", req.ToParams())
 	if err != nil {
 		return nil, err
 	}

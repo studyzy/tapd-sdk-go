@@ -12,8 +12,8 @@ import (
 
 func TestCreateRelease(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/releases" {
-			t.Errorf("unexpected path: %s, want /releases", r.URL.Path)
+		if r.URL.Path != "/new_releases" {
+			t.Errorf("unexpected path: %s, want /new_releases", r.URL.Path)
 		}
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
@@ -55,8 +55,8 @@ func TestCreateRelease(t *testing.T) {
 
 func TestUpdateRelease(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/releases" {
-			t.Errorf("unexpected path: %s, want /releases", r.URL.Path)
+		if r.URL.Path != "/new_releases" {
+			t.Errorf("unexpected path: %s, want /new_releases", r.URL.Path)
 		}
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
@@ -89,8 +89,8 @@ func TestUpdateRelease(t *testing.T) {
 
 func TestCountReleases(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/releases/count" {
-			t.Errorf("unexpected path: %s, want /releases/count", r.URL.Path)
+		if r.URL.Path != "/new_releases/count" {
+			t.Errorf("unexpected path: %s, want /new_releases/count", r.URL.Path)
 		}
 		if r.URL.Query().Get("workspace_id") != "11111111" {
 			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "11111111")

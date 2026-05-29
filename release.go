@@ -7,9 +7,9 @@ import (
 )
 
 // CreateRelease 创建发布计划
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/add_release.html
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/add_new_release.html
 func (c *Client) CreateRelease(ctx context.Context, req *model.CreateReleaseRequest) (*model.Release, error) {
-	data, err := c.doPost(ctx, "/releases", req.ToParams())
+	data, err := c.doPost(ctx, "/new_releases", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -18,9 +18,9 @@ func (c *Client) CreateRelease(ctx context.Context, req *model.CreateReleaseRequ
 }
 
 // UpdateRelease 更新发布计划
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/update_release.html
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/update_new_release.html
 func (c *Client) UpdateRelease(ctx context.Context, req *model.UpdateReleaseRequest) (*model.Release, error) {
-	data, err := c.doPost(ctx, "/releases", req.ToParams())
+	data, err := c.doPost(ctx, "/new_releases", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
@@ -29,9 +29,9 @@ func (c *Client) UpdateRelease(ctx context.Context, req *model.UpdateReleaseRequ
 }
 
 // CountReleases 获取发布计划数量
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_releases_count.html
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_new_releases_count.html
 func (c *Client) CountReleases(ctx context.Context, req *model.CountReleasesRequest) (int, error) {
-	data, err := c.doGet(ctx, "/releases/count", req.ToParams())
+	data, err := c.doGet(ctx, "/new_releases/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}

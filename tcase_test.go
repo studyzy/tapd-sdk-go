@@ -126,3 +126,26 @@ func TestBatchCreateTCases(t *testing.T) {
 		t.Error("expected non-nil result")
 	}
 }
+
+func TestGetTCaseFieldsInfo(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tcases/get_fields_info" {
+			t.Errorf("unexpected path: %s, want /tcases/get_fields_info", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "1" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "1")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"id":{"html_type":"input","label":"ID","options":[],"name":"id"},"name":{"html_type":"input","label":"用例名称","options":[],"name":"name"}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.GetTCaseFieldsInfo(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "1"})
+	if err != nil {
+		t.Fatalf("GetTCaseFieldsInfo() unexpected error: %v", err)
+	}
+	if result == nil {
+		t.Error("expected non-nil result")
+	}
+}

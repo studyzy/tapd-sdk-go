@@ -45,8 +45,8 @@ func TestGetCommitMsg(t *testing.T) {
 
 func TestListReleases(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/releases" {
-			t.Errorf("unexpected path: %s, want /releases", r.URL.Path)
+		if r.URL.Path != "/new_releases" {
+			t.Errorf("unexpected path: %s, want /new_releases", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":1,"data":[{"Release":{"id":"10","name":"v1.0","status":"open","workspace_id":"1","creator":"admin","startdate":"2026-01-01","enddate":"2026-06-30"}}],"info":"success"}`))
