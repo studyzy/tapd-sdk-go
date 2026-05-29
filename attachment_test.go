@@ -166,8 +166,8 @@ func TestGetAttachments_APIError(t *testing.T) {
 
 func TestGetOneAttachment(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/files/get_one_attachment" {
-			t.Errorf("unexpected path: %s, want /files/get_one_attachment", r.URL.Path)
+		if r.URL.Path != "/attachments/down" {
+			t.Errorf("unexpected path: %s, want /attachments/down", r.URL.Path)
 		}
 		if r.URL.Query().Get("workspace_id") != "11111111" {
 			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "11111111")

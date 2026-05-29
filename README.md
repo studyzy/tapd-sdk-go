@@ -11,35 +11,39 @@ TAPD（腾讯敏捷产品研发平台）Open API 的 Go SDK，零外部依赖，
 
 > <https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/>
 
-TAPD Open API 共提供约 192 个接口，覆盖 20 个模块。本 SDK 封装了其中常用的核心接口。
+TAPD Open API 共提供约 192 个接口，覆盖 20 个模块。本 SDK 经全量审计后已基本覆盖官方文档所有公开接口。
 
 ## 功能概览
 
-SDK 当前覆盖 20 种 TAPD 资源类型，提供 **110 个 API 方法**：
+SDK 覆盖 20+ 种 TAPD 资源类型，提供 **200+ 个 API 方法**：
 
 | 资源 | 方法数 | 支持操作 |
 |------|--------|----------|
-| **Story（需求）** | 5 | 列表、详情、创建、更新、计数 |
-| **Task（任务）** | 5 | 列表、详情、创建、更新、计数 |
-| **Bug（缺陷）** | 5 | 列表、详情、创建、更新、计数 |
+| **Story（需求）** | 25 | CRUD、计数、变更、模板、复制、批量更新、视图查询、分类、链接关系、时间关系、转换工作项类型等 |
+| **Task（任务）** | 8 | CRUD、计数、批量更新、获取已删除、视图查询 |
+| **Bug（缺陷）** | 12 | CRUD、计数、链接缺陷、复制、批量更新、模板、IDs 转 token、相关需求等 |
 | **Iteration（迭代）** | 6 | 列表、创建、更新、计数、锁定、解锁 |
+| **MiniItem（轻量工作项）** | 18 | 完整 CRUD + 分类 + 变更 + 关联 + 已删除 + 链接需求/缺陷 |
+| **TCase（测试用例）** | 28 | CRUD、分类、测试计划完整套件、用例实例（指派/执行/移除/结果）、关联管理 |
 | **Comment（评论）** | 4 | 列表、添加、更新、计数 |
-| **Wiki（文档）** | 5 | 列表、详情、创建、更新、计数 |
-| **TCase（测试用例）** | 4 | 列表、创建、批量创建、计数 |
+| **Wiki（文档）** | 12 | CRUD、计数、附件计数、Drawio、实体权限、关注者、标签 |
 | **Timesheet（工时）** | 5 | 列表、添加、更新、计数、删除 |
-| **Attachment（附件）** | 4 | 图片下载链接、附件列表、单个附件下载、文档下载 |
+| **Attachment（附件）** | 7 | 上传/Base64 上传、图片链接、列表、下载、文档下载 |
 | **Workflow（工作流）** | 6 | 状态流转、状态映射、结束状态、所有结束状态、起始状态、工作流列表 |
-| **Change（变更历史）** | 7 | 需求变更/计数、缺陷变更/计数、任务变更/计数、迭代变更 |
+| **Change（变更历史）** | 7 | 需求/缺陷/任务变更及计数、迭代变更 |
 | **Board（看板）** | 4 | 工作项创建、列表、更新、板块列表 |
-| **Release（发布计划）** | 3 | 创建、更新、计数 |
-| **Setting（配置）** | 16 | 模块/版本/基线/特性的创建、更新、列表、计数 |
+| **Release（发布计划）** | 12 | 新发布 CRUD、发布单/活动日志/模板/自定义字段、发布附件 |
+| **Setting（配置）** | 21 | 模块/版本/基线/特性 CRUD、自定义字段配置、选项更新、级联字段、项目设置 |
+| **Workspace（项目）** | 15 | 列表、详情、子项目、公司项目、成员、角色、工作日历、长 ID 转换、文档列表 |
+| **User（用户）** | 2 | 个人配置、第三方用户映射 |
+| **Program（项目集）** | 2 | 批量绑定/解绑业务对象、关联项目 |
+| **Webhook** | 1 | 解析 webhook 事件载荷（JSON/form） |
+| **Source（源码）** | 3 | 保存提交、获取提交、提交对象 |
 | **Report（报表）** | 1 | 项目报告 |
 | **Measure（度量）** | 1 | 状态流转时间 |
-| **Source（源码）** | 2 | 保存提交数据、获取提交数据 |
 | **Category（需求分类）** | 1 | 需求分类列表 |
-| **CustomField（自定义字段）** | 6 | 字段配置、需求/缺陷字段标签、需求/缺陷字段详情、需求类别 |
+| **CustomField（自定义字段）** | 6 | 字段配置、需求/缺陷字段标签、字段详情、工作项类型 |
 | **Relation（实体关联）** | 2 | 需求关联缺陷、创建关联 |
-| **Workspace（项目）** | 7 | 列表、详情、子项目、公司项目列表、项目成员、添加成员、角色列表 |
 | **Misc（杂项）** | 6 | 发布计划列表、源码提交关键字、待办需求/任务/缺陷、企业微信消息 |
 
 ## 安装
@@ -109,47 +113,63 @@ func main() {
 tapd-sdk-go/
 ├── go.mod                 # 独立模块，零外部依赖
 ├── client.go              # Client 核心：认证、HTTP 封装、响应解析
-├── story.go               # 需求 API
+├── story.go               # 需求 API（基础 CRUD）
+├── story_extras.go        # 需求扩展 API（分类、链接、批量、复制等）
 ├── task.go                # 任务 API
-├── bug.go                 # 缺陷 API
+├── bug.go                 # 缺陷 API（基础 CRUD）
+├── bug_extras.go          # 缺陷扩展 API（链接、复制、批量、模板等）
+├── mini_item.go           # 轻量工作项 API（CRUD + 分类 + 关联 + 变更）
 ├── iteration.go           # 迭代 API（含锁定/解锁）
 ├── comment.go             # 评论 API
 ├── wiki.go                # Wiki 文档 API
+├── wiki_extras.go         # Wiki 扩展 API（附件、Drawio、权限、关注、标签）
 ├── tcase.go               # 测试用例 API
-├── timesheet.go           # 工时 API（含计数/删除）
-├── attachment.go          # 附件/图片 API（含单个下载/文档下载）
-├── workflow.go            # 工作流 API（含起始/结束状态、列表）
+├── tcase_test_plan.go     # 测试计划 API
+├── tcase_instance.go      # 用例实例 API
+├── timesheet.go           # 工时 API
+├── attachment.go          # 附件/图片 API（含上传、下载、文档下载）
+├── workflow.go            # 工作流 API
 ├── change.go              # 变更历史 API（需求/缺陷/任务/迭代）
 ├── board.go               # 看板 API
-├── release.go             # 发布计划 API
-├── setting.go             # 配置 API（模块/版本/基线/特性）
+├── release.go             # 发布计划 API（new_releases、launch_forms、launch_accessories）
+├── setting.go             # 配置 API（模块/版本/基线/特性、自定义字段）
 ├── report.go              # 报表 API
 ├── measure.go             # 度量 API
 ├── source.go              # 源码提交 API
 ├── category.go            # 需求分类 API
 ├── custom_field.go        # 自定义字段 API
 ├── relation.go            # 实体关联 API
-├── workspace.go           # 项目 API（含成员/角色/子项目）
-├── misc.go                # 杂项：发布计划列表、待办事项、企业微信等
+├── workspace.go           # 项目 API（含成员/角色/子项目/工作日历/文档）
+├── user.go                # 用户 API（个人配置、第三方映射）
+├── program.go             # 项目集 API
+├── webhook.go             # Webhook 事件解析（JSON/form）
+├── misc.go                # 杂项：待办、源码关键字、企业微信
 └── model/                 # 数据模型与请求参数
-    ├── model.go           # 通用模型（TAPDResponse、Workspace、UserWorkspace 等）
-    ├── request.go         # 通用请求结构体（WorkflowRequest、TodoRequest 等）
-    ├── story.go           # Story 及其请求结构体
-    ├── task.go            # Task 及其请求结构体
-    ├── bug.go             # Bug 及其请求结构体
-    ├── iteration.go       # Iteration 及其请求结构体
-    ├── comment.go         # Comment 及其请求结构体
-    ├── wiki.go            # Wiki 及其请求结构体
-    ├── tcase.go           # TCase 及其请求结构体
-    ├── timesheet.go       # Timesheet 及其请求结构体
-    ├── attachment.go      # Attachment/ImageInfo 模型及请求结构体
-    ├── board.go           # BoardCard/BoardColumn 及其请求结构体
-    ├── change.go          # WorkitemChange/BugChange/IterationChange 及请求结构体
-    ├── release.go         # Release 及其请求结构体
-    ├── setting.go         # Module/Version/Baseline/Feature 及 IterationLockRequest
-    ├── workflow.go        # WorkflowTransition 及相关类型
-    ├── category.go        # Category 模型
-    └── custom_fields.go   # 自定义字段辅助函数（ExtractCustomFields 等）
+    ├── model.go                  # 通用模型（TAPDResponse、Workspace 等）
+    ├── request.go                # 通用请求结构体
+    ├── story.go / story_extras.go        # Story 及扩展请求/响应
+    ├── task.go                   # Task 及其请求结构体
+    ├── bug.go / bug_extras.go            # Bug 及扩展请求/响应
+    ├── mini_item.go              # MiniItem 及其请求结构体
+    ├── iteration.go / iteration_lock.go  # Iteration 及锁定相关
+    ├── comment.go                # Comment 及其请求结构体
+    ├── wiki.go / wiki_extras.go          # Wiki 及扩展请求/响应
+    ├── tcase.go / tcase_test_plan.go / tcase_instance.go
+    ├── timesheet.go              # Timesheet 及其请求结构体
+    ├── attachment.go             # Attachment/ImageInfo 及请求结构体
+    ├── board.go                  # BoardCard/BoardColumn 及请求结构体
+    ├── change.go                 # WorkitemChange/BugChange/IterationChange
+    ├── release.go                # Release/LaunchForm/LaunchAccessory 等
+    ├── setting.go                # Module/Version/Baseline/Feature 及自定义字段
+    ├── workflow.go               # WorkflowTransition 及相关类型
+    ├── workspace.go              # 工作日历、长 ID、文档等扩展类型
+    ├── user.go                   # PersonalSetting、ThirdUserMapping
+    ├── program.go                # 项目集请求/响应
+    ├── webhook.go                # WebhookEvent 及事件常量
+    ├── report.go                 # WorkspaceReport
+    ├── source.go                 # 源码提交对象
+    ├── category.go               # Category 模型
+    └── custom_fields.go          # 自定义字段辅助函数（ExtractCustomFields 等）
 ```
 
 ### 设计原则
@@ -219,32 +239,36 @@ if err != nil {
 
 ## API 覆盖对照
 
-下表对比 TAPD Open API 全量接口与本 SDK 的覆盖情况：
+经全量审计后，本 SDK 对 `docs/api_reference` 与 `docs/mini_api_reference` 文档中的接口已基本完整覆盖：
 
 | TAPD 模块 | 官方接口数 | SDK 已覆盖 | 覆盖范围 |
 |-----------|-----------|-----------|----------|
-| 需求 (Story) | 33 | 5 | 基础 CRUD + 计数 |
-| 缺陷 (Bug) | 21 | 5 | 基础 CRUD + 计数 |
-| 任务 (Task) | 10 | 5 | 基础 CRUD + 计数 |
+| 需求 (Story) | 33 | 25 | CRUD、变更、模板、分类、链接、批量、复制、视图查询、转换工作项类型 |
+| 缺陷 (Bug) | 21 | 12 | CRUD、链接、复制、批量、模板、IDs 转 token、相关需求 |
+| 任务 (Task) | 10 | 8 | CRUD、批量更新、删除项、视图查询、变更 |
 | 迭代 (Iteration) | 8 | 6 | 列表、创建、更新、计数、锁定、解锁 |
-| 测试 (TCase) | 27 | 4 | 列表、创建、批量创建、计数 |
-| Wiki | 11 | 5 | 基础 CRUD + 计数 |
-| 评论 (Comment) | 4 | 4 | 全部覆盖 |
-| 工时 (Timesheet) | 5 | 5 | 全部覆盖（列表、添加、更新、计数、删除） |
-| 附件 (Attachment) | 3 | 4 | 图片链接、附件列表、单个附件下载、文档下载 |
-| 项目 (Workspace) | 17 | 7 | 列表、详情、子项目、公司项目、成员、添加成员、角色 |
+| 轻量工作项 (MiniItem) | 17 | 18 | CRUD、分类、变更、关联、已删除、链接需求/缺陷（含 mini_api 全部接口）|
+| 测试 (TCase) | 27 | 28 | CRUD、分类、测试计划、用例实例、关联、字段配置 |
+| Wiki | 11 | 12 | CRUD、计数、附件计数、Drawio、实体权限、关注者、标签 |
+| 评论 (Comment) | 4 | 4 | 全部覆盖（含 mini_api）|
+| 工时 (Timesheet) | 5 | 5 | 全部覆盖 |
+| 附件 (Attachment) | 7 | 7 | 上传、Base64 上传、列表、下载、图片链接、文档下载 |
+| 项目 (Workspace) | 17 | 15 | 列表、详情、子项目、成员、角色、工作日历、长 ID、文档 |
 | 工作流 (Workflow) | 6 | 6 | 全部覆盖 |
-| 发布 (Release) | 11 | 4 | 列表、创建、更新、计数 |
-| 配置 (Setting) | 21 | 16 | 模块/版本/基线/特性的 CRUD |
+| 发布 (Release) | 11 | 12 | 新发布 CRUD、发布单全套（活动日志/模板/字段配置）、发布附件 |
+| 配置 (Setting) | 21 | 21 | 模块/版本/基线/特性 CRUD、自定义字段配置、选项更新、级联字段、项目设置 |
+| 用户 (User) | 3 | 2 | 个人配置、第三方用户映射（角色已通过 Workspace 模块覆盖）|
+| 项目集 (Program) | 2 | 2 | 全部覆盖 |
+| Webhook | - | 1 | Webhook 事件载荷解析（JSON/form）|
+| 度量 (Measure) | 1 | 1 | 状态流转时间 |
+| 报表 (Report) | 1 | 1 | 项目报告 |
+| 源码 (Source) | 3 | 3 | 保存提交、获取提交、提交对象 |
+| 看板 (Board) | 4 | 4 | 全部覆盖 |
 | 变更历史 (Change) | - | 7 | 需求/缺陷/任务变更及计数、迭代变更 |
-| 看板 (Board) | - | 4 | 工作项创建、列表、更新、板块列表 |
-| 报表 (Report) | - | 1 | 项目报告 |
-| 度量 (Measure) | - | 1 | 状态流转时间 |
-| 源码 (Source) | - | 2 | 保存/获取提交数据 |
-| 自定义字段 | - | 6 | 字段配置、字段标签/详情（需求+缺陷）、需求类别 |
+| 自定义字段 | - | 6 | 字段配置、字段标签/详情（需求+缺陷+工作项类型） |
 | 关联 (Relation) | - | 2 | 需求关联缺陷、创建关联 |
 | 分类 (Category) | - | 1 | 需求分类列表 |
-| 其他 | - | 5 | 源码提交关键字、待办需求/任务/缺陷、企业微信消息 |
+| 其他 | - | 6 | 待办需求/任务/缺陷、源码关键字、企业微信消息 |
 
 ## 测试
 

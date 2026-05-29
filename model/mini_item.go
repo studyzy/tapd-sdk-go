@@ -178,29 +178,30 @@ func (r *UpdateMiniItemRequest) ToParams() map[string]string {
 
 // ListMiniItemsRequest 查询工作项列表的请求参数
 type ListMiniItemsRequest struct {
-	WorkspaceID    string // 必填：空间ID
-	ID             string // 可选：工作项ID，支持多ID查询
-	Name           string // 可选：标题，支持模糊匹配
-	Priority       string // 可选：优先级，支持枚举查询
-	Status         string // 可选：状态，支持枚举查询
-	Label          string // 可选：标签，支持枚举查询
-	Owner          string // 可选：处理人，支持模糊匹配
-	IsArchived     string // 可选：是否归档
-	Creator        string // 可选：创建人，支持多人查询
-	Begin          string // 可选：预计开始，支持时间范围查询
-	Due            string // 可选：预计结束，支持时间范围查询
-	Created        string // 可选：创建时间，支持时间范围查询
-	Modified       string // 可选：最后修改时间，支持时间范围查询
-	Completed      string // 可选：完成时间，支持时间范围查询
-	ProgressManual string // 可选：进度
-	CategoryID     string // 可选：分组，支持枚举查询
-	ParentID       string // 可选：父工作项
-	ChildrenID     string // 可选：子工作项
-	Description    string // 可选：详细描述，支持模糊匹配
-	Limit          int    // 可选：每页数量，默认30，最大200
-	Page           int    // 可选：页码，默认1
-	Order          string // 可选：排序规则
-	Fields         string // 可选：返回字段，逗号分隔
+	WorkspaceID    string            // 必填：空间ID
+	ID             string            // 可选：工作项ID，支持多ID查询
+	Name           string            // 可选：标题，支持模糊匹配
+	Priority       string            // 可选：优先级，支持枚举查询
+	Status         string            // 可选：状态，支持枚举查询
+	Label          string            // 可选：标签，支持枚举查询
+	Owner          string            // 可选：处理人，支持模糊匹配
+	IsArchived     string            // 可选：是否归档
+	Creator        string            // 可选：创建人，支持多人查询
+	Begin          string            // 可选：预计开始，支持时间范围查询
+	Due            string            // 可选：预计结束，支持时间范围查询
+	Created        string            // 可选：创建时间，支持时间范围查询
+	Modified       string            // 可选：最后修改时间，支持时间范围查询
+	Completed      string            // 可选：完成时间，支持时间范围查询
+	ProgressManual string            // 可选：进度
+	CategoryID     string            // 可选：分组，支持枚举查询
+	ParentID       string            // 可选：父工作项
+	ChildrenID     string            // 可选：子工作项
+	Description    string            // 可选：详细描述，支持模糊匹配
+	Limit          int               // 可选：每页数量，默认30，最大200
+	Page           int               // 可选：页码，默认1
+	Order          string            // 可选：排序规则
+	Fields         string            // 可选：返回字段，逗号分隔
+	CustomFields   map[string]string // 可选：自定义字段过滤，key 为 custom_field_* 或 cus_别名
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -230,30 +231,32 @@ func (r *ListMiniItemsRequest) ToParams() map[string]string {
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
 // CountMiniItemsRequest 查询工作项数量的请求参数
 type CountMiniItemsRequest struct {
-	WorkspaceID    string // 必填：空间ID
-	ID             string // 可选：工作项ID，支持多ID查询
-	Name           string // 可选：标题，支持模糊匹配
-	Priority       string // 可选：优先级，支持枚举查询
-	Status         string // 可选：状态，支持枚举查询
-	Label          string // 可选：标签，支持枚举查询
-	Owner          string // 可选：处理人，支持模糊匹配
-	Creator        string // 可选：创建人，支持模糊匹配
-	Begin          string // 可选：预计开始，支持时间范围查询
-	Due            string // 可选：预计结束，支持时间范围查询
-	Created        string // 可选：创建时间，支持时间范围查询
-	Modified       string // 可选：最后修改时间，支持时间范围查询
-	Completed      string // 可选：完成时间，支持时间范围查询
-	ProgressManual string // 可选：进度
-	CategoryID     string // 可选：分组，支持枚举查询
-	ParentID       string // 可选：父工作项
-	ChildrenID     string // 可选：子工作项
-	Description    string // 可选：详细描述，支持模糊匹配
-	IsArchived     string // 可选：是否归档
+	WorkspaceID    string            // 必填：空间ID
+	ID             string            // 可选：工作项ID，支持多ID查询
+	Name           string            // 可选：标题，支持模糊匹配
+	Priority       string            // 可选：优先级，支持枚举查询
+	Status         string            // 可选：状态，支持枚举查询
+	Label          string            // 可选：标签，支持枚举查询
+	Owner          string            // 可选：处理人，支持模糊匹配
+	Creator        string            // 可选：创建人，支持模糊匹配
+	Begin          string            // 可选：预计开始，支持时间范围查询
+	Due            string            // 可选：预计结束，支持时间范围查询
+	Created        string            // 可选：创建时间，支持时间范围查询
+	Modified       string            // 可选：最后修改时间，支持时间范围查询
+	Completed      string            // 可选：完成时间，支持时间范围查询
+	ProgressManual string            // 可选：进度
+	CategoryID     string            // 可选：分组，支持枚举查询
+	ParentID       string            // 可选：父工作项
+	ChildrenID     string            // 可选：子工作项
+	Description    string            // 可选：详细描述，支持模糊匹配
+	IsArchived     string            // 可选：是否归档
+	CustomFields   map[string]string // 可选：自定义字段过滤，key 为 custom_field_* 或 cus_别名
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -279,6 +282,7 @@ func (r *CountMiniItemsRequest) ToParams() map[string]string {
 	setOptional(params, "children_id", r.ChildrenID)
 	setOptional(params, "description", r.Description)
 	setOptional(params, "is_archived", r.IsArchived)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 
