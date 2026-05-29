@@ -19,6 +19,30 @@ type Attachment struct {
 	DownloadURL string `json:"download_url,omitempty"`
 }
 
+// UnmarshalJSON 自定义解码器，兼容 TAPD 某些接口返回 entry_id 为数字的情况
+func (a *Attachment) UnmarshalJSON(data []byte) error {
+	type shadow Attachment
+	aux := struct {
+		EntryID json.RawMessage `json:"entry_id,omitempty"`
+		*shadow
+	}{shadow: (*shadow)(a)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if len(aux.EntryID) == 0 || string(aux.EntryID) == "null" {
+		return nil
+	}
+	if aux.EntryID[0] == '"' {
+		return json.Unmarshal(aux.EntryID, &a.EntryID)
+	}
+	var n json.Number
+	if err := json.Unmarshal(aux.EntryID, &n); err != nil {
+		return err
+	}
+	a.EntryID = n.String()
+	return nil
+}
+
 // ImageInfo 表示 TAPD 图片下载信息
 type ImageInfo struct {
 	Type        string `json:"type,omitempty"`
