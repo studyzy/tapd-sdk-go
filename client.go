@@ -136,6 +136,12 @@ func (c *Client) applyAuth(req *http.Request) {
 	req.Header.Set("Authorization", c.authHeader)
 }
 
+// DoGet 发送 GET 请求到指定端点，解析 TAPD 统一响应格式并返回 data 字段。
+// 用于 CLI 层需要直接发送带自定义参数的请求场景（如 --filter 高级过滤）。
+func (c *Client) DoGet(ctx context.Context, endpoint string, params map[string]string) (json.RawMessage, error) {
+	return c.doGet(ctx, endpoint, params)
+}
+
 // doGet 发送 GET 请求到指定端点，解析 TAPD 统一响应格式并返回 data 字段
 func (c *Client) doGet(ctx context.Context, endpoint string, params map[string]string) (json.RawMessage, error) {
 	reqURL, err := url.Parse(c.baseURL + endpoint)

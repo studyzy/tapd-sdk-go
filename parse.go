@@ -5,6 +5,13 @@ import (
 	"fmt"
 )
 
+// ParseList 解析 TAPD 列表响应格式 [{"Key": {...}}, ...]
+// key 为 TAPD 响应中的包裹键名，如 "Story"、"Bug" 等。
+// 不含指定 key 的条目会被跳过；含指定 key 但反序列化失败的条目会返回错误。
+func ParseList[T any](data json.RawMessage, key string) ([]T, error) {
+	return parseList[T](data, key)
+}
+
 // parseList 解析 TAPD 列表响应格式 [{"Key": {...}}, ...]
 // key 为 TAPD 响应中的包裹键名，如 "Story"、"Bug" 等。
 // 不含指定 key 的条目会被跳过；含指定 key 但反序列化失败的条目会返回错误。
