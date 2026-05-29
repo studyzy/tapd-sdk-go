@@ -183,3 +183,134 @@ func (r *CountIterationsRequest) ToParams() map[string]string {
 	setOptional(params, "completed", r.Completed)
 	return params
 }
+
+// GetCustomDashBoardContentRequest 获取迭代仪表盘自定义卡片内容的请求参数
+type GetCustomDashBoardContentRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	IterationID string // 必填：迭代 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetCustomDashBoardContentRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"iteration_id": r.IterationID,
+	}
+}
+
+// UpdateCustomDashBoardContentRequest 修改迭代仪表盘自定义卡片内容的请求参数
+type UpdateCustomDashBoardContentRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	IterationID string // 必填：迭代 ID
+	CardID      string // 必填：卡片 ID
+	Content     string // 必填：卡片内容，支持富文本
+	PlanAppID   string // 可选：计划应用 ID，默认为 0 代表迭代应用
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *UpdateCustomDashBoardContentRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"iteration_id": r.IterationID,
+		"card_id":      r.CardID,
+		"content":      r.Content,
+	}
+	setOptional(params, "plan_app_id", r.PlanAppID)
+	return params
+}
+
+// GetIterationTemplateFieldsRequest 获取迭代模板字段配置的请求参数
+type GetIterationTemplateFieldsRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	TemplateID  string // 必填：迭代模板 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetIterationTemplateFieldsRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"template_id":  r.TemplateID,
+	}
+}
+
+// GetDefaultTemplateFieldsByWorkitemTypeIDRequest 获取迭代类别默认模板字段配置的请求参数
+type GetDefaultTemplateFieldsByWorkitemTypeIDRequest struct {
+	WorkspaceID    string // 必填：项目 ID
+	WorkitemTypeID string // 必填：迭代类别 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetDefaultTemplateFieldsByWorkitemTypeIDRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id":     r.WorkspaceID,
+		"workitem_type_id": r.WorkitemTypeID,
+	}
+}
+
+// PlanApp 表示计划应用
+type PlanApp struct {
+	ID          string `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	PlanIDField string `json:"plan_id_field,omitempty"`
+	Creator     string `json:"creator,omitempty"`
+	Created     string `json:"created,omitempty"`
+	Modifier    string `json:"modifier,omitempty"`
+	Modified    string `json:"modified,omitempty"`
+}
+
+// GetPlanAppsRequest 获取计划应用列表的请求参数
+type GetPlanAppsRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：计划应用 ID（支持多 ID 查询）
+	Name        string // 可选：标题（支持模糊匹配）
+	PlanIDField string // 可选：业务对象关联字段
+	Creator     string // 可选：创建人
+	Created     string // 可选：创建时间（支持时间查询）
+	Modifier    string // 可选：修改人
+	Modified    string // 可选：最后修改时间（支持时间查询）
+	Limit       int    // 可选：返回数量限制（默认 30，最大 200）
+	Page        int    // 可选：页码
+	Order       string // 可选：排序规则
+	Fields      string // 可选：返回字段
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetPlanAppsRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "plan_id_field", r.PlanIDField)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "modifier", r.Modifier)
+	setOptional(params, "modified", r.Modified)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
+	return params
+}
+
+// CountPlanAppsRequest 获取计划应用数量的请求参数
+type CountPlanAppsRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：计划应用 ID
+	Name        string // 可选：标题
+	Creator     string // 可选：创建人
+	Created     string // 可选：创建时间
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CountPlanAppsRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "created", r.Created)
+	return params
+}

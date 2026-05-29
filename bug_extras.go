@@ -80,3 +80,17 @@ func (c *Client) GetBugCustomFieldsSettings(ctx context.Context, req *model.Work
 	}
 	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
 }
+
+// BugFilterToQueryToken 将缺陷过滤条件转换成 QueryToken
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/filter_to_query_token.html
+func (c *Client) BugFilterToQueryToken(ctx context.Context, req *model.FilterToQueryTokenRequest) (*model.QueryTokenResponse, error) {
+	data, err := c.doPost(ctx, "/bugs/filter_to_query_token", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.QueryTokenResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse bug filter_to_query_token response: %w", err)
+	}
+	return &result, nil
+}

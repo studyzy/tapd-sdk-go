@@ -245,3 +245,139 @@ func (c *Client) BatchUpdateStory(ctx context.Context, req *model.BatchUpdateSto
 	}
 	return r.Msg, nil
 }
+
+// GetSecretInfo 获取需求保密信息
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_secret_info.html
+func (c *Client) GetSecretInfo(ctx context.Context, req *model.GetSecretInfoRequest) (*model.SecretInfo, error) {
+	data, err := c.doGet(ctx, "/stories/get_secret_info", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.SecretInfo
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse secret info: %w", err)
+	}
+	return &result, nil
+}
+
+// GetSecretStories 获取保密需求 ID 列表
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_secret_stories.html
+func (c *Client) GetSecretStories(ctx context.Context, req *model.GetSecretStoriesRequest) (*model.SecretStoriesList, error) {
+	data, err := c.doGet(ctx, "/secret_stories", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.SecretStoriesList
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse secret stories: %w", err)
+	}
+	return &result, nil
+}
+
+// CountSecretStories 获取保密需求数量
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_secret_stories_count.html
+func (c *Client) CountSecretStories(ctx context.Context, workspaceID string) (int, error) {
+	params := map[string]string{
+		"workspace_id": workspaceID,
+	}
+	data, err := c.doGet(ctx, "/secret_stories/count", params)
+	if err != nil {
+		return 0, err
+	}
+	return parseCount(data)
+}
+
+// BatchUpdateSecretInfo 批量修改需求的保密信息
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/batch_update_secret_info.html
+func (c *Client) BatchUpdateSecretInfo(ctx context.Context, req *model.BatchUpdateSecretInfoRequest) (string, error) {
+	data, err := c.doPost(ctx, "/stories/batch_update_secret_info", req.ToParams())
+	if err != nil {
+		return "", err
+	}
+	var r struct {
+		Code string `json:"code"`
+		Msg  string `json:"msg"`
+	}
+	if err := json.Unmarshal(data, &r); err != nil {
+		return "", fmt.Errorf("failed to parse batch_update_secret_info response: %w", err)
+	}
+	return r.Msg, nil
+}
+
+// StoryFilterToQueryToken 将需求过滤条件转换成 QueryToken
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/filter_to_query_token.html
+func (c *Client) StoryFilterToQueryToken(ctx context.Context, req *model.FilterToQueryTokenRequest) (*model.QueryTokenResponse, error) {
+	data, err := c.doPost(ctx, "/stories/filter_to_query_token", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.QueryTokenResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse filter_to_query_token response: %w", err)
+	}
+	return &result, nil
+}
+
+// StoryIDsToQueryToken 将需求 ID 列表转换成 QueryToken
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/story_ids_to_query_token.html
+func (c *Client) StoryIDsToQueryToken(ctx context.Context, req *model.IDsToQueryTokenRequest) (*model.QueryTokenResponse, error) {
+	data, err := c.doPost(ctx, "/stories/ids_to_query_token", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.QueryTokenResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse ids_to_query_token response: %w", err)
+	}
+	return &result, nil
+}
+
+// RemoveStoryLinkRelation 解除需求关联关系
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/remove_story_link_relation.html
+func (c *Client) RemoveStoryLinkRelation(ctx context.Context, req *model.RemoveStoryLinkRelationRequest) (bool, error) {
+	data, err := c.doPost(ctx, "/stories/remove_story_link_relation", req.ToParams())
+	if err != nil {
+		return false, err
+	}
+	var r struct {
+		Success int `json:"success"`
+	}
+	if err := json.Unmarshal(data, &r); err != nil {
+		return false, fmt.Errorf("failed to parse remove_story_link_relation response: %w", err)
+	}
+	return r.Success == 1, nil
+}
+
+// ResetWorkitemSteps 并行工作流流程重置
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/reset_workitem_steps.html
+func (c *Client) ResetWorkitemSteps(ctx context.Context, req *model.ResetWorkitemStepsRequest) (*model.Story, error) {
+	data, err := c.doPost(ctx, "/stories/reset_workitem_steps", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.Story](data, "Story")
+}
+
+// UpdateStoryStepStatus 完成进行中的节点（并行工作流）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/update_story_step_status.html
+func (c *Client) UpdateStoryStepStatus(ctx context.Context, req *model.UpdateStoryStepStatusRequest) (*model.Story, error) {
+	data, err := c.doPost(ctx, "/stories/update_story_step_status", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.Story](data, "Story")
+}
+
+// CountStoriesByCategories 获取指定分类下需求数量
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/count_by_categories.html
+func (c *Client) CountStoriesByCategories(ctx context.Context, req *model.CountStoriesByCategoriesRequest) (map[string]int, error) {
+	data, err := c.doGet(ctx, "/stories/count_by_categories", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result map[string]int
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse count_by_categories response: %w", err)
+	}
+	return result, nil
+}

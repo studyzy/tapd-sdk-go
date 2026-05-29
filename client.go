@@ -182,6 +182,30 @@ func (c *Client) doPost(ctx context.Context, endpoint string, body map[string]st
 	return c.doRequest(req)
 }
 
+// doDelete 发送 DELETE 请求到指定端点
+func (c *Client) doDelete(ctx context.Context, endpoint string, params map[string]string) (json.RawMessage, error) {
+	reqURL, err := url.Parse(c.baseURL + endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	if len(params) > 0 {
+		q := reqURL.Query()
+		for k, v := range params {
+			q.Set(k, v)
+		}
+		reqURL.RawQuery = q.Encode()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, reqURL.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	c.applyAuth(req)
+
+	return c.doRequest(req)
+}
+
 // doRequest 执行 HTTP 请求并解析 TAPD 统一响应格式
 func (c *Client) doRequest(req *http.Request) (json.RawMessage, error) {
 	resp, err := c.httpClient.Do(req)

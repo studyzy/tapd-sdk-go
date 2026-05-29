@@ -214,3 +214,27 @@ func (c *Client) GetWorkspaceSetting(ctx context.Context, req *model.GetWorkspac
 	}
 	return result, nil
 }
+
+// UpdateSelectFieldOptions 更新下拉类型自定义字段候选值（统一接口，支持需求/缺陷/任务/迭代/测试用例）
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_select_field_options.html
+func (c *Client) UpdateSelectFieldOptions(ctx context.Context, req *model.UpdateSelectFieldOptionsUnifiedRequest) error {
+	_, err := c.doPost(ctx, "/custom_field_configs/update_select_field_options", req.ToParams())
+	return err
+}
+
+// CopyWorkitemTypeSetting 复制需求类别配置到目标项目
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/copy_workitem_type_setting.html
+func (c *Client) CopyWorkitemTypeSetting(ctx context.Context, req *model.CopyWorkitemTypeSettingRequest) (*model.WorkitemType, error) {
+	data, err := c.doPost(ctx, "/stories/copy_workitem_type_setting", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.WorkitemType](data, "WorkitemType")
+}
+
+// CopyBugSetting 复制缺陷配置到目标项目
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/copy_bug_setting.html
+func (c *Client) CopyBugSetting(ctx context.Context, req *model.CopyBugSettingRequest) error {
+	_, err := c.doPost(ctx, "/bugs/copy_settings", req.ToParams())
+	return err
+}

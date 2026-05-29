@@ -93,3 +93,9 @@ func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) (
 	}
 	return data, nil
 }
+
+// GetWorkflowStepMap 获取工作流步骤映射
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_step_map.html
+func (c *Client) GetWorkflowStepMap(ctx context.Context, req *model.WorkflowRequest) (json.RawMessage, error) {
+	return c.doGet(ctx, "/workflows/step_map", req.ToParams())
+}

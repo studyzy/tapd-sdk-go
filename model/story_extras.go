@@ -568,3 +568,181 @@ func (r *BatchUpdateStoryRequest) ToParams() map[string]string {
 	}
 	return params
 }
+
+// GetSecretInfoRequest 获取需求保密信息的请求参数
+type GetSecretInfoRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	StoryID     string // 必填：需求 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetSecretInfoRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"story_id":     r.StoryID,
+	}
+}
+
+// SecretInfo 表示需求的保密信息
+type SecretInfo struct {
+	Creator              string `json:"creator,omitempty"`
+	AllowList            string `json:"allow_list,omitempty"`
+	SecretRootID         string `json:"secret_root_id,omitempty"`
+	AddParticipantFields string `json:"add_participant_fields,omitempty"`
+	SecretScope          string `json:"secret_scrope,omitempty"`
+}
+
+// GetSecretStoriesRequest 获取保密需求列表的请求参数
+type GetSecretStoriesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Limit       int    // 可选：返回数量限制（默认 30，最大 200）
+	Page        int    // 可选：页码
+	Order       string // 可选：排序规则
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetSecretStoriesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	return params
+}
+
+// SecretStoriesList 保密需求ID列表
+type SecretStoriesList struct {
+	List []string `json:"list,omitempty"`
+}
+
+// BatchUpdateSecretInfoRequest 批量修改需求保密信息的请求参数
+type BatchUpdateSecretInfoRequest struct {
+	WorkspaceID          string // 必填：项目 ID
+	StoryIDList          string // 必填：需求 ID 列表，用 "|" 隔开多个
+	SecretScope          string // 必填：保密状态（public/secret）
+	AllowList            string // 必填：保密白名单，用 ";" 隔开
+	AddParticipantFields string // 必填：是否将参与人纳入保密范围（true/false）
+	OperationType        string // 可选：操作模式（0:覆盖/1:新增/2:删除）
+	CurrentUser          string // 必填：执行操作的用户 nick
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *BatchUpdateSecretInfoRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id":           r.WorkspaceID,
+		"story_id_list":          r.StoryIDList,
+		"secret_scope":           r.SecretScope,
+		"allow_list":             r.AllowList,
+		"add_participant_fields": r.AddParticipantFields,
+		"current_user":           r.CurrentUser,
+	}
+	setOptional(params, "operation_type", r.OperationType)
+	return params
+}
+
+// FilterToQueryTokenRequest 过滤条件转换成 QueryToken 的请求参数
+type FilterToQueryTokenRequest struct {
+	WorkspaceID string            // 必填：项目 ID
+	Filters     map[string]string // 必填：过滤条件 map, key 为字段名
+	BlockType   string            // 可选：分组字段
+	ShowFields  string            // 可选：显示字段，逗号分隔
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *FilterToQueryTokenRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	for k, v := range r.Filters {
+		params["filter["+k+"]"] = v
+	}
+	setOptional(params, "block_type", r.BlockType)
+	setOptional(params, "show_fields", r.ShowFields)
+	return params
+}
+
+// QueryTokenResponse 表示 QueryToken 转换结果
+type QueryTokenResponse struct {
+	QueryToken string `json:"queryToken,omitempty"`
+	Href       string `json:"href,omitempty"`
+}
+
+// IDsToQueryTokenRequest 需求 ID 转换成 QueryToken 的请求参数
+type IDsToQueryTokenRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	IDs         string // 必填：需求 ID 列表，逗号分隔
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *IDsToQueryTokenRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"ids":          r.IDs,
+	}
+}
+
+// RemoveStoryLinkRelationRequest 解除需求关联关系的请求参数
+type RemoveStoryLinkRelationRequest struct {
+	WorkspaceID   string // 必填：项目 ID
+	SrcStoryID    string // 必填：源需求 ID
+	TargetStoryID string // 必填：目标需求 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *RemoveStoryLinkRelationRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id":    r.WorkspaceID,
+		"src_story_id":    r.SrcStoryID,
+		"target_story_id": r.TargetStoryID,
+	}
+}
+
+// ResetWorkitemStepsRequest 并行工作流流程重置的请求参数
+type ResetWorkitemStepsRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	StoryID     string // 必填：需求 ID
+	ResetType   string // 必填：重置类型（status/step）
+	ResetDst    string // 必填：需启用的状态或节点
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *ResetWorkitemStepsRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"story_id":     r.StoryID,
+		"reset_type":   r.ResetType,
+		"reset_dst":    r.ResetDst,
+	}
+}
+
+// UpdateStoryStepStatusRequest 完成进行中的节点的请求参数
+type UpdateStoryStepStatusRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	StoryID     string // 必填：需求 ID
+	Step        string // 必填：当前进行中的节点
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *UpdateStoryStepStatusRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"story_id":     r.StoryID,
+		"step":         r.Step,
+	}
+}
+
+// CountStoriesByCategoriesRequest 获取指定分类下需求数量的请求参数
+type CountStoriesByCategoriesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	CategoryID  string // 可选：需求分类 ID，支持多 ID（逗号分隔）
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CountStoriesByCategoriesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "category_id", r.CategoryID)
+	return params
+}

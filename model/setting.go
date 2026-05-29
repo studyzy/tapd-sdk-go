@@ -533,3 +533,50 @@ func (r *GetWorkspaceSettingRequest) ToParams() map[string]string {
 		"type":         r.Type,
 	}
 }
+
+// UpdateSelectFieldOptionsUnifiedRequest 更新下拉类型自定义字段候选值（统一接口）的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_select_field_options.html
+type UpdateSelectFieldOptionsUnifiedRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 必填：自定义字段配置 ID（19 位长度）
+	Options     string // 必填：候选值，以英文竖线 "|" 隔开
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *UpdateSelectFieldOptionsUnifiedRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+		"options":      r.Options,
+	}
+}
+
+// CopyWorkitemTypeSettingRequest 复制需求类别配置的请求参数
+type CopyWorkitemTypeSettingRequest struct {
+	SrcWorkspaceID    string // 必填：源项目 ID
+	SrcWorkitemTypeID string // 必填：源需求类型 ID
+	WorkspaceID       string // 必填：目标项目 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CopyWorkitemTypeSettingRequest) ToParams() map[string]string {
+	return map[string]string{
+		"src_workspace_id":     r.SrcWorkspaceID,
+		"src_workitem_type_id": r.SrcWorkitemTypeID,
+		"workspace_id":         r.WorkspaceID,
+	}
+}
+
+// CopyBugSettingRequest 复制缺陷配置的请求参数
+type CopyBugSettingRequest struct {
+	SrcWorkspaceID    string // 必填：源项目 ID
+	TargetWorkspaceID string // 必填：目标项目 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CopyBugSettingRequest) ToParams() map[string]string {
+	return map[string]string{
+		"src_workspace_id":    r.SrcWorkspaceID,
+		"target_workspace_id": r.TargetWorkspaceID,
+	}
+}

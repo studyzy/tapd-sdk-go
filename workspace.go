@@ -264,3 +264,13 @@ func (c *Client) GetWorkspaceDocuments(ctx context.Context, req *model.GetWorksp
 	// TAPD 返回格式: [{"Document": {...}}, ...]
 	return parseList[model.Document](data, "Document")
 }
+
+// UpdateWorkspaceInfo 更新项目信息
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/update_workspace_info.html
+func (c *Client) UpdateWorkspaceInfo(ctx context.Context, req *model.UpdateWorkspaceInfoRequest) (*model.Workspace, error) {
+	data, err := c.doPost(ctx, "/workspaces/update_workspace_info", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.Workspace](data, "Workspace")
+}

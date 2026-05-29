@@ -54,3 +54,40 @@ type ThirdPartyMapping struct {
 type ThirdUserMapping struct {
 	ThirdPartys []ThirdPartyMapping `json:"third_partys,omitempty"`
 }
+
+// GetUserViewListRequest 获取用户视图列表的请求参数
+type GetUserViewListRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	Type        string // 可选：对象类型（目前只支持 story）
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetUserViewListRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "type", r.Type)
+	return params
+}
+
+// UserView 表示用户视图
+type UserView struct {
+	ID          string `json:"id,omitempty"`
+	Title       string `json:"title,omitempty"`
+	Enable      string `json:"enable,omitempty"`
+	Type        string `json:"type,omitempty"`
+	DefaultShow string `json:"default_show,omitempty"`
+	ViewID      string `json:"view_id,omitempty"`
+	Sort        string `json:"sort,omitempty"`
+}
+
+// UserInfo 表示用户信息
+type UserInfo struct {
+	ID         string `json:"id,omitempty"`
+	Nick       string `json:"nick,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Avatar     string `json:"avatar,omitempty"`
+	Enabled    string `json:"enabled,omitempty"`
+	StatusID   string `json:"status_id,omitempty"`
+	StatusName string `json:"status_name,omitempty"`
+}

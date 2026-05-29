@@ -125,3 +125,9 @@ func (c *Client) GetTasksByViewConfID(ctx context.Context, req *model.GetTasksBy
 
 	return parseList[model.Task](data, "Task")
 }
+
+// GetTaskFieldsInfo 获取任务所有字段及候选值
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_task_fields_info.html
+func (c *Client) GetTaskFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
+	return c.doGet(ctx, "/tasks/get_fields_info", req.ToParams())
+}
