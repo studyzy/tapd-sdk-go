@@ -188,7 +188,7 @@ func TestGetBugFieldsInfo(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	req := &model.WorkspaceIDRequest{
+	req := &model.GetBugFieldsInfoRequest{
 		WorkspaceID: "1",
 	}
 	fields, err := c.GetBugFieldsInfo(context.Background(), req)

@@ -71,7 +71,7 @@ func (c *Client) GetBugFieldsLabel(ctx context.Context, req *model.WorkspaceIDRe
 
 // GetBugFieldsInfo 获取缺陷所有字段及候选值，返回 map[string]model.FieldInfo
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bug_fields_info.html
-func (c *Client) GetBugFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (map[string]model.FieldInfo, error) {
+func (c *Client) GetBugFieldsInfo(ctx context.Context, req *model.GetBugFieldsInfoRequest) (map[string]model.FieldInfo, error) {
 	data, err := c.doGet(ctx, "/bugs/get_fields_info", req.ToParams())
 	if err != nil {
 		return nil, err

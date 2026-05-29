@@ -54,7 +54,7 @@ func TestListReleases(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	releases, err := c.ListReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "1"})
+	releases, err := c.ListReleases(context.Background(), &model.ListReleasesRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListReleases() unexpected error: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestListReleases_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	releases, err := c.ListReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "1"})
+	releases, err := c.ListReleases(context.Background(), &model.ListReleasesRequest{WorkspaceID: "1"})
 	if err != nil {
 		t.Fatalf("ListReleases() unexpected error: %v", err)
 	}

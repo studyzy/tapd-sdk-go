@@ -276,13 +276,17 @@ func (r *DeleteTimeRelationsRequest) ToParams() map[string]string {
 // WorkitemTemplate 表示需求模板
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_template_list.html
 type WorkitemTemplate struct {
-	ID          string `json:"id,omitempty"`          // 模板 ID
-	Name        string `json:"name,omitempty"`        // 模板名称
-	Description string `json:"description,omitempty"` // 描述
-	Sort        string `json:"sort,omitempty"`        // 排序
-	Default     string `json:"default,omitempty"`     // 是否启用
-	Creator     string `json:"creator,omitempty"`     // 提交人
-	EditorType  string `json:"editor_type,omitempty"` // 详细描述类型
+	ID          string `json:"id,omitempty"`           // 模板 ID
+	Name        string `json:"name,omitempty"`         // 模板名称
+	Description string `json:"description,omitempty"`  // 描述
+	Sort        string `json:"sort,omitempty"`         // 排序
+	Default     string `json:"default,omitempty"`      // 是否启用
+	Creator     string `json:"creator,omitempty"`      // 提交人
+	EditorType  string `json:"editor_type,omitempty"`  // 详细描述类型
+	WorkspaceID string `json:"workspace_id,omitempty"` // 项目 ID
+	Type        string `json:"type,omitempty"`         // 类型
+	Created     string `json:"created,omitempty"`      // 创建时间
+	Modified    string `json:"modified,omitempty"`     // 最后修改时间
 }
 
 // GetStoryTemplateListRequest 获取需求模板列表的请求参数

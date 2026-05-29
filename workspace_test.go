@@ -21,7 +21,7 @@ func TestListWorkspaces(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	workspaces, err := c.ListWorkspaces(context.Background())
+	workspaces, err := c.ListWorkspaces(context.Background(), "12345")
 	if err != nil {
 		t.Fatalf("ListWorkspaces() unexpected error: %v", err)
 	}

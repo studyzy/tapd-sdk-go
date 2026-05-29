@@ -10,6 +10,7 @@ type Module struct {
 	Creator     string `json:"creator,omitempty"`
 	Created     string `json:"created,omitempty"`
 	Modified    string `json:"modified,omitempty"`
+	Owner       string `json:"owner,omitempty"`
 }
 
 // CreateModuleRequest 创建模块的请求参数
@@ -108,13 +109,30 @@ func (r *CountModulesRequest) ToParams() map[string]string {
 
 // Version 表示 TAPD 版本
 type Version struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID             string `json:"id,omitempty"`
+	WorkspaceID    string `json:"workspace_id,omitempty"`
+	Name           string `json:"name,omitempty"`
+	Description    string `json:"description,omitempty"`
+	Creator        string `json:"creator,omitempty"`
+	Created        string `json:"created,omitempty"`
+	Modified       string `json:"modified,omitempty"`
+	Due            string `json:"due,omitempty"`
+	Completed      string `json:"completed,omitempty"`
+	Default        string `json:"default,omitempty"`
+	ParentID       string `json:"parent_id,omitempty"`
+	Path           string `json:"path,omitempty"`
+	ModuleID       string `json:"module_id,omitempty"`
+	Start          string `json:"start,omitempty"`
+	RealEnd        string `json:"realend,omitempty"`
+	TestTime       string `json:"testtime,omitempty"`
+	RealBegin      string `json:"realbegin,omitempty"`
+	ReleaseTime    string `json:"releasetime,omitempty"`
+	BusinessModule string `json:"business_module,omitempty"`
+	VersionType    string `json:"version_type,omitempty"`
+	Modifier       string `json:"modifier,omitempty"`
+	ModifiedTime   string `json:"modified_time,omitempty"`
+	Status         string `json:"status,omitempty"`
+	Owner          string `json:"owner,omitempty"`
 }
 
 // CreateVersionRequest 创建版本的请求参数
@@ -176,6 +194,7 @@ type GetVersionsRequest struct {
 	Status      string // 可选：状态（Closed/Unclosed）
 	Limit       int    // 可选：返回数量限制
 	Page        int    // 可选：页码
+	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段，多个以英文逗号隔开
 }
 
@@ -192,6 +211,7 @@ func (r *GetVersionsRequest) ToParams() map[string]string {
 	setOptional(params, "status", r.Status)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
 }
@@ -221,13 +241,23 @@ func (r *CountVersionsRequest) ToParams() map[string]string {
 
 // Baseline 表示 TAPD 基线
 type Baseline struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID           string `json:"id,omitempty"`
+	WorkspaceID  string `json:"workspace_id,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Description  string `json:"description,omitempty"`
+	Creator      string `json:"creator,omitempty"`
+	Created      string `json:"created,omitempty"`
+	Modified     string `json:"modified,omitempty"`
+	Owner        string `json:"owner,omitempty"`
+	Due          string `json:"due,omitempty"`
+	Completed    string `json:"completed,omitempty"`
+	Default      string `json:"default,omitempty"`
+	VersionID    string `json:"version_id,omitempty"`
+	ModuleID     string `json:"module_id,omitempty"`
+	SvnTag       string `json:"svn_tag,omitempty"`
+	SvnProjectID string `json:"svn_project_id,omitempty"`
+	SvnPathID    string `json:"svn_path_id,omitempty"`
+	SvnSyncType  string `json:"svn_sync_type,omitempty"`
 }
 
 // CreateBaselineRequest 创建基线的请求参数
@@ -344,13 +374,23 @@ func (r *CountBaselinesRequest) ToParams() map[string]string {
 
 // Feature 表示 TAPD 特性
 type Feature struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Description string `json:"description,omitempty"`
-	Creator     string `json:"creator,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	ID                string `json:"id,omitempty"`
+	WorkspaceID       string `json:"workspace_id,omitempty"`
+	Name              string `json:"name,omitempty"`
+	Description       string `json:"description,omitempty"`
+	Creator           string `json:"creator,omitempty"`
+	Created           string `json:"created,omitempty"`
+	Modified          string `json:"modified,omitempty"`
+	Owner             string `json:"owner,omitempty"`
+	Due               string `json:"due,omitempty"`
+	Completed         string `json:"completed,omitempty"`
+	Default           string `json:"default,omitempty"`
+	ModuleID          string `json:"module_id,omitempty"`
+	ReleaseID         string `json:"release_id,omitempty"`
+	ReleaseName       string `json:"release_name,omitempty"`
+	Priority          string `json:"priority,omitempty"`
+	Estimate          string `json:"estimate,omitempty"`
+	EstimateCompleted string `json:"estimate_completed,omitempty"`
 }
 
 // CreateFeatureRequest 创建特性的请求参数

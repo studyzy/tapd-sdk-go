@@ -162,6 +162,7 @@ type CountIterationsRequest struct {
 	Created        string // 可选：创建时间（支持时间查询）
 	Modified       string // 可选：最后修改时间（支持时间查询）
 	Completed      string // 可选：完成时间
+	Locker         string // 可选：锁定人
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -181,6 +182,7 @@ func (r *CountIterationsRequest) ToParams() map[string]string {
 	setOptional(params, "created", r.Created)
 	setOptional(params, "modified", r.Modified)
 	setOptional(params, "completed", r.Completed)
+	setOptional(params, "locker", r.Locker)
 	return params
 }
 
@@ -301,6 +303,13 @@ type CountPlanAppsRequest struct {
 	Name        string // 可选：标题
 	Creator     string // 可选：创建人
 	Created     string // 可选：创建时间
+	PlanIDField string // 可选：计划 ID
+	Modifier    string // 可选：最后修改人
+	Modified    string // 可选：最后修改时间
+	Limit       string // 可选：返回数量限制
+	Page        string // 可选：页码
+	Order       string // 可选：排序规则
+	Fields      string // 可选：返回字段列表
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -312,5 +321,12 @@ func (r *CountPlanAppsRequest) ToParams() map[string]string {
 	setOptional(params, "name", r.Name)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "plan_id_field", r.PlanIDField)
+	setOptional(params, "modifier", r.Modifier)
+	setOptional(params, "modified", r.Modified)
+	setOptional(params, "limit", r.Limit)
+	setOptional(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
 	return params
 }

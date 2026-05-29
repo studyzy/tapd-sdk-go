@@ -16,7 +16,7 @@ func (r *GetCustomFieldsRequest) ToParams() map[string]string {
 
 // WorkspaceIDRequest 仅需项目 ID 的通用请求参数
 // 适用于 GetStoryFieldsLabel、GetStoryFieldsInfo、GetWorkitemTypes、
-// ListCategories、ListReleases 等仅需 workspace_id 的接口
+// ListCategories 等仅需 workspace_id 的接口
 type WorkspaceIDRequest struct {
 	WorkspaceID string // 必填：项目 ID
 }
@@ -32,8 +32,18 @@ func (r *WorkspaceIDRequest) ToParams() map[string]string {
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/
 type WorkflowRequest struct {
 	WorkspaceID    string // 必填：项目 ID
-	System         string // 必填：系统名（story/bug）
+	System         string // 可选：系统名（story/bug），用于 status_map/first_step/last_steps 等接口
 	WorkitemTypeID string // 可选：需求类别 ID
+	ID             string // 可选：工作流 ID
+	Name           string // 可选：工作流名称
+	Description    string // 可选：工作流描述
+	SystemName     string // 可选：系统名称（用于 get_workflows 接口，参数名 system_name）
+	Creator        string // 可选：创建人
+	Created        string // 可选：创建时间
+	Limit          string // 可选：返回数量限制
+	Page           string // 可选：页码
+	Type           string // 可选：工作流类型
+	GroupKey       string // 可选：分组键（用于 all_last_steps 等接口）
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -43,7 +53,34 @@ func (r *WorkflowRequest) ToParams() map[string]string {
 	}
 	setOptional(params, "system", r.System)
 	setOptional(params, "workitem_type_id", r.WorkitemTypeID)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "system_name", r.SystemName)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "limit", r.Limit)
+	setOptional(params, "page", r.Page)
+	setOptional(params, "type", r.Type)
+	setOptional(params, "group_key", r.GroupKey)
 	return params
+}
+
+// AddNewStepForBugRequest 新增 Bug 工作流步骤的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/add_new_step_for_bug.html
+type AddNewStepForBugRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	WorkflowID  string // 必填：工作流 ID
+	StepName    string // 必填：步骤名称
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *AddNewStepForBugRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"workflow_id":  r.WorkflowID,
+		"step_name":    r.StepName,
+	}
 }
 
 // GetCommitMsgRequest 获取源码提交关键字的请求参数
@@ -67,6 +104,7 @@ func (r *GetCommitMsgRequest) ToParams() map[string]string {
 type GetTodoRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	EntityType  string // 必填：对象类型（story/bug/task）
+	User        string // 可选：用户
 	Limit       int    // 可选：返回数量限制（默认 30，最大 200）
 	Page        int    // 可选：页码（默认 1）
 	Order       string // 可选：排序规则
@@ -78,6 +116,7 @@ func (r *GetTodoRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+	setOptional(params, "user", r.User)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
@@ -154,6 +193,7 @@ func (r *ListCompanyProjectsRequest) ToParams() map[string]string {
 // GetWorkspaceUsersRequest 获取指定项目成员的请求参数
 type GetWorkspaceUsersRequest struct {
 	WorkspaceID string // 必填：项目 ID
+	User        string // 可选：用户账号
 	Fields      string // 可选：返回字段列表（逗号分隔）
 }
 
@@ -162,6 +202,7 @@ func (r *GetWorkspaceUsersRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+	setOptional(params, "user", r.User)
 	setOptional(params, "fields", r.Fields)
 	return params
 }
@@ -307,6 +348,7 @@ type CustomFieldConfig struct {
 	IsOut           int    `json:"is_out,omitempty"`            // 已弃用
 	IsUninstall     int    `json:"is_uninstall,omitempty"`      // 应用是否未安装（0=已安装，1=未安装）
 	AppName         string `json:"app_name,omitempty"`          // 关联应用名称
+	CreatedFrom     string `json:"created_from,omitempty"`      // 创建来源
 }
 
 // FieldInfo 表示需求字段的详细信息（含候选值）
@@ -366,26 +408,45 @@ type StoryBugRelation struct {
 // GetLifeTimesRequest 获取状态流转时间的请求参数
 type GetLifeTimesRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	System      string // 必填：系统名（story/bug/task）
+	EntityType  string // 必填：对象类型（story/bug/task）
 	EntityID    string // 必填：实体 ID
+	Created     string // 可选：创建时间
+	Limit       string // 可选：返回数量限制
+	Page        string // 可选：页码
+	Order       string // 可选：排序
+	Fields      string // 可选：返回字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *GetLifeTimesRequest) ToParams() map[string]string {
-	return map[string]string{
+	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
-		"system":       r.System,
+		"entity_type":  r.EntityType,
 		"entity_id":    r.EntityID,
 	}
+	setOptional(params, "created", r.Created)
+	setOptional(params, "limit", r.Limit)
+	setOptional(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
+	return params
 }
 
 // AddCodeCommitInfoRequest 保存 Commit 提交数据的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/add_code_commit_info.html
 type AddCodeCommitInfoRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Message     string // 必填：提交信息
-	Author      string // 必填：提交作者
-	HookURL     string // 可选：Hook URL
-	Ref         string // 可选：分支引用
+	Author      string // 必填：提交人
+	CommitID    string // 必填：提交 ID
+	Files       string // 必填：变更文件
+	Repo        string // 必填：仓库名
+	RepoID      string // 必填：仓库 ID
+	CommitTime  string // 必填：提交时间
+	HookURL     string // 可选：Hook URL（保留兼容）
+	Ref         string // 可选：分支引用（保留兼容）
+	GitEnv      string // 可选：信息来源
+	RepoURL     string // 可选：仓库链接
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -394,28 +455,44 @@ func (r *AddCodeCommitInfoRequest) ToParams() map[string]string {
 		"workspace_id": r.WorkspaceID,
 		"message":      r.Message,
 		"author":       r.Author,
+		"commit_id":    r.CommitID,
+		"files":        r.Files,
+		"repo":         r.Repo,
+		"repo_id":      r.RepoID,
+		"commit_time":  r.CommitTime,
 	}
 	setOptional(params, "hook_url", r.HookURL)
 	setOptional(params, "ref", r.Ref)
+	setOptional(params, "git_env", r.GitEnv)
+	setOptional(params, "repo_url", r.RepoURL)
 	return params
 }
 
 // GetCodeCommitInfosRequest 获取 GIT 关联提交数据的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/get_code_commit_infos.html
 type GetCodeCommitInfosRequest struct {
 	WorkspaceID string // 必填：项目 ID
+	Type        string // 必填：TAPD 业务对象类型
+	ObjectID    string // 必填：TAPD 业务对象 ID
 	Limit       int    // 可选：返回数量限制
 	Page        int    // 可选：页码
-	Created     string // 可选：创建时间
+	Created     string // 可选：创建时间（保留兼容）
+	CommitTime  string // 可选：提交时间
+	RelatedType string // 可选：关联类型
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *GetCodeCommitInfosRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
+		"type":         r.Type,
+		"object_id":    r.ObjectID,
 	}
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "commit_time", r.CommitTime)
+	setOptional(params, "related_type", r.RelatedType)
 	return params
 }
 
@@ -462,11 +539,17 @@ type Report struct {
 type LifeTime struct {
 	ID          string `json:"id,omitempty"`
 	WorkspaceID string `json:"workspace_id,omitempty"`
+	EntityType  string `json:"entity_type,omitempty"`
 	EntityID    string `json:"entity_id,omitempty"`
 	Status      string `json:"status,omitempty"`
-	TimeIn      string `json:"time_in,omitempty"`
-	TimeOut     string `json:"time_out,omitempty"`
-	Duration    string `json:"duration,omitempty"`
+	BeginDate   string `json:"begin_date,omitempty"`
+	EndDate     string `json:"end_date,omitempty"`
+	TimeCost    string `json:"time_cost,omitempty"`
+	Owner       string `json:"owner,omitempty"`
+	IsRepeated  string `json:"is_repeated,omitempty"`
+	Created     string `json:"created,omitempty"`
+	Operator    string `json:"operator,omitempty"`
+	ChangeFrom  string `json:"change_from,omitempty"`
 }
 
 // CodeCommitInfo 表示 GIT 提交信息

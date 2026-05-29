@@ -41,30 +41,36 @@ type BugChange struct {
 // IterationChange 表示迭代的变更记录
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iteration_changes.html
 type IterationChange struct {
-	ID           string `json:"id,omitempty"`
-	WorkspaceID  string `json:"workspace_id,omitempty"`
-	IterationID  string `json:"iteration_id,omitempty"`
-	Author       string `json:"author,omitempty"`
-	Field        string `json:"field,omitempty"`
-	OldValue     string `json:"old_value,omitempty"`
-	NewValue     string `json:"new_value,omitempty"`
-	Memo         string `json:"memo,omitempty"`
-	Created      string `json:"created,omitempty"`
-	OperaterType string `json:"operater_type,omitempty"`
+	ID            string `json:"id,omitempty"`
+	WorkspaceID   string `json:"workspace_id,omitempty"`
+	IterationID   string `json:"iteration_id,omitempty"`
+	Author        string `json:"author,omitempty"`
+	Field         string `json:"field,omitempty"`
+	OldValue      string `json:"old_value,omitempty"`
+	NewValue      string `json:"new_value,omitempty"`
+	Memo          string `json:"memo,omitempty"`
+	Created       string `json:"created,omitempty"`
+	OperaterType  string `json:"operater_type,omitempty"`
+	ModifyVersion string `json:"modifyversion,omitempty"`
 }
 
 // GetStoryChangesRequest 查询需求变更历史的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_changes.html
 type GetStoryChangesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	StoryID     string // 可选：需求 ID
-	Creator     string // 可选：创建人
-	Created     string // 可选：创建时间
-	ChangeType  string // 可选：变更类型
-	Limit       int    // 可选：返回数量限制
-	Page        int    // 可选：页码
-	Order       string // 可选：排序规则
-	Fields      string // 可选：返回字段列表
+	WorkspaceID   string // 必填：项目 ID
+	StoryID       string // 可选：需求 ID
+	Creator       string // 可选：创建人
+	Created       string // 可选：创建时间
+	ChangeType    string // 可选：变更类型
+	ID            string // 可选：变更 ID
+	ChangeSummary string // 可选：变更摘要
+	Comment       string // 可选：评论
+	Changes       string // 可选：变更内容
+	EntityType    string // 可选：实体类型
+	Limit         int    // 可选：返回数量限制
+	Page          int    // 可选：页码
+	Order         string // 可选：排序规则
+	Fields        string // 可选：返回字段列表
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -76,6 +82,11 @@ func (r *GetStoryChangesRequest) ToParams() map[string]string {
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "change_type", r.ChangeType)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "change_summary", r.ChangeSummary)
+	setOptional(params, "comment", r.Comment)
+	setOptional(params, "changes", r.Changes)
+	setOptional(params, "entity_type", r.EntityType)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
@@ -85,10 +96,16 @@ func (r *GetStoryChangesRequest) ToParams() map[string]string {
 
 // CountStoryChangesRequest 查询需求变更数量的请求参数
 type CountStoryChangesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	StoryID     string // 可选：需求 ID
-	Creator     string // 可选：创建人
-	Created     string // 可选：创建时间
+	WorkspaceID   string // 必填：项目 ID
+	StoryID       string // 可选：需求 ID
+	Creator       string // 可选：创建人
+	Created       string // 可选：创建时间
+	ID            string // 可选：变更 ID
+	ChangeSummary string // 可选：变更摘要
+	Comment       string // 可选：评论
+	Changes       string // 可选：变更内容
+	EntityType    string // 可选：实体类型
+	ChangeType    string // 可选：变更类型
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -99,21 +116,32 @@ func (r *CountStoryChangesRequest) ToParams() map[string]string {
 	setOptional(params, "story_id", r.StoryID)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "change_summary", r.ChangeSummary)
+	setOptional(params, "comment", r.Comment)
+	setOptional(params, "changes", r.Changes)
+	setOptional(params, "entity_type", r.EntityType)
+	setOptional(params, "change_type", r.ChangeType)
 	return params
 }
 
 // GetBugChangesRequest 查询缺陷变更历史的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bug_changes.html
 type GetBugChangesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	BugID       string // 可选：缺陷 ID
-	Author      string // 可选：变更人
-	Created     string // 可选：创建时间
-	Field       string // 可选：变更字段
-	Limit       int    // 可选：返回数量限制
-	Page        int    // 可选：页码
-	Order       string // 可选：排序规则
-	Fields      string // 可选：返回字段列表
+	WorkspaceID   string // 必填：项目 ID
+	BugID         string // 可选：缺陷 ID
+	Author        string // 可选：变更人
+	Created       string // 可选：创建时间
+	Field         string // 可选：变更字段
+	ID            string // 可选：变更 ID
+	OldValue      string // 可选：旧值
+	NewValue      string // 可选：新值
+	Memo          string // 可选：备注
+	IncludeAddBug string // 可选：是否包含新增缺陷
+	Limit         int    // 可选：返回数量限制
+	Page          int    // 可选：页码
+	Order         string // 可选：排序规则
+	Fields        string // 可选：返回字段列表
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -125,6 +153,11 @@ func (r *GetBugChangesRequest) ToParams() map[string]string {
 	setOptional(params, "author", r.Author)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "field", r.Field)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "old_value", r.OldValue)
+	setOptional(params, "new_value", r.NewValue)
+	setOptional(params, "memo", r.Memo)
+	setOptional(params, "include_add_bug", r.IncludeAddBug)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
@@ -139,6 +172,10 @@ type CountBugChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
+	ID          string // 可选：变更 ID
+	OldValue    string // 可选：旧值
+	NewValue    string // 可选：新值
+	Memo        string // 可选：备注
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -150,20 +187,30 @@ func (r *CountBugChangesRequest) ToParams() map[string]string {
 	setOptional(params, "author", r.Author)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "field", r.Field)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "old_value", r.OldValue)
+	setOptional(params, "new_value", r.NewValue)
+	setOptional(params, "memo", r.Memo)
 	return params
 }
 
 // GetTaskChangesRequest 查询任务变更历史的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_task_changes.html
 type GetTaskChangesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	TaskID      string // 可选：任务 ID
-	Creator     string // 可选：创建人
-	Created     string // 可选：创建时间
-	Limit       int    // 可选：返回数量限制
-	Page        int    // 可选：页码
-	Order       string // 可选：排序规则
-	Fields      string // 可选：返回字段列表
+	WorkspaceID      string // 必填：项目 ID
+	TaskID           string // 可选：任务 ID
+	Creator          string // 可选：创建人
+	Created          string // 可选：创建时间
+	ID               string // 可选：变更 ID
+	ChangeSummary    string // 可选：变更摘要
+	Comment          string // 可选：评论
+	Changes          string // 可选：变更内容
+	EntityType       string // 可选：实体类型
+	NeedParseChanges string // 可选：是否需要解析变更
+	Limit            int    // 可选：返回数量限制
+	Page             int    // 可选：页码
+	Order            string // 可选：排序规则
+	Fields           string // 可选：返回字段列表
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -174,6 +221,12 @@ func (r *GetTaskChangesRequest) ToParams() map[string]string {
 	setOptional(params, "task_id", r.TaskID)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "change_summary", r.ChangeSummary)
+	setOptional(params, "comment", r.Comment)
+	setOptional(params, "changes", r.Changes)
+	setOptional(params, "entity_type", r.EntityType)
+	setOptional(params, "need_parse_changes", r.NeedParseChanges)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
@@ -183,10 +236,15 @@ func (r *GetTaskChangesRequest) ToParams() map[string]string {
 
 // CountTaskChangesRequest 查询任务变更数量的请求参数
 type CountTaskChangesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	TaskID      string // 可选：任务 ID
-	Creator     string // 可选：创建人
-	Created     string // 可选：创建时间
+	WorkspaceID   string // 必填：项目 ID
+	TaskID        string // 可选：任务 ID
+	Creator       string // 可选：创建人
+	Created       string // 可选：创建时间
+	ID            string // 可选：变更 ID
+	ChangeSummary string // 可选：变更摘要
+	Comment       string // 可选：评论
+	Changes       string // 可选：变更内容
+	EntityType    string // 可选：实体类型
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -197,6 +255,11 @@ func (r *CountTaskChangesRequest) ToParams() map[string]string {
 	setOptional(params, "task_id", r.TaskID)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "created", r.Created)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "change_summary", r.ChangeSummary)
+	setOptional(params, "comment", r.Comment)
+	setOptional(params, "changes", r.Changes)
+	setOptional(params, "entity_type", r.EntityType)
 	return params
 }
 
@@ -208,6 +271,9 @@ type GetIterationChangesRequest struct {
 	Author      string // 可选：变更人
 	Created     string // 可选：创建时间
 	Field       string // 可选：变更字段
+	ID          string // 可选：变更 ID
+	OldValue    string // 可选：旧值
+	NewValue    string // 可选：新值
 	Limit       int    // 可选：返回数量限制
 	Page        int    // 可选：页码
 	Fields      string // 可选：返回字段列表
@@ -222,6 +288,9 @@ func (r *GetIterationChangesRequest) ToParams() map[string]string {
 	setOptional(params, "author", r.Author)
 	setOptional(params, "created", r.Created)
 	setOptional(params, "field", r.Field)
+	setOptional(params, "id", r.ID)
+	setOptional(params, "old_value", r.OldValue)
+	setOptional(params, "new_value", r.NewValue)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "fields", r.Fields)

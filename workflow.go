@@ -99,3 +99,10 @@ func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) (
 func (c *Client) GetWorkflowStepMap(ctx context.Context, req *model.WorkflowRequest) (json.RawMessage, error) {
 	return c.doGet(ctx, "/workflows/step_map", req.ToParams())
 }
+
+// AddNewStepForBug 新增 Bug 工作流步骤
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/add_new_step_for_bug.html
+func (c *Client) AddNewStepForBug(ctx context.Context, req *model.AddNewStepForBugRequest) error {
+	_, err := c.doPost(ctx, "/workflows/add_new_step_for_bug", req.ToParams())
+	return err
+}

@@ -101,7 +101,7 @@ func TestCountReleases(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountReleases(context.Background(), &model.WorkspaceIDRequest{WorkspaceID: "11111111"})
+	count, err := c.CountReleases(context.Background(), &model.CountReleasesRequest{WorkspaceID: "11111111"})
 	if err != nil {
 		t.Fatalf("CountReleases() unexpected error: %v", err)
 	}

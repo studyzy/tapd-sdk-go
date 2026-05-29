@@ -17,21 +17,21 @@ func TestGetLifeTimes(t *testing.T) {
 		if r.URL.Query().Get("workspace_id") != "11111111" {
 			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "11111111")
 		}
-		if r.URL.Query().Get("system") != "story" {
-			t.Errorf("system = %q, want %q", r.URL.Query().Get("system"), "story")
+		if r.URL.Query().Get("entity_type") != "story" {
+			t.Errorf("entity_type = %q, want %q", r.URL.Query().Get("entity_type"), "story")
 		}
 		if r.URL.Query().Get("entity_id") != "2001" {
 			t.Errorf("entity_id = %q, want %q", r.URL.Query().Get("entity_id"), "2001")
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":[{"LifeTime":{"id":"1001","workspace_id":"11111111","entity_id":"2001","status":"open","time_in":"2026-01-01 10:00:00","time_out":"2026-01-02 10:00:00","duration":"86400"}}],"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"LifeTime":{"id":"1001","workspace_id":"11111111","entity_id":"2001","status":"open","begin_date":"2026-01-01 10:00:00","end_date":"2026-01-02 10:00:00","time_cost":"86400"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	data, err := c.GetLifeTimes(context.Background(), &model.GetLifeTimesRequest{
 		WorkspaceID: "11111111",
-		System:      "story",
+		EntityType:  "story",
 		EntityID:    "2001",
 	})
 	if err != nil {
@@ -55,7 +55,7 @@ func TestGetLifeTimes_APIError(t *testing.T) {
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	_, err := c.GetLifeTimes(context.Background(), &model.GetLifeTimesRequest{
 		WorkspaceID: "11111111",
-		System:      "story",
+		EntityType:  "story",
 		EntityID:    "2001",
 	})
 	if err == nil {

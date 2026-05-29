@@ -72,21 +72,25 @@ func (r *ListTCasesRequest) ToParams() map[string]string {
 // CountTCasesRequest 查询测试用例数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases_count.html
 type CountTCasesRequest struct {
-	WorkspaceID  string // 必填：项目 ID
-	ID           string // 可选：测试用例 ID，支持多 ID 查询
-	Name         string // 可选：用例名称，支持模糊匹配
-	Status       string // 可选：用例状态（normal|updating|abandon）
-	CategoryID   string // 可选：用例目录 ID
-	Priority     string // 可选：用例等级
-	Type         string // 可选：用例类型
-	Creator      string // 可选：创建人
-	Modifier     string // 可选：最后修改人
-	Created      string // 可选：创建时间，支持时间查询
-	Modified     string // 可选：最后修改时间，支持时间查询
-	Steps        string // 可选：用例步骤
-	Precondition string // 可选：前置条件
-	Expectation  string // 可选：预期结果
-	TestPlanID   string // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
+	WorkspaceID        string // 必填：项目 ID
+	ID                 string // 可选：测试用例 ID，支持多 ID 查询
+	Name               string // 可选：用例名称，支持模糊匹配
+	Status             string // 可选：用例状态（normal|updating|abandon）
+	CategoryID         string // 可选：用例目录 ID
+	Priority           string // 可选：用例等级
+	Type               string // 可选：用例类型
+	Creator            string // 可选：创建人
+	Modifier           string // 可选：最后修改人
+	Created            string // 可选：创建时间，支持时间查询
+	Modified           string // 可选：最后修改时间，支持时间查询
+	Steps              string // 可选：用例步骤
+	Precondition       string // 可选：前置条件
+	Expectation        string // 可选：预期结果
+	TestPlanID         string // 可选：测试计划 ID，获取当前测试计划关联的测试用例数量
+	IsAutomated        string // 可选：是否自动化
+	AutomationType     string // 可选：自动化类型
+	AutomationPlatform string // 可选：自动化平台
+	IsServing          string // 可选：是否在用
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -108,6 +112,10 @@ func (r *CountTCasesRequest) ToParams() map[string]string {
 	setOptional(params, "precondition", r.Precondition)
 	setOptional(params, "expectation", r.Expectation)
 	setOptional(params, "test_plan_id", r.TestPlanID)
+	setOptional(params, "is_automated", r.IsAutomated)
+	setOptional(params, "automation_type", r.AutomationType)
+	setOptional(params, "automation_platform", r.AutomationPlatform)
+	setOptional(params, "is_serving", r.IsServing)
 	return params
 }
 

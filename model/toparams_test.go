@@ -1357,15 +1357,15 @@ func TestAddWorkspaceMemberRequest_ToParams(t *testing.T) {
 func TestGetLifeTimesRequest_ToParams(t *testing.T) {
 	req := &GetLifeTimesRequest{
 		WorkspaceID: "100",
-		System:      "story",
+		EntityType:  "story",
 		EntityID:    "2001",
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
 		t.Errorf("workspace_id: got %q", params["workspace_id"])
 	}
-	if params["system"] != "story" {
-		t.Errorf("system: got %q", params["system"])
+	if params["entity_type"] != "story" {
+		t.Errorf("entity_type: got %q", params["entity_type"])
 	}
 	if params["entity_id"] != "2001" {
 		t.Errorf("entity_id: got %q", params["entity_id"])

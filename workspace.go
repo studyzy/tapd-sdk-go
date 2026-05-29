@@ -10,8 +10,10 @@ import (
 
 // ListWorkspaces 获取当前用户参与的项目列表，自动过滤 category 为 organization 的条目
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/user_participant_projects.html
-func (c *Client) ListWorkspaces(ctx context.Context) ([]model.Workspace, error) {
-	params := map[string]string{}
+func (c *Client) ListWorkspaces(ctx context.Context, companyID string) ([]model.Workspace, error) {
+	params := map[string]string{
+		"company_id": companyID,
+	}
 	if nick := c.GetNick(); nick != "" {
 		params["nick"] = nick
 	}
@@ -273,4 +275,19 @@ func (c *Client) UpdateWorkspaceInfo(ctx context.Context, req *model.UpdateWorks
 		return nil, err
 	}
 	return parseOne[model.Workspace](data, "Workspace")
+}
+
+// GetWorkspaceCustomFieldSettings 获取项目自定义字段配置
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/workspace_custom_field_settings.html
+func (c *Client) GetWorkspaceCustomFieldSettings(ctx context.Context, workspaceID string) ([]model.CustomFieldConfig, error) {
+	params := map[string]string{
+		"workspace_id": workspaceID,
+	}
+	data, err := c.doGet(ctx, "/workspaces/workspace_custom_field_settings", params)
+	if err != nil {
+		return nil, err
+	}
+
+	// TAPD 返回格式: [{"CustomFieldConfig": {...}}, ...]
+	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
 }

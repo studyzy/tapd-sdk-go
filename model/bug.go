@@ -47,6 +47,7 @@ type Bug struct {
 	ReopenTime     string `json:"reopen_time,omitempty"`
 	AuditTime      string `json:"audit_time,omitempty"`
 	SuspendTime    string `json:"suspend_time,omitempty"`
+	AssignedTime   string `json:"assigned_time,omitempty"`
 	Begin          string `json:"begin,omitempty"`
 	Due            string `json:"due,omitempty"`
 	Deadline       string `json:"deadline,omitempty"`

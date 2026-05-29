@@ -26,10 +26,14 @@ type Workspace struct {
 	Milestone         string `json:"milestone,omitempty"`
 	Risk              string `json:"risk,omitempty"`
 	CompanyID         string `json:"company_id,omitempty"`
+	ParentID          string `json:"parent_id,omitempty"`
+	MemberCount       string `json:"member_count,omitempty"`
+	CreatorID         string `json:"creator_id,omitempty"`
 }
 
 // UserWorkspace 表示项目成员信息
 type UserWorkspace struct {
+	UserID          string   `json:"user_id,omitempty"`
 	User            string   `json:"user,omitempty"`
 	RoleID          []string `json:"role_id,omitempty"`
 	Name            string   `json:"name,omitempty"`

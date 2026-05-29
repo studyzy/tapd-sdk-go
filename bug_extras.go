@@ -94,3 +94,61 @@ func (c *Client) BugFilterToQueryToken(ctx context.Context, req *model.FilterToQ
 	}
 	return &result, nil
 }
+
+// CopyBug 复制缺陷
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/copy_bug.html
+func (c *Client) CopyBug(ctx context.Context, req *model.CopyBugRequest) (*model.Bug, error) {
+	data, err := c.doPost(ctx, "/bugs/copy_bug", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.Bug](data, "Bug")
+}
+
+// BatchUpdateBug 批量更新缺陷
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/batch_update_bug.html
+func (c *Client) BatchUpdateBug(ctx context.Context, req *model.BatchUpdateBugRequest) error {
+	_, err := c.doPost(ctx, "/bugs/batch_update_bug", req.ToParams())
+	return err
+}
+
+// GetRemovedBugs 获取回收站中的缺陷
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_removed_bugs.html
+func (c *Client) GetRemovedBugs(ctx context.Context, req *model.GetRemovedBugsRequest) ([]model.RemovedBug, error) {
+	data, err := c.doGet(ctx, "/bugs/get_removed_bugs", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.RemovedBug](data, "RemovedBug")
+}
+
+// GetBugsByViewConfID 获取视图对应的缺陷列表
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bugs_by_view_conf_id.html
+func (c *Client) GetBugsByViewConfID(ctx context.Context, req *model.GetBugsByViewConfIDRequest) ([]model.Bug, error) {
+	data, err := c.doGet(ctx, "/bugs/get_bugs_by_view_conf_id", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.Bug](data, "Bug")
+}
+
+// BugIDsToQueryToken 将缺陷 ID 列表转换成 QueryToken
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/ids_to_query_token.html
+func (c *Client) BugIDsToQueryToken(ctx context.Context, req *model.BugIDsToQueryTokenRequest) (string, error) {
+	data, err := c.doPost(ctx, "/bugs/ids_to_query_token", req.ToParams())
+	if err != nil {
+		return "", err
+	}
+	var result model.QueryTokenResponse
+	if err := json.Unmarshal(data, &result); err != nil {
+		return "", fmt.Errorf("failed to parse bug ids_to_query_token response: %w", err)
+	}
+	return result.QueryToken, nil
+}
+
+// UpdateBugSystemSelectFieldOptions 更新缺陷系统下拉字段选项
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/update_system_select_field_options.html
+func (c *Client) UpdateBugSystemSelectFieldOptions(ctx context.Context, req *model.UpdateBugSystemSelectFieldOptionsRequest) error {
+	_, err := c.doPost(ctx, "/bugs/update_system_select_field_options", req.ToParams())
+	return err
+}
