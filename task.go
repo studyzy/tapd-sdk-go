@@ -131,3 +131,12 @@ func (c *Client) GetTasksByViewConfID(ctx context.Context, req *model.GetTasksBy
 func (c *Client) GetTaskFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
 	return c.doGet(ctx, "/tasks/get_fields_info", req.ToParams())
 }
+
+// GetTaskCustomFieldsSettings 获取任务自定义字段配置
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_task_custom_fields_settings.html
+func (c *Client) GetTaskCustomFieldsSettings(ctx context.Context, workspaceID string) ([]model.CustomFieldConfig, error) {
+	return c.GetCustomFields(ctx, &model.GetCustomFieldsRequest{
+		WorkspaceID: workspaceID,
+		EntityType:  "tasks",
+	})
+}

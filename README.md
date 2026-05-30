@@ -105,6 +105,27 @@ func main() {
     for _, s := range stories {
         fmt.Printf("需求: %s [%s]\n", s.Name, s.Status)
     }
+
+    // 翻页获取全部需求（TAPD 单次最多返回 200 条）
+    page := 1
+    var allStories []model.Story
+    for {
+        batch, err := client.ListStories(ctx, &model.ListStoriesRequest{
+            WorkspaceID: "12345678",
+            Status:      "open",
+            Limit:       200, // 最大值
+            Page:        page,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        if len(batch) == 0 {
+            break
+        }
+        allStories = append(allStories, batch...)
+        page++
+    }
+    fmt.Printf("共 %d 条需求\n", len(allStories))
 }
 ```
 

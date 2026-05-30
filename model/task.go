@@ -178,6 +178,7 @@ type CreateTaskRequest struct {
 	Priority      string            // 可选：优先级（建议使用 PriorityLabel 以兼容自定义优先级）
 	PriorityLabel string            // 可选：优先级（推荐使用）
 	Effort        string            // 可选：预估工时
+	ReleaseID     string            // 可选：发布计划 ID
 	Label         string            // 可选：标签（标签不存在时自动创建，多个以 | 分隔）
 	CustomFields  map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
@@ -199,6 +200,7 @@ func (r *CreateTaskRequest) ToParams() map[string]string {
 	setOptional(params, "priority", r.Priority)
 	setOptional(params, "priority_label", r.PriorityLabel)
 	setOptional(params, "effort", r.Effort)
+	setOptional(params, "release_id", r.ReleaseID)
 	setOptional(params, "label", r.Label)
 	MergeCustomFields(params, r.CustomFields)
 	return params
