@@ -86,7 +86,7 @@ func (c *Client) GetLaunchFormsTemplates(ctx context.Context, req *model.GetLaun
 	if err != nil {
 		return nil, err
 	}
-	return parseList[model.LaunchFormTemplate](data, "LaunchFormTemplate")
+	return parseList[model.LaunchFormTemplate](data, "template")
 }
 
 // GetLaunchFormsActivityLogs 获取发布评审活动日志
@@ -96,7 +96,7 @@ func (c *Client) GetLaunchFormsActivityLogs(ctx context.Context, req *model.GetL
 	if err != nil {
 		return nil, err
 	}
-	return parseList[model.LaunchFormActivityLog](data, "LaunchFormActivityLog")
+	return parseList[model.LaunchFormActivityLog](data, "LaunchChange")
 }
 
 // CreateLaunchAccessory 创建发布评审附件

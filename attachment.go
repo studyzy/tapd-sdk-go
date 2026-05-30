@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -46,12 +45,12 @@ func (c *Client) GetOneAttachment(ctx context.Context, req *model.GetOneAttachme
 
 // DownloadDocument 获取单个文档下载链接
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/attachment/download_document.html
-func (c *Client) DownloadDocument(ctx context.Context, req *model.DownloadDocumentRequest) (json.RawMessage, error) {
+func (c *Client) DownloadDocument(ctx context.Context, req *model.DownloadDocumentRequest) (*model.Document, error) {
 	data, err := c.doGet(ctx, "/documents/down", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
-	return data, nil
+	return parseOne[model.Document](data, "Document")
 }
 
 // UploadAttachment 上传附件

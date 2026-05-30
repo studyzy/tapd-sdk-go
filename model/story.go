@@ -125,42 +125,53 @@ func (s Story) MarshalJSON() ([]byte, error) {
 // ListStoriesRequest 查询需求列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_stories.html
 type ListStoriesRequest struct {
-	WorkspaceID    string            // 必填：项目 ID
-	ID             string            // 可选：需求 ID
-	Name           string            // 可选：标题（支持模糊匹配）
-	Priority       string            // 可选：优先级（数字）
-	PriorityLabel  string            // 可选：优先级标签
-	BusinessValue  string            // 可选：业务价值
-	VStatus        string            // 可选：中文状态名
-	WithVStatus    string            // 可选：带中文状态名返回
-	Status         string            // 可选：状态
-	Owner          string            // 可选：处理人
-	Creator        string            // 可选：创建人
-	Developer      string            // 可选：开发人员
-	CC             string            // 可选：抄送人
-	IterationID    string            // 可选：迭代 ID
-	CategoryID     string            // 可选：需求分类
-	Label          string            // 可选：标签
-	Version        string            // 可选：版本
-	Module         string            // 可选：模块
-	TestFocus      string            // 可选：测试重点
-	Size           string            // 可选：规模
-	Begin          string            // 可选：预计开始日期
-	Due            string            // 可选：预计结束日期
-	Created        string            // 可选：创建时间
-	Modified       string            // 可选：修改时间
-	Completed      string            // 可选：完成时间
-	Type           string            // 可选：需求类型
-	Source         string            // 可选：需求来源
-	Feature        string            // 可选：特性
-	ParentID       string            // 可选：父需求 ID
-	WorkitemTypeID string            // 可选：需求类别 ID
-	ReleaseID      string            // 可选：发布计划 ID
-	Fields         string            // 可选：返回字段列表
-	Limit          int               // 可选：返回数量限制
-	Page           int               // 可选：页码
-	Order          string            // 可选：排序规则
-	CustomFields   map[string]string // 可选：自定义字段
+	WorkspaceID         string            // 必填：项目 ID
+	ID                  string            // 可选：需求 ID
+	Name                string            // 可选：标题（支持模糊匹配）
+	Priority            string            // 可选：优先级（数字）
+	PriorityLabel       string            // 可选：优先级标签
+	BusinessValue       string            // 可选：业务价值
+	VStatus             string            // 可选：中文状态名
+	WithVStatus         string            // 可选：带中文状态名返回
+	Status              string            // 可选：状态
+	Owner               string            // 可选：处理人
+	Creator             string            // 可选：创建人
+	Developer           string            // 可选：开发人员
+	CC                  string            // 可选：抄送人
+	IterationID         string            // 可选：迭代 ID
+	CategoryID          string            // 可选：需求分类
+	Label               string            // 可选：标签
+	Version             string            // 可选：版本
+	Module              string            // 可选：模块
+	TestFocus           string            // 可选：测试重点
+	Size                string            // 可选：规模
+	Begin               string            // 可选：预计开始日期
+	Due                 string            // 可选：预计结束日期
+	Created             string            // 可选：创建时间
+	Modified            string            // 可选：修改时间
+	Completed           string            // 可选：完成时间
+	Type                string            // 可选：需求类型
+	Source              string            // 可选：需求来源
+	Feature             string            // 可选：特性
+	ParentID            string            // 可选：父需求 ID
+	WorkitemTypeID      string            // 可选：需求类别 ID
+	ReleaseID           string            // 可选：发布计划 ID
+	TechRisk            string            // 可选：技术风险
+	Effort              string            // 可选：预估工时
+	EffortCompleted     string            // 可选：已完成工时
+	Remain              string            // 可选：剩余工时
+	Exceed              string            // 可选：超出工时
+	AncestorID          string            // 可选：祖先需求 ID
+	ChildrenID          string            // 可选：子需求 ID
+	Description         string            // 可选：详细描述
+	IncludeSubIteration string            // 可选：是否包含子迭代
+	IncludeSubCategory  string            // 可选：是否包含子分类
+	IncludeLeafStories  string            // 可选：是否包含叶子需求
+	Fields              string            // 可选：返回字段列表
+	Limit               int               // 可选：返回数量限制
+	Page                int               // 可选：页码
+	Order               string            // 可选：排序规则
+	CustomFields        map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -198,6 +209,17 @@ func (r *ListStoriesRequest) ToParams() map[string]string {
 	setOptional(params, "parent_id", r.ParentID)
 	setOptional(params, "workitem_type_id", r.WorkitemTypeID)
 	setOptional(params, "release_id", r.ReleaseID)
+	setOptional(params, "tech_risk", r.TechRisk)
+	setOptional(params, "effort", r.Effort)
+	setOptional(params, "effort_completed", r.EffortCompleted)
+	setOptional(params, "remain", r.Remain)
+	setOptional(params, "exceed", r.Exceed)
+	setOptional(params, "ancestor_id", r.AncestorID)
+	setOptional(params, "children_id", r.ChildrenID)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "include_sub_iteration", r.IncludeSubIteration)
+	setOptional(params, "include_sub_category", r.IncludeSubCategory)
+	setOptional(params, "include_leaf_stories", r.IncludeLeafStories)
 	setOptional(params, "fields", r.Fields)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
@@ -209,38 +231,41 @@ func (r *ListStoriesRequest) ToParams() map[string]string {
 // CreateStoryRequest 创建需求的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/add_story.html
 type CreateStoryRequest struct {
-	WorkspaceID     string            // 必填：项目 ID
-	Name            string            // 必填：标题
-	Description     string            // 可选：详细描述
-	Priority        string            // 可选：优先级（数字）
-	PriorityLabel   string            // 可选：优先级标签
-	BusinessValue   string            // 可选：业务价值
-	Status          string            // 可选：状态
-	Owner           string            // 可选：处理人
-	Creator         string            // 可选：创建人
-	Developer       string            // 可选：开发人员
-	CC              string            // 可选：抄送人
-	IterationID     string            // 可选：迭代 ID
-	ParentID        string            // 可选：父需求 ID（创建子需求时使用）
-	CategoryID      string            // 可选：需求分类 ID
-	Type            string            // 可选：需求类型
-	Source          string            // 可选：需求来源
-	Begin           string            // 可选：预计开始日期
-	Due             string            // 可选：预计结束日期
-	Label           string            // 可选：标签
-	Version         string            // 可选：版本
-	Module          string            // 可选：模块
-	TestFocus       string            // 可选：测试重点
-	Size            string            // 可选：规模
-	Effort          string            // 可选：预估工时
-	EffortCompleted string            // 可选：已完成工时
-	Remain          string            // 可选：剩余工时
-	Exceed          string            // 可选：超出工时
-	ReleaseID       string            // 可选：发布计划 ID
-	Feature         string            // 可选：特性
-	TemplatedID     string            // 可选：模板 ID
-	WorkitemTypeID  string            // 可选：需求类别 ID
-	CustomFields    map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
+	WorkspaceID                 string            // 必填：项目 ID
+	Name                        string            // 必填：标题
+	Description                 string            // 可选：详细描述
+	Priority                    string            // 可选：优先级（数字）
+	PriorityLabel               string            // 可选：优先级标签
+	BusinessValue               string            // 可选：业务价值
+	Status                      string            // 可选：状态
+	Owner                       string            // 可选：处理人
+	Creator                     string            // 可选：创建人
+	Developer                   string            // 可选：开发人员
+	CC                          string            // 可选：抄送人
+	IterationID                 string            // 可选：迭代 ID
+	ParentID                    string            // 可选：父需求 ID（创建子需求时使用）
+	CategoryID                  string            // 可选：需求分类 ID
+	Type                        string            // 可选：需求类型
+	Source                      string            // 可选：需求来源
+	Begin                       string            // 可选：预计开始日期
+	Due                         string            // 可选：预计结束日期
+	Label                       string            // 可选：标签
+	Version                     string            // 可选：版本
+	Module                      string            // 可选：模块
+	TestFocus                   string            // 可选：测试重点
+	Size                        string            // 可选：规模
+	Effort                      string            // 可选：预估工时
+	EffortCompleted             string            // 可选：已完成工时
+	Remain                      string            // 可选：剩余工时
+	Exceed                      string            // 可选：超出工时
+	ReleaseID                   string            // 可选：发布计划 ID
+	Feature                     string            // 可选：特性
+	TemplatedID                 string            // 可选：模板 ID
+	WorkitemTypeID              string            // 可选：需求类别 ID
+	TechRisk                    string            // 可选：技术风险
+	IsApplyTemplateDefaultValue string            // 可选：是否应用模板默认值
+	ApplyTemplate               string            // 可选：应用模板
+	CustomFields                map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -278,6 +303,9 @@ func (r *CreateStoryRequest) ToParams() map[string]string {
 	setOptional(params, "feature", r.Feature)
 	setOptional(params, "templated_id", r.TemplatedID)
 	setOptional(params, "workitem_type_id", r.WorkitemTypeID)
+	setOptional(params, "tech_risk", r.TechRisk)
+	setOptional(params, "is_apply_template_default_value", r.IsApplyTemplateDefaultValue)
+	setOptional(params, "apply_template", r.ApplyTemplate)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }
@@ -316,6 +344,7 @@ type UpdateStoryRequest struct {
 	Progress        string            // 可选：进度
 	Type            string            // 可选：需求类型
 	Source          string            // 可选：需求来源
+	IsAutoCloseTask string            // 可选：是否自动关闭关联任务
 	CustomFields    map[string]string // 可选：自定义字段，key 如 custom_field_one、custom_field_9
 }
 
@@ -354,6 +383,7 @@ func (r *UpdateStoryRequest) ToParams() map[string]string {
 	setOptional(params, "progress", r.Progress)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "source", r.Source)
+	setOptional(params, "is_auto_close_task", r.IsAutoCloseTask)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }
@@ -361,37 +391,48 @@ func (r *UpdateStoryRequest) ToParams() map[string]string {
 // CountStoriesRequest 查询需求数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_stories_count.html
 type CountStoriesRequest struct {
-	WorkspaceID    string            // 必填：项目 ID
-	ID             string            // 可选：需求 ID
-	Name           string            // 可选：标题（支持模糊匹配）
-	Priority       string            // 可选：优先级（数字）
-	PriorityLabel  string            // 可选：优先级标签
-	BusinessValue  string            // 可选：业务价值
-	VStatus        string            // 可选：中文状态名
-	Status         string            // 可选：状态
-	Owner          string            // 可选：处理人
-	Creator        string            // 可选：创建人
-	Developer      string            // 可选：开发人员
-	CC             string            // 可选：抄送人
-	IterationID    string            // 可选：迭代 ID
-	CategoryID     string            // 可选：需求分类
-	Label          string            // 可选：标签
-	Version        string            // 可选：版本
-	Module         string            // 可选：模块
-	TestFocus      string            // 可选：测试重点
-	Size           string            // 可选：规模
-	Begin          string            // 可选：预计开始日期
-	Due            string            // 可选：预计结束日期
-	Created        string            // 可选：创建时间
-	Modified       string            // 可选：修改时间
-	Completed      string            // 可选：完成时间
-	Type           string            // 可选：需求类型
-	Source         string            // 可选：需求来源
-	Feature        string            // 可选：特性
-	ParentID       string            // 可选：父需求 ID
-	WorkitemTypeID string            // 可选：需求类别 ID
-	ReleaseID      string            // 可选：发布计划 ID
-	CustomFields   map[string]string // 可选：自定义字段
+	WorkspaceID         string            // 必填：项目 ID
+	ID                  string            // 可选：需求 ID
+	Name                string            // 可选：标题（支持模糊匹配）
+	Priority            string            // 可选：优先级（数字）
+	PriorityLabel       string            // 可选：优先级标签
+	BusinessValue       string            // 可选：业务价值
+	VStatus             string            // 可选：中文状态名
+	Status              string            // 可选：状态
+	Owner               string            // 可选：处理人
+	Creator             string            // 可选：创建人
+	Developer           string            // 可选：开发人员
+	CC                  string            // 可选：抄送人
+	IterationID         string            // 可选：迭代 ID
+	CategoryID          string            // 可选：需求分类
+	Label               string            // 可选：标签
+	Version             string            // 可选：版本
+	Module              string            // 可选：模块
+	TestFocus           string            // 可选：测试重点
+	Size                string            // 可选：规模
+	Begin               string            // 可选：预计开始日期
+	Due                 string            // 可选：预计结束日期
+	Created             string            // 可选：创建时间
+	Modified            string            // 可选：修改时间
+	Completed           string            // 可选：完成时间
+	Type                string            // 可选：需求类型
+	Source              string            // 可选：需求来源
+	Feature             string            // 可选：特性
+	ParentID            string            // 可选：父需求 ID
+	WorkitemTypeID      string            // 可选：需求类别 ID
+	ReleaseID           string            // 可选：发布计划 ID
+	TechRisk            string            // 可选：技术风险
+	Effort              string            // 可选：预估工时
+	EffortCompleted     string            // 可选：已完成工时
+	Remain              string            // 可选：剩余工时
+	Exceed              string            // 可选：超出工时
+	AncestorID          string            // 可选：祖先需求 ID
+	ChildrenID          string            // 可选：子需求 ID
+	Description         string            // 可选：详细描述
+	IncludeSubCategory  string            // 可选：是否包含子分类
+	IncludeSubIteration string            // 可选：是否包含子迭代
+	IncludeLeafStories  string            // 可选：是否包含叶子需求
+	CustomFields        map[string]string // 可选：自定义字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -428,6 +469,17 @@ func (r *CountStoriesRequest) ToParams() map[string]string {
 	setOptional(params, "parent_id", r.ParentID)
 	setOptional(params, "workitem_type_id", r.WorkitemTypeID)
 	setOptional(params, "release_id", r.ReleaseID)
+	setOptional(params, "tech_risk", r.TechRisk)
+	setOptional(params, "effort", r.Effort)
+	setOptional(params, "effort_completed", r.EffortCompleted)
+	setOptional(params, "remain", r.Remain)
+	setOptional(params, "exceed", r.Exceed)
+	setOptional(params, "ancestor_id", r.AncestorID)
+	setOptional(params, "children_id", r.ChildrenID)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "include_sub_category", r.IncludeSubCategory)
+	setOptional(params, "include_sub_iteration", r.IncludeSubIteration)
+	setOptional(params, "include_leaf_stories", r.IncludeLeafStories)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

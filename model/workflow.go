@@ -35,3 +35,24 @@ type WorkflowFieldDefaultValue struct {
 	DBModel string `json:"DBModel,omitempty"` // 引用的数据模型（Type 为 record_value 时使用）
 	Field   string `json:"Field,omitempty"`   // 引用的字段名（Type 为 record_value 时使用）
 }
+
+// Workflow 表示工作流定义
+type Workflow struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	SystemName  string `json:"system_name,omitempty"`
+	IsDefault   string `json:"is_default,omitempty"`
+	Created     string `json:"created,omitempty"`
+	Creator     string `json:"creator,omitempty"`
+	Modified    string `json:"modified,omitempty"`
+	Modifier    string `json:"modifier,omitempty"`
+	Type        string `json:"type,omitempty"`
+}
+
+// NewStepResult 表示添加工作流步骤的返回结果
+type NewStepResult struct {
+	SysName  string `json:"sys_name,omitempty"`
+	StepName string `json:"step_name,omitempty"`
+}

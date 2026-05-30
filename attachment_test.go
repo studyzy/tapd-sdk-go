@@ -228,23 +228,23 @@ func TestDownloadDocument(t *testing.T) {
 			t.Errorf("id = %q, want %q", r.URL.Query().Get("id"), "2001")
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"download_url":"https://example.com/doc.pdf"},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"Document":{"id":"2001","workspace_id":"11111111","download_url":"https://example.com/doc.pdf"}},"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.DownloadDocument(context.Background(), &model.DownloadDocumentRequest{
+	doc, err := c.DownloadDocument(context.Background(), &model.DownloadDocumentRequest{
 		WorkspaceID: "11111111",
 		ID:          "2001",
 	})
 	if err != nil {
 		t.Fatalf("DownloadDocument() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if doc == nil {
+		t.Fatal("expected non-nil document")
 	}
-	if string(data) == "" {
-		t.Error("expected non-empty data")
+	if doc.DownloadURL != "https://example.com/doc.pdf" {
+		t.Errorf("download_url = %q, want %q", doc.DownloadURL, "https://example.com/doc.pdf")
 	}
 }
 

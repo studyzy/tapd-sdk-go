@@ -27,11 +27,11 @@ func TestGetWorkspaceReports(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetWorkspaceReports() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if len(data) != 1 {
+		t.Fatalf("expected 1 report, got %d", len(data))
 	}
-	if string(data) == "" {
-		t.Error("expected non-empty data")
+	if data[0].ID != "1001" {
+		t.Errorf("id = %q, want %q", data[0].ID, "1001")
 	}
 }
 

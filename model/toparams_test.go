@@ -1,6 +1,9 @@
 package model
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 // TestSetOptional 测试 setOptional 辅助函数
 func TestSetOptional(t *testing.T) {
@@ -1375,29 +1378,45 @@ func TestGetLifeTimesRequest_ToParams(t *testing.T) {
 	}
 }
 
-func TestAddCodeCommitInfoRequest_ToParams(t *testing.T) {
+func TestAddCodeCommitInfoRequest_ToJSON(t *testing.T) {
 	req := &AddCodeCommitInfoRequest{
 		WorkspaceID: "100",
 		Message:     "fix bug #100",
 		Author:      "admin",
+		CommitID:    "abc123",
+		Files:       []string{"U main.go", "A new.go"},
+		Repo:        "my-repo",
+		RepoID:      "repo-001",
+		CommitTime:  "2026-01-01 10:00:00",
 		HookURL:     "https://example.com/hook",
 		Ref:         "refs/heads/main",
 	}
-	params := req.ToParams()
-	if params["workspace_id"] != "100" {
-		t.Errorf("workspace_id: got %q", params["workspace_id"])
+	data, err := req.ToJSON()
+	if err != nil {
+		t.Fatalf("ToJSON() error: %v", err)
 	}
-	if params["message"] != "fix bug #100" {
-		t.Errorf("message: got %q", params["message"])
+	var m map[string]interface{}
+	if err := json.Unmarshal(data, &m); err != nil {
+		t.Fatalf("Unmarshal error: %v", err)
 	}
-	if params["author"] != "admin" {
-		t.Errorf("author: got %q", params["author"])
+	if m["workspace_id"] != "100" {
+		t.Errorf("workspace_id: got %v", m["workspace_id"])
 	}
-	if params["hook_url"] != "https://example.com/hook" {
-		t.Errorf("hook_url: got %q", params["hook_url"])
+	if m["message"] != "fix bug #100" {
+		t.Errorf("message: got %v", m["message"])
 	}
-	if params["ref"] != "refs/heads/main" {
-		t.Errorf("ref: got %q", params["ref"])
+	if m["author"] != "admin" {
+		t.Errorf("author: got %v", m["author"])
+	}
+	if m["hook_url"] != "https://example.com/hook" {
+		t.Errorf("hook_url: got %v", m["hook_url"])
+	}
+	if m["ref"] != "refs/heads/main" {
+		t.Errorf("ref: got %v", m["ref"])
+	}
+	files, ok := m["files"].([]interface{})
+	if !ok || len(files) != 2 {
+		t.Errorf("files: got %v", m["files"])
 	}
 }
 

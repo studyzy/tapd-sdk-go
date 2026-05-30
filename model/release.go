@@ -33,10 +33,10 @@ func (r *CreateReleaseRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
 		"name":         r.Name,
+		"startdate":    r.StartDate,
+		"enddate":      r.EndDate,
 	}
 	setOptional(params, "description", r.Description)
-	setOptional(params, "startdate", r.StartDate)
-	setOptional(params, "enddate", r.EndDate)
 	setOptional(params, "creator", r.Creator)
 	return params
 }
@@ -322,14 +322,25 @@ func (r *UpdateLaunchFormRequest) ToParams() map[string]string {
 
 // CountLaunchFormsRequest 获取发布评审数量的请求参数
 type CountLaunchFormsRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	ID          string // 可选：发布评审 ID
-	Creator     string // 可选：创建人
-	Created     string // 可选：创建时间
-	Title       string // 可选：标题
-	Status      string // 可选：状态
-	VersionType string // 可选：版本类型
-	Baseline    string // 可选：基线
+	WorkspaceID    string // 必填：项目 ID
+	ID             string // 可选：发布评审 ID
+	Creator        string // 可选：创建人
+	Created        string // 可选：创建时间
+	Title          string // 可选：标题
+	Status         string // 可选：状态
+	VersionType    string // 可选：版本类型
+	Baseline       string // 可选：基线
+	ReleaseModel   string // 可选：发布模块
+	RoadmapVersion string // 可选：路标版本
+	ReleaseType    string // 可选：发布类型
+	ChangeType     string // 可选：变更类型
+	SignedBy       string // 可选：签发人
+	ArchivedBy     string // 可选：归档人
+	CC             string // 可选：抄送人
+	ChangeNotifier string // 可选：变更通知人
+	Limit          int    // 可选：返回数量限制
+	Page           int    // 可选：页码
+	Fields         string // 可选：返回字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -344,6 +355,17 @@ func (r *CountLaunchFormsRequest) ToParams() map[string]string {
 	setOptional(params, "status", r.Status)
 	setOptional(params, "version_type", r.VersionType)
 	setOptional(params, "baseline", r.Baseline)
+	setOptional(params, "release_model", r.ReleaseModel)
+	setOptional(params, "roadmap_version", r.RoadmapVersion)
+	setOptional(params, "release_type", r.ReleaseType)
+	setOptional(params, "change_type", r.ChangeType)
+	setOptional(params, "signed_by", r.SignedBy)
+	setOptional(params, "archived_by", r.ArchivedBy)
+	setOptional(params, "cc", r.CC)
+	setOptional(params, "change_notifier", r.ChangeNotifier)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "fields", r.Fields)
 	return params
 }
 
@@ -418,12 +440,17 @@ func (r *GetLaunchFormsActivityLogsRequest) ToParams() map[string]string {
 
 // LaunchFormActivityLog 表示发布评审活动日志
 type LaunchFormActivityLog struct {
-	ID          string `json:"id"`
-	WorkspaceID string `json:"workspace_id"`
-	FormID      string `json:"form_id"`
-	Creator     string `json:"creator"`
-	Created     string `json:"created"`
-	Content     string `json:"content"`
+	ID             string `json:"id,omitempty"`
+	WorkspaceID    string `json:"workspace_id,omitempty"`
+	FormID         string `json:"form_id,omitempty"`
+	Type           string `json:"type,omitempty"`             // 活动类型
+	ActivityFormID string `json:"activity_form_id,omitempty"` // 上线活动单ID
+	Field          string `json:"field,omitempty"`            // 变更字段
+	OldValue       string `json:"old_value,omitempty"`        // 变更前值
+	NewValue       string `json:"new_value,omitempty"`        // 变更后值
+	Operation      string `json:"operation,omitempty"`        // 操作状态
+	CreatedBy      string `json:"created_by,omitempty"`       // 创建人
+	Created        string `json:"created,omitempty"`          // 创建时间
 }
 
 // CreateLaunchAccessoryRequest 创建发布评审附件的请求参数
@@ -451,6 +478,12 @@ type LaunchAccessory struct {
 	FormID      string `json:"form_id"`
 	Type        string `json:"type"`
 	Content     string `json:"content"`
+	Tag         string `json:"tag,omitempty"`          // 附件标签
+	Title       string `json:"title,omitempty"`        // 标题
+	Description string `json:"description,omitempty"`  // 描述
+	ContentType string `json:"content_type,omitempty"` // 内容类型
+	GroupID     string `json:"group_id,omitempty"`     // 分组ID
+	Source      string `json:"source,omitempty"`       // 来源
 	CreatedBy   string `json:"created_by"`
 	Created     string `json:"created"`
 }

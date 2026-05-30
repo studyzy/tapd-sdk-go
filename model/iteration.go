@@ -148,6 +148,7 @@ type CreateIterationRequest struct {
 	Status         string            // 可选：状态（open/done）
 	Label          string            // 可选：标签（多个以竖线分隔）
 	CustomFields   map[string]string // 可选：自定义字段
+	CustomMoments  map[string]string // 可选：关键日期，key 为 custom_moment_* 形式
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -167,6 +168,11 @@ func (r *CreateIterationRequest) ToParams() map[string]string {
 	setOptional(params, "status", r.Status)
 	setOptional(params, "label", r.Label)
 	MergeCustomFields(params, r.CustomFields)
+	for k, v := range r.CustomMoments {
+		if v != "" {
+			params[k] = v
+		}
+	}
 	return params
 }
 

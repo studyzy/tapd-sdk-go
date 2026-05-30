@@ -138,23 +138,60 @@ func (r *CopyBugRequest) ToParams() map[string]string {
 
 // BatchUpdateBugItem 批量更新中的单条缺陷字段
 type BatchUpdateBugItem struct {
-	ID            string            `json:"id,omitempty"`             // 必填：缺陷 ID
-	Title         string            `json:"title,omitempty"`          // 可选：标题
-	Description   string            `json:"description,omitempty"`    // 可选：详细描述
-	Priority      string            `json:"priority,omitempty"`       // 可选：优先级
-	PriorityLabel string            `json:"priority_label,omitempty"` // 可选：优先级（推荐）
-	Severity      string            `json:"severity,omitempty"`       // 可选：严重程度
-	Status        string            `json:"status,omitempty"`         // 可选：状态
-	VStatus       string            `json:"v_status,omitempty"`       // 可选：中文状态名
-	BugType       string            `json:"bugtype,omitempty"`        // 可选：缺陷类型
-	CurrentOwner  string            `json:"current_owner,omitempty"`  // 可选：处理人
-	CurrentUser   string            `json:"current_user,omitempty"`   // 可选：变更人
-	IterationID   string            `json:"iteration_id,omitempty"`   // 可选：迭代 ID
-	Module        string            `json:"module,omitempty"`         // 可选：模块
-	Label         string            `json:"label,omitempty"`          // 可选：标签
-	Begin         string            `json:"begin,omitempty"`          // 可选：预计开始
-	Due           string            `json:"due,omitempty"`            // 可选：预计结束
-	CustomFields  map[string]string `json:"-"`                        // 可选：自定义字段
+	ID             string            `json:"id,omitempty"`               // 必填：缺陷 ID
+	Title          string            `json:"title,omitempty"`            // 可选：标题
+	Description    string            `json:"description,omitempty"`      // 可选：详细描述
+	Priority       string            `json:"priority,omitempty"`         // 可选：优先级
+	PriorityLabel  string            `json:"priority_label,omitempty"`   // 可选：优先级（推荐）
+	Severity       string            `json:"severity,omitempty"`         // 可选：严重程度
+	Status         string            `json:"status,omitempty"`           // 可选：状态
+	VStatus        string            `json:"v_status,omitempty"`         // 可选：中文状态名
+	BugType        string            `json:"bugtype,omitempty"`          // 可选：缺陷类型
+	CurrentOwner   string            `json:"current_owner,omitempty"`    // 可选：处理人
+	CurrentUser    string            `json:"current_user,omitempty"`     // 可选：变更人
+	IterationID    string            `json:"iteration_id,omitempty"`     // 可选：迭代 ID
+	Module         string            `json:"module,omitempty"`           // 可选：模块
+	Label          string            `json:"label,omitempty"`            // 可选：标签
+	Begin          string            `json:"begin,omitempty"`            // 可选：预计开始
+	Due            string            `json:"due,omitempty"`              // 可选：预计结束
+	Feature        string            `json:"feature,omitempty"`          // 可选：特性
+	ReleaseID      string            `json:"release_id,omitempty"`       // 可选：发布计划
+	VersionReport  string            `json:"version_report,omitempty"`   // 可选：发现版本
+	VersionTest    string            `json:"version_test,omitempty"`     // 可选：验证版本
+	VersionFix     string            `json:"version_fix,omitempty"`      // 可选：合入版本
+	VersionClose   string            `json:"version_close,omitempty"`    // 可选：关闭版本
+	BaselineFind   string            `json:"baseline_find,omitempty"`    // 可选：发现基线
+	BaselineJoin   string            `json:"baseline_join,omitempty"`    // 可选：合入基线
+	BaselineTest   string            `json:"baseline_test,omitempty"`    // 可选：验证基线
+	BaselineClose  string            `json:"baseline_close,omitempty"`   // 可选：关闭基线
+	CC             string            `json:"cc,omitempty"`               // 可选：抄送人
+	Reporter       string            `json:"reporter,omitempty"`         // 可选：报告人
+	Participator   string            `json:"participator,omitempty"`     // 可选：参与人
+	TE             string            `json:"te,omitempty"`               // 可选：测试人员
+	DE             string            `json:"de,omitempty"`               // 可选：开发人员
+	Auditer        string            `json:"auditer,omitempty"`          // 可选：审核人
+	Confirmer      string            `json:"confirmer,omitempty"`        // 可选：验证人
+	Fixer          string            `json:"fixer,omitempty"`            // 可选：修复人
+	Closer         string            `json:"closer,omitempty"`           // 可选：关闭人
+	LastModify     string            `json:"lastmodify,omitempty"`       // 可选：最后修改人
+	InProgressTime string            `json:"in_progress_time,omitempty"` // 可选：处理中时间
+	VerifyTime     string            `json:"verify_time,omitempty"`      // 可选：验证时间
+	RejectTime     string            `json:"reject_time,omitempty"`      // 可选：拒绝时间
+	Deadline       string            `json:"deadline,omitempty"`         // 可选：截止日期
+	OS             string            `json:"os,omitempty"`               // 可选：操作系统
+	Platform       string            `json:"platform,omitempty"`         // 可选：软件平台
+	TestMode       string            `json:"testmode,omitempty"`         // 可选：测试方式
+	TestPhase      string            `json:"testphase,omitempty"`        // 可选：测试阶段
+	TestType       string            `json:"testtype,omitempty"`         // 可选：测试类型
+	Source         string            `json:"source,omitempty"`           // 可选：缺陷来源
+	Frequency      string            `json:"frequency,omitempty"`        // 可选：重现规律
+	OriginPhase    string            `json:"originphase,omitempty"`      // 可选：发现阶段
+	SourcePhase    string            `json:"sourcephase,omitempty"`      // 可选：引入阶段
+	Resolution     string            `json:"resolution,omitempty"`       // 可选：解决方法
+	Estimate       string            `json:"estimate,omitempty"`         // 可选：预计解决时间
+	Effort         string            `json:"effort,omitempty"`           // 可选：工时
+	KeepOwner      string            `json:"keep_owner,omitempty"`       // 可选：是否保持处理人
+	CustomFields   map[string]string `json:"-"`                          // 可选：自定义字段
 }
 
 // MarshalJSON 自定义序列化，将 CustomFields 合并到输出 JSON
@@ -193,7 +230,7 @@ type BatchUpdateBugRequest struct {
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *BatchUpdateBugRequest) ToParams() map[string]string {
 	params := map[string]string{
-		"workspace_id": r.WorkspaceID,
+		"project_id": r.WorkspaceID,
 	}
 	if len(r.Workitems) > 0 {
 		raw, _ := json.Marshal(r.Workitems)
@@ -204,12 +241,15 @@ func (r *BatchUpdateBugRequest) ToParams() map[string]string {
 
 // RemovedBug 表示回收站中的缺陷
 type RemovedBug struct {
-	ID            string `json:"id,omitempty"`             // 缺陷 ID
-	Name          string `json:"name,omitempty"`           // 标题
-	Creator       string `json:"creator,omitempty"`        // 创建人
-	Created       string `json:"created,omitempty"`        // 创建时间
-	OperationUser string `json:"operation_user,omitempty"` // 删除人
-	Modified      string `json:"modified,omitempty"`       // 最后修改时间
+	ID             string `json:"id,omitempty"`              // 缺陷 ID
+	Title          string `json:"title,omitempty"`           // 标题
+	Reporter       string `json:"reporter,omitempty"`        // 报告人
+	Created        string `json:"created,omitempty"`         // 创建时间
+	OperationUser  string `json:"operation_user,omitempty"`  // 删除人
+	Modified       string `json:"modified,omitempty"`        // 最后修改时间
+	RemovedComment string `json:"removed_comment,omitempty"` // 删除评论
+	Type           string `json:"type,omitempty"`            // 操作类型：delete/move/merge
+	NewBugURL      string `json:"new_bug_url,omitempty"`     // 新缺陷链接（move/merge时）
 }
 
 // GetRemovedBugsRequest 获取回收站缺陷的请求参数

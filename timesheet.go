@@ -3,7 +3,7 @@ package tapd
 import (
 	"context"
 	"encoding/json"
-	"strings"
+	"net/url"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -62,15 +62,12 @@ func (c *Client) CountTimesheets(ctx context.Context, req *model.CountTimesheets
 // DeleteTimesheets 删除工时花费
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/delete_timesheets.html
 func (c *Client) DeleteTimesheets(ctx context.Context, req *model.DeleteTimesheetsRequest) (json.RawMessage, error) {
-	params := map[string]string{
-		"workspace_id": req.WorkspaceID,
-		"entity_type":  req.EntityType,
-		"entity_id":    req.EntityID,
-		"cost_ids":     strings.Join(req.CostIDs, ","),
+	form := url.Values{}
+	form.Set("workspace_id", req.WorkspaceID)
+	form.Set("entity_type", req.EntityType)
+	form.Set("entity_id", req.EntityID)
+	for _, id := range req.CostIDs {
+		form.Add("cost_ids[]", id)
 	}
-	data, err := c.doPost(ctx, "/timesheets/delete_timesheets", params)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return c.doPostForm(ctx, "/timesheets/delete_timesheets", form)
 }

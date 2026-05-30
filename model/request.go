@@ -1,6 +1,8 @@
 // Package model 中的 request.go 定义了杂项 API 的请求参数结构体
 package model
 
+import "encoding/json"
+
 // GetCustomFieldsRequest 获取自定义字段配置的请求参数
 type GetCustomFieldsRequest struct {
 	WorkspaceID string // 必填：项目 ID
@@ -44,6 +46,7 @@ type WorkflowRequest struct {
 	Page           string // 可选：页码
 	Type           string // 可选：工作流类型
 	GroupKey       string // 可选：分组键（用于 all_last_steps 等接口）
+	Fields         string // 可选：返回字段
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -63,6 +66,7 @@ func (r *WorkflowRequest) ToParams() map[string]string {
 	setOptional(params, "page", r.Page)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "group_key", r.GroupKey)
+	setOptional(params, "fields", r.Fields)
 	return params
 }
 
@@ -435,37 +439,51 @@ func (r *GetLifeTimesRequest) ToParams() map[string]string {
 // AddCodeCommitInfoRequest 保存 Commit 提交数据的请求参数
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/add_code_commit_info.html
 type AddCodeCommitInfoRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	Message     string // 必填：提交信息
-	Author      string // 必填：提交人
-	CommitID    string // 必填：提交 ID
-	Files       string // 必填：变更文件
-	Repo        string // 必填：仓库名
-	RepoID      string // 必填：仓库 ID
-	CommitTime  string // 必填：提交时间
-	HookURL     string // 可选：Hook URL（保留兼容）
-	Ref         string // 可选：分支引用（保留兼容）
-	GitEnv      string // 可选：信息来源
-	RepoURL     string // 可选：仓库链接
+	WorkspaceID string   // 必填：项目 ID
+	Message     string   // 必填：提交信息
+	Author      string   // 必填：提交人
+	CommitID    string   // 必填：提交 ID
+	Files       []string // 必填：变更文件
+	Repo        string   // 必填：仓库名
+	RepoID      string   // 必填：仓库 ID
+	CommitTime  string   // 必填：提交时间
+	HookURL     string   // 可选：Hook URL（保留兼容）
+	Ref         string   // 可选：分支引用（保留兼容）
+	GitEnv      string   // 可选：信息来源
+	RepoURL     string   // 可选：仓库链接
+	CommitURL   string   // 可选：提交链接
 }
 
-// ToParams 将请求结构体转换为 TAPD API 参数 map
-func (r *AddCodeCommitInfoRequest) ToParams() map[string]string {
-	params := map[string]string{
+// ToJSON 将请求结构体序列化为 JSON 字节（该 API 使用 JSON Body 提交）
+func (r *AddCodeCommitInfoRequest) ToJSON() ([]byte, error) {
+	m := map[string]interface{}{
 		"workspace_id": r.WorkspaceID,
 		"message":      r.Message,
 		"author":       r.Author,
 		"commit_id":    r.CommitID,
-		"files":        r.Files,
 		"repo":         r.Repo,
 		"repo_id":      r.RepoID,
 		"commit_time":  r.CommitTime,
 	}
-	setOptional(params, "hook_url", r.HookURL)
-	setOptional(params, "ref", r.Ref)
-	setOptional(params, "git_env", r.GitEnv)
-	setOptional(params, "repo_url", r.RepoURL)
-	return params
+	if len(r.Files) > 0 {
+		m["files"] = r.Files
+	}
+	if r.HookURL != "" {
+		m["hook_url"] = r.HookURL
+	}
+	if r.Ref != "" {
+		m["ref"] = r.Ref
+	}
+	if r.GitEnv != "" {
+		m["git_env"] = r.GitEnv
+	}
+	if r.RepoURL != "" {
+		m["repo_url"] = r.RepoURL
+	}
+	if r.CommitURL != "" {
+		m["commit_url"] = r.CommitURL
+	}
+	return json.Marshal(m)
 }
 
 // GetCodeCommitInfosRequest 获取 GIT 关联提交数据的请求参数

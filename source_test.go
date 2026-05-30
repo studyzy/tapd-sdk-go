@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -18,9 +19,21 @@ func TestAddCodeCommitInfo(t *testing.T) {
 		if r.Method != http.MethodPost {
 			t.Errorf("expected POST, got %s", r.Method)
 		}
+		ct := r.Header.Get("Content-Type")
+		if ct != "application/json" {
+			t.Errorf("Content-Type = %q, want application/json", ct)
+		}
 		body, _ := io.ReadAll(r.Body)
 		if string(body) == "" {
 			t.Fatal("expected non-empty body")
+		}
+		// 验证 body 是合法的 JSON
+		var m map[string]interface{}
+		if err := json.Unmarshal(body, &m); err != nil {
+			t.Fatalf("body is not valid JSON: %v", err)
+		}
+		if m["workspace_id"] != "11111111" {
+			t.Errorf("workspace_id = %v, want 11111111", m["workspace_id"])
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":1,"data":{"msg":"success"},"info":"success"}`))
@@ -32,6 +45,11 @@ func TestAddCodeCommitInfo(t *testing.T) {
 		WorkspaceID: "11111111",
 		Message:     "fix bug #100",
 		Author:      "admin",
+		CommitID:    "abc123",
+		Files:       []string{"U main.go", "A new.go"},
+		Repo:        "my-repo",
+		RepoID:      "repo-001",
+		CommitTime:  "2026-01-01 10:00:00",
 		HookURL:     "https://example.com/hook",
 		Ref:         "refs/heads/main",
 	})

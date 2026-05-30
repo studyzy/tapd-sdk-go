@@ -178,10 +178,13 @@ func TestGetWorkflows(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetWorkflows() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if len(data) == 0 {
+		t.Fatal("expected non-empty data")
 	}
-	if string(data) == "" {
-		t.Error("expected non-empty data")
+	if data[0].ID != "1" {
+		t.Errorf("expected id=1, got %q", data[0].ID)
+	}
+	if data[0].Name != "默认工作流" {
+		t.Errorf("expected name=默认工作流, got %q", data[0].Name)
 	}
 }

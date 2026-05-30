@@ -269,12 +269,16 @@ func (c *Client) GetWorkspaceDocuments(ctx context.Context, req *model.GetWorksp
 
 // UpdateWorkspaceInfo 更新项目信息
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/update_workspace_info.html
-func (c *Client) UpdateWorkspaceInfo(ctx context.Context, req *model.UpdateWorkspaceInfoRequest) (*model.Workspace, error) {
+func (c *Client) UpdateWorkspaceInfo(ctx context.Context, req *model.UpdateWorkspaceInfoRequest) (string, error) {
 	data, err := c.doPost(ctx, "/workspaces/update_workspace_info", req.ToParams())
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return parseOne[model.Workspace](data, "Workspace")
+	var msg string
+	if err := json.Unmarshal(data, &msg); err != nil {
+		return "", err
+	}
+	return msg, nil
 }
 
 // GetWorkspaceCustomFieldSettings 获取项目自定义字段配置

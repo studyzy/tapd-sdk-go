@@ -173,6 +173,11 @@ func (c *Client) doPost(ctx context.Context, endpoint string, body map[string]st
 		form.Set(k, v)
 	}
 
+	return c.doPostForm(ctx, endpoint, form)
+}
+
+// doPostForm 发送 form-urlencoded POST 请求，支持重复键（如 cost_ids[]）
+func (c *Client) doPostForm(ctx context.Context, endpoint string, form url.Values) (json.RawMessage, error) {
 	reqURL, err := url.Parse(c.baseURL + endpoint)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)
@@ -248,6 +253,23 @@ func (c *Client) doRequest(req *http.Request) (json.RawMessage, error) {
 	}
 
 	return tapdResp.Data, nil
+}
+
+// doPostJSONBody 发送 JSON 格式的 POST 请求到 TAPD API 端点，解析标准 TAPD 响应
+func (c *Client) doPostJSONBody(ctx context.Context, endpoint string, body []byte) (json.RawMessage, error) {
+	reqURL, err := url.Parse(c.baseURL + endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL.String(), bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	c.applyAuth(req)
+	req.Header.Set("Content-Type", "application/json")
+
+	return c.doRequest(req)
 }
 
 // doPostJSON 发送 JSON 格式的 POST 请求到指定 URL（用于企业微信等外部 API）

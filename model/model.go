@@ -29,6 +29,7 @@ type Workspace struct {
 	ParentID          string `json:"parent_id,omitempty"`
 	MemberCount       string `json:"member_count,omitempty"`
 	CreatorID         string `json:"creator_id,omitempty"`
+	TemplateID        string `json:"template_id,omitempty"`
 }
 
 // UserWorkspace 表示项目成员信息

@@ -7,21 +7,24 @@ import "encoding/json"
 // 自定义字段（custom_field_*）通过 CustomFields map 保留，不会丢失
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcases.html
 type TCase struct {
-	ID           string `json:"id,omitempty"`
-	Name         string `json:"name,omitempty"`
-	WorkspaceID  string `json:"workspace_id,omitempty"`
-	CategoryID   string `json:"category_id,omitempty"`
-	Status       string `json:"status,omitempty"`
-	Precondition string `json:"precondition,omitempty"`
-	Steps        string `json:"steps,omitempty"`
-	Expectation  string `json:"expectation,omitempty"`
-	Type         string `json:"type,omitempty"`
-	Priority     string `json:"priority,omitempty"`
-	Creator      string `json:"creator,omitempty"`
-	Modifier     string `json:"modifier,omitempty"`
-	Created      string `json:"created,omitempty"`
-	Modified     string `json:"modified,omitempty"`
-	URL          string `json:"url,omitempty"`
+	ID                 string `json:"id,omitempty"`
+	Name               string `json:"name,omitempty"`
+	WorkspaceID        string `json:"workspace_id,omitempty"`
+	CategoryID         string `json:"category_id,omitempty"`
+	Status             string `json:"status,omitempty"`
+	Precondition       string `json:"precondition,omitempty"`
+	Steps              string `json:"steps,omitempty"`
+	Expectation        string `json:"expectation,omitempty"`
+	Type               string `json:"type,omitempty"`
+	Priority           string `json:"priority,omitempty"`
+	Creator            string `json:"creator,omitempty"`
+	Modifier           string `json:"modifier,omitempty"`
+	Created            string `json:"created,omitempty"`
+	Modified           string `json:"modified,omitempty"`
+	URL                string `json:"url,omitempty"`
+	IsAutomated        string `json:"is_automated,omitempty"`        // 是否实现自动化
+	AutomationType     string `json:"automation_type,omitempty"`     // 自动化测试类型
+	AutomationPlatform string `json:"automation_platform,omitempty"` // 自动化测试平台
 
 	// 自定义字段，key 为 custom_field_1、custom_field_2 等
 	CustomFields map[string]string `json:"-"`

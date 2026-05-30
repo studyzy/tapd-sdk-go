@@ -84,14 +84,14 @@ func (c *Client) GetWorkflowFirstStep(ctx context.Context, req *model.WorkflowRe
 	return firstStep, nil
 }
 
-// GetWorkflows 获取项目下的工作流列表，返回 json.RawMessage（结构复杂，不做强类型解析）
+// GetWorkflows 获取项目下的工作流列表
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflows.html
-func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) (json.RawMessage, error) {
+func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) ([]model.Workflow, error) {
 	data, err := c.doGet(ctx, "/workflows", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
-	return data, nil
+	return parseList[model.Workflow](data, "Workflow")
 }
 
 // GetWorkflowStepMap 获取工作流步骤映射
@@ -102,7 +102,14 @@ func (c *Client) GetWorkflowStepMap(ctx context.Context, req *model.WorkflowRequ
 
 // AddNewStepForBug 新增 Bug 工作流步骤
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/add_new_step_for_bug.html
-func (c *Client) AddNewStepForBug(ctx context.Context, req *model.AddNewStepForBugRequest) error {
-	_, err := c.doPost(ctx, "/workflows/add_new_step_for_bug", req.ToParams())
-	return err
+func (c *Client) AddNewStepForBug(ctx context.Context, req *model.AddNewStepForBugRequest) (*model.NewStepResult, error) {
+	data, err := c.doPost(ctx, "/workflows/add_new_step_for_bug", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.NewStepResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

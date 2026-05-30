@@ -21,6 +21,7 @@ type Wiki struct {
 	// 人员相关
 	Creator  string `json:"creator,omitempty"`
 	Modifier string `json:"modifier,omitempty"`
+	Author   string `json:"author,omitempty"`
 
 	// 时间相关
 	Created  string `json:"created,omitempty"`

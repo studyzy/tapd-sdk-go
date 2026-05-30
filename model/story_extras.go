@@ -57,6 +57,8 @@ type CountStoryCategoriesRequest struct {
 	Name        string // 可选：分类名称（模糊匹配）
 	Description string // 可选：分类描述
 	ParentID    string // 可选：父分类 ID
+	Created     string // 可选：创建时间
+	Modified    string // 可选：修改时间
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -68,6 +70,8 @@ func (r *CountStoryCategoriesRequest) ToParams() map[string]string {
 	setOptional(params, "name", r.Name)
 	setOptional(params, "description", r.Description)
 	setOptional(params, "parent_id", r.ParentID)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "modified", r.Modified)
 	return params
 }
 

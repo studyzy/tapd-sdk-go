@@ -4,18 +4,20 @@ package model
 // Timesheet 表示 TAPD 花费工时记录
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/
 type Timesheet struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	EntityType  string `json:"entity_type,omitempty"`
-	EntityID    string `json:"entity_id,omitempty"`
-	Timespent   string `json:"timespent,omitempty"`
-	Timeremain  string `json:"timeremain,omitempty"`
-	Spentdate   string `json:"spentdate,omitempty"`
-	Owner       string `json:"owner,omitempty"`
-	Memo        string `json:"memo,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Modified    string `json:"modified,omitempty"`
-	IsDelete    string `json:"is_delete,omitempty"`
+	ID           string `json:"id,omitempty"`
+	WorkspaceID  string `json:"workspace_id,omitempty"`
+	EntityType   string `json:"entity_type,omitempty"`
+	EntityID     string `json:"entity_id,omitempty"`
+	Timespent    string `json:"timespent,omitempty"`
+	Timeremain   string `json:"timeremain,omitempty"`
+	Spentdate    string `json:"spentdate,omitempty"`
+	Owner        string `json:"owner,omitempty"`
+	Memo         string `json:"memo,omitempty"`
+	Created      string `json:"created,omitempty"`
+	Modified     string `json:"modified,omitempty"`
+	IsDelete     string `json:"is_delete,omitempty"`
+	WorkflowStep string `json:"workflow_step,omitempty"` // 工作流节点原名
+	RelationType string `json:"relation_type,omitempty"` // 关联类型
 }
 
 // ListTimesheetsRequest 查询工时列表的请求参数

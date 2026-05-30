@@ -1,27 +1,42 @@
 // Package model 中的 change.go 定义了 TAPD 变更历史数据模型及请求参数结构体
 package model
 
+import "encoding/json"
+
 // WorkitemChange 表示需求/任务的变更记录，适用于 Story 和 Task 的变更历史
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_changes.html
 type WorkitemChange struct {
-	ID               string `json:"id,omitempty"`
-	WorkspaceID      string `json:"workspace_id,omitempty"`
-	AppID            string `json:"app_id,omitempty"`
-	WorkitemTypeID   string `json:"workitem_type_id,omitempty"`
-	Creator          string `json:"creator,omitempty"`
-	Created          string `json:"created,omitempty"`
-	ChangeSummary    string `json:"change_summary,omitempty"`
-	Comment          string `json:"comment,omitempty"`
-	Changes          string `json:"changes,omitempty"`
-	EntityType       string `json:"entity_type,omitempty"`
-	ChangeType       string `json:"change_type,omitempty"`
-	ChangeTypeDetail string `json:"change_type_detail,omitempty"`
-	ChangeTypeText   string `json:"change_type_text,omitempty"`
-	Updated          string `json:"updated,omitempty"`
-	StoryID          string `json:"story_id,omitempty"`
-	TaskID           string `json:"task_id,omitempty"`
-	MiniItemID       string `json:"mini_item_id,omitempty"`
-	FieldChanges     string `json:"field_changes,omitempty"`
+	ID               string          `json:"id,omitempty"`
+	WorkspaceID      string          `json:"workspace_id,omitempty"`
+	AppID            string          `json:"app_id,omitempty"`
+	WorkitemTypeID   string          `json:"workitem_type_id,omitempty"`
+	Creator          string          `json:"creator,omitempty"`
+	Created          string          `json:"created,omitempty"`
+	ChangeSummary    string          `json:"change_summary,omitempty"`
+	Comment          string          `json:"comment,omitempty"`
+	Changes          string          `json:"changes,omitempty"`
+	EntityType       string          `json:"entity_type,omitempty"`
+	ChangeType       string          `json:"change_type,omitempty"`
+	ChangeTypeDetail string          `json:"change_type_detail,omitempty"`
+	ChangeTypeText   string          `json:"change_type_text,omitempty"`
+	Updated          string          `json:"updated,omitempty"`
+	StoryID          string          `json:"story_id,omitempty"`
+	TaskID           string          `json:"task_id,omitempty"`
+	MiniItemID       string          `json:"mini_item_id,omitempty"`
+	FieldChanges     json.RawMessage `json:"field_changes,omitempty"`
+}
+
+// FieldChange 表示单个字段的变更详情，用于解析 WorkitemChange.FieldChanges
+// ValueBefore/ValueAfter 为 interface{} 类型，API 可能返回字符串或数字
+type FieldChange struct {
+	Field             string      `json:"field"`
+	ValueBefore       interface{} `json:"value_before"`
+	ValueAfter        interface{} `json:"value_after"`
+	FieldName         string      `json:"field_name,omitempty"`
+	FieldType         string      `json:"field_type,omitempty"`
+	ValueBeforeParsed string      `json:"value_before_parsed,omitempty"`
+	ValueAfterParsed  string      `json:"value_after_parsed,omitempty"`
+	FieldLabel        string      `json:"field_label,omitempty"`
 }
 
 // BugChange 表示缺陷的变更记录
@@ -57,20 +72,22 @@ type IterationChange struct {
 // GetStoryChangesRequest 查询需求变更历史的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_changes.html
 type GetStoryChangesRequest struct {
-	WorkspaceID   string // 必填：项目 ID
-	StoryID       string // 可选：需求 ID
-	Creator       string // 可选：创建人
-	Created       string // 可选：创建时间
-	ChangeType    string // 可选：变更类型
-	ID            string // 可选：变更 ID
-	ChangeSummary string // 可选：变更摘要
-	Comment       string // 可选：评论
-	Changes       string // 可选：变更内容
-	EntityType    string // 可选：实体类型
-	Limit         int    // 可选：返回数量限制
-	Page          int    // 可选：页码
-	Order         string // 可选：排序规则
-	Fields        string // 可选：返回字段列表
+	WorkspaceID      string // 必填：项目 ID
+	StoryID          string // 可选：需求 ID
+	Creator          string // 可选：创建人
+	Created          string // 可选：创建时间
+	ChangeType       string // 可选：变更类型
+	ID               string // 可选：变更 ID
+	ChangeSummary    string // 可选：变更摘要
+	Comment          string // 可选：评论
+	Changes          string // 可选：变更内容
+	EntityType       string // 可选：实体类型
+	ChangeField      string // 可选：变更字段
+	NeedParseChanges string // 可选：是否需要解析变更
+	Limit            int    // 可选：返回数量限制
+	Page             int    // 可选：页码
+	Order            string // 可选：排序规则
+	Fields           string // 可选：返回字段列表
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -87,6 +104,8 @@ func (r *GetStoryChangesRequest) ToParams() map[string]string {
 	setOptional(params, "comment", r.Comment)
 	setOptional(params, "changes", r.Changes)
 	setOptional(params, "entity_type", r.EntityType)
+	setOptional(params, "change_field", r.ChangeField)
+	setOptional(params, "need_parse_changes", r.NeedParseChanges)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)

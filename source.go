@@ -10,11 +10,11 @@ import (
 // AddCodeCommitInfo 保存 Commit 提交数据
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/add_code_commit_info.html
 func (c *Client) AddCodeCommitInfo(ctx context.Context, req *model.AddCodeCommitInfoRequest) (json.RawMessage, error) {
-	data, err := c.doPost(ctx, "/code_commit_infos", req.ToParams())
+	body, err := req.ToJSON()
 	if err != nil {
 		return nil, err
 	}
-	return data, nil
+	return c.doPostJSONBody(ctx, "/code_commit_infos", body)
 }
 
 // GetCodeCommitInfos 获取 GIT 关联提交数据
