@@ -134,16 +134,16 @@ func (c *Client) GetBugsByViewConfID(ctx context.Context, req *model.GetBugsByVi
 
 // BugIDsToQueryToken 将缺陷 ID 列表转换成 QueryToken
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/ids_to_query_token.html
-func (c *Client) BugIDsToQueryToken(ctx context.Context, req *model.BugIDsToQueryTokenRequest) (string, error) {
+func (c *Client) BugIDsToQueryToken(ctx context.Context, req *model.BugIDsToQueryTokenRequest) (*model.QueryTokenResponse, error) {
 	data, err := c.doPost(ctx, "/bugs/ids_to_query_token", req.ToParams())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	var result model.QueryTokenResponse
 	if err := json.Unmarshal(data, &result); err != nil {
-		return "", fmt.Errorf("failed to parse bug ids_to_query_token response: %w", err)
+		return nil, fmt.Errorf("failed to parse bug ids_to_query_token response: %w", err)
 	}
-	return result.QueryToken, nil
+	return &result, nil
 }
 
 // UpdateBugSystemSelectFieldOptions 更新缺陷系统下拉字段选项

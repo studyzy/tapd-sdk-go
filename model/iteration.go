@@ -222,7 +222,6 @@ type CountIterationsRequest struct {
 	Created        string            // 可选：创建时间（支持时间查询）
 	Modified       string            // 可选：最后修改时间（支持时间查询）
 	Completed      string            // 可选：完成时间
-	Locker         string            // 可选：锁定人
 	CustomFields   map[string]string // 可选：自定义字段
 }
 
@@ -243,7 +242,6 @@ func (r *CountIterationsRequest) ToParams() map[string]string {
 	setOptional(params, "created", r.Created)
 	setOptional(params, "modified", r.Modified)
 	setOptional(params, "completed", r.Completed)
-	setOptional(params, "locker", r.Locker)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

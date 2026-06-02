@@ -321,16 +321,15 @@ type UpdateBugSystemSelectFieldOptionsRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Field       string // 必填：字段名
 	Options     string // 必填：选项列表（JSON 格式）
-	Value       string // 可选：默认值
+	Value       string // 必填：选项对应 value
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *UpdateBugSystemSelectFieldOptionsRequest) ToParams() map[string]string {
-	params := map[string]string{
+	return map[string]string{
 		"workspace_id": r.WorkspaceID,
 		"field":        r.Field,
 		"options":      r.Options,
+		"value":        r.Value,
 	}
-	setOptional(params, "value", r.Value)
-	return params
 }

@@ -23,8 +23,8 @@ type CreateReleaseRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Name        string // 必填：发布计划名称
 	Description string // 可选：描述
-	StartDate   string // 可选：开始日期
-	EndDate     string // 可选：结束日期
+	StartDate   string // 必填：开始日期
+	EndDate     string // 必填：结束日期
 	Creator     string // 可选：创建人
 }
 

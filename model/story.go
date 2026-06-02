@@ -237,7 +237,6 @@ type CreateStoryRequest struct {
 	Priority                    string            // 可选：优先级（数字）
 	PriorityLabel               string            // 可选：优先级标签
 	BusinessValue               string            // 可选：业务价值
-	Status                      string            // 可选：状态
 	Owner                       string            // 可选：处理人
 	Creator                     string            // 可选：创建人
 	Developer                   string            // 可选：开发人员
@@ -278,7 +277,6 @@ func (r *CreateStoryRequest) ToParams() map[string]string {
 	setOptional(params, "priority", r.Priority)
 	setOptional(params, "priority_label", r.PriorityLabel)
 	setOptional(params, "business_value", r.BusinessValue)
-	setOptional(params, "status", r.Status)
 	setOptional(params, "owner", r.Owner)
 	setOptional(params, "creator", r.Creator)
 	setOptional(params, "developer", r.Developer)
@@ -340,8 +338,6 @@ type UpdateStoryRequest struct {
 	Remain          string            // 可选：剩余工时
 	Exceed          string            // 可选：超出工时
 	ReleaseID       string            // 可选：发布计划 ID
-	Feature         string            // 可选：特性
-	Progress        string            // 可选：进度
 	Type            string            // 可选：需求类型
 	Source          string            // 可选：需求来源
 	IsAutoCloseTask string            // 可选：是否自动关闭关联任务
@@ -379,8 +375,6 @@ func (r *UpdateStoryRequest) ToParams() map[string]string {
 	setOptional(params, "remain", r.Remain)
 	setOptional(params, "exceed", r.Exceed)
 	setOptional(params, "release_id", r.ReleaseID)
-	setOptional(params, "feature", r.Feature)
-	setOptional(params, "progress", r.Progress)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "source", r.Source)
 	setOptional(params, "is_auto_close_task", r.IsAutoCloseTask)
