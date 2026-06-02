@@ -291,3 +291,82 @@ func TestGetTasksByViewConfID(t *testing.T) {
 		t.Errorf("got %+v, want one task id=301", tasks)
 	}
 }
+
+func TestGetTaskFieldsInfo(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tasks/get_fields_info" {
+			t.Errorf("unexpected path: %s, want /tasks/get_fields_info", r.URL.Path)
+		}
+		if r.Method != http.MethodGet {
+			t.Errorf("unexpected method: %s, want GET", r.Method)
+		}
+		if r.URL.Query().Get("workspace_id") != "10104801" {
+			t.Errorf("workspace_id = %q, want 10104801", r.URL.Query().Get("workspace_id"))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"id":{"name":"id","html_type":"input","label":"ID"},"status":{"name":"status","html_type":"select","label":"状态"},"priority":{"name":"priority","html_type":"select","label":"优先级"}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	fields, err := c.GetTaskFieldsInfo(context.Background(), &model.WorkspaceIDRequest{
+		WorkspaceID: "10104801",
+	})
+	if err != nil {
+		t.Fatalf("GetTaskFieldsInfo() unexpected error: %v", err)
+	}
+	if len(fields) != 3 {
+		t.Fatalf("expected 3 fields, got %d", len(fields))
+	}
+	statusInfo, ok := fields["status"]
+	if !ok {
+		t.Fatal("expected 'status' key in fields")
+	}
+	if statusInfo.Name != "status" {
+		t.Errorf("name = %q, want %q", statusInfo.Name, "status")
+	}
+	if statusInfo.Label != "状态" {
+		t.Errorf("label = %q, want %q", statusInfo.Label, "状态")
+	}
+	if statusInfo.HTMLType != "select" {
+		t.Errorf("html_type = %q, want %q", statusInfo.HTMLType, "select")
+	}
+}
+
+func TestGetTaskCustomFieldsSettings(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/tasks/custom_fields_settings" {
+			t.Errorf("unexpected path: %s, want /tasks/custom_fields_settings", r.URL.Path)
+		}
+		if r.Method != http.MethodGet {
+			t.Errorf("unexpected method: %s, want GET", r.Method)
+		}
+		if r.URL.Query().Get("workspace_id") != "10158231" {
+			t.Errorf("workspace_id = %q, want 10158231", r.URL.Query().Get("workspace_id"))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"CustomFieldConfig":{"id":"1010158231214902317","workspace_id":"10158231","entry_type":"task","custom_field":"custom_field_eight","type":"user_chooser","name":"设计人员","enabled":"1"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	configs, err := c.GetTaskCustomFieldsSettings(context.Background(), "10158231")
+	if err != nil {
+		t.Fatalf("GetTaskCustomFieldsSettings() unexpected error: %v", err)
+	}
+	if len(configs) != 1 {
+		t.Fatalf("expected 1 config, got %d", len(configs))
+	}
+	if configs[0].ID != "1010158231214902317" {
+		t.Errorf("id = %q, want %q", configs[0].ID, "1010158231214902317")
+	}
+	if configs[0].CustomField != "custom_field_eight" {
+		t.Errorf("custom_field = %q, want %q", configs[0].CustomField, "custom_field_eight")
+	}
+	if configs[0].Name != "设计人员" {
+		t.Errorf("name = %q, want %q", configs[0].Name, "设计人员")
+	}
+	if configs[0].Type != "user_chooser" {
+		t.Errorf("type = %q, want %q", configs[0].Type, "user_chooser")
+	}
+}

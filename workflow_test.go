@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -186,5 +187,91 @@ func TestGetWorkflows(t *testing.T) {
 	}
 	if data[0].Name != "默认工作流" {
 		t.Errorf("expected name=默认工作流, got %q", data[0].Name)
+	}
+}
+
+func TestGetWorkflowStepMap(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workflows/step_map" {
+			t.Errorf("unexpected path: %s, want /workflows/step_map", r.URL.Path)
+		}
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Query().Get("workspace_id") != "10158231" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "10158231")
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"status":1,"data":[{"name":"new","label":"开始阶段","steps":[{"name":"step_begin","label":"创建"},{"name":"step_2970811_1","label":"待处理"}]},{"name":"in_progress","label":"执行阶段","steps":[{"name":"step_2970811_2","label":"执行节点1"},{"name":"step_2970811_3","label":"执行节点2"}]},{"name":"closed","label":"结束阶段","steps":[{"name":"step_end","label":"结束"}]}],"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.GetWorkflowStepMap(context.Background(), &model.WorkflowRequest{
+		WorkspaceID: "10158231",
+		System:      "story",
+	})
+	if err != nil {
+		t.Fatalf("GetWorkflowStepMap() unexpected error: %v", err)
+	}
+	if len(result) != 3 {
+		t.Fatalf("expected 3 groups, got %d", len(result))
+	}
+	if result[0].Name != "new" {
+		t.Errorf("first group name = %q, want %q", result[0].Name, "new")
+	}
+	if result[0].Label != "开始阶段" {
+		t.Errorf("first group label = %q, want %q", result[0].Label, "开始阶段")
+	}
+	if len(result[0].Steps) != 2 {
+		t.Fatalf("expected 2 steps in first group, got %d", len(result[0].Steps))
+	}
+	if result[0].Steps[0].Name != "step_begin" {
+		t.Errorf("first step name = %q, want %q", result[0].Steps[0].Name, "step_begin")
+	}
+	if result[0].Steps[0].Label != "创建" {
+		t.Errorf("first step label = %q, want %q", result[0].Steps[0].Label, "创建")
+	}
+}
+
+func TestAddNewStepForBug(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/workflows/add_new_step_for_bug" {
+			t.Errorf("unexpected path: %s, want /workflows/add_new_step_for_bug", r.URL.Path)
+		}
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("failed to parse form: %v", err)
+		}
+		if r.FormValue("workspace_id") != "48464494" {
+			t.Errorf("workspace_id = %q, want %q", r.FormValue("workspace_id"), "48464494")
+		}
+		if r.FormValue("workflow_id") != "1148464494001000011" {
+			t.Errorf("workflow_id = %q, want %q", r.FormValue("workflow_id"), "1148464494001000011")
+		}
+		if r.FormValue("step_name") != "新增状态" {
+			t.Errorf("step_name = %q, want %q", r.FormValue("step_name"), "新增状态")
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `{"status":1,"data":{"sys_name":"status_10","step_name":"新增状态"},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.AddNewStepForBug(context.Background(), &model.AddNewStepForBugRequest{
+		WorkspaceID: "48464494",
+		WorkflowID:  "1148464494001000011",
+		StepName:    "新增状态",
+	})
+	if err != nil {
+		t.Fatalf("AddNewStepForBug() unexpected error: %v", err)
+	}
+	if result.SysName != "status_10" {
+		t.Errorf("sys_name = %q, want %q", result.SysName, "status_10")
+	}
+	if result.StepName != "新增状态" {
+		t.Errorf("step_name = %q, want %q", result.StepName, "新增状态")
 	}
 }

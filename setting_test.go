@@ -470,3 +470,235 @@ func TestCountFeatures(t *testing.T) {
 		t.Errorf("count = %d, want 7", count)
 	}
 }
+
+// --- Setting 配置测试 ---
+
+func TestAddCustomFieldConfig(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/custom_field_configs" {
+			t.Errorf("unexpected path: %s, want /custom_field_configs", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"CustomFieldConfig":{"id":"1010158231215016293","workspace_id":"10158231","entry_type":"story","custom_field":"custom_field_three","type":"text","name":"add_field","options":"","enabled":"1","sort":"","memo":""}},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	config, err := c.AddCustomFieldConfig(context.Background(), &model.AddCustomFieldConfigRequest{
+		WorkspaceID: "10158231",
+		EntryType:   "story",
+		Name:        "add_field",
+		Type:        "text",
+	})
+	if err != nil {
+		t.Fatalf("AddCustomFieldConfig() unexpected error: %v", err)
+	}
+	if config.ID != "1010158231215016293" {
+		t.Errorf("ID = %q, want %q", config.ID, "1010158231215016293")
+	}
+	if config.EntryType != "story" {
+		t.Errorf("EntryType = %q, want %q", config.EntryType, "story")
+	}
+	if config.CustomField != "custom_field_three" {
+		t.Errorf("CustomField = %q, want %q", config.CustomField, "custom_field_three")
+	}
+	if config.Name != "add_field" {
+		t.Errorf("Name = %q, want %q", config.Name, "add_field")
+	}
+	if config.Enabled != "1" {
+		t.Errorf("Enabled = %q, want %q", config.Enabled, "1")
+	}
+}
+
+func TestUpdateBugSelectFieldOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/custom_field_configs/update_bug_select_field_options" {
+			t.Errorf("unexpected path: %s, want /custom_field_configs/update_bug_select_field_options", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"status":1},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.UpdateBugSelectFieldOptions(context.Background(), &model.UpdateSelectFieldOptionsRequest{
+		WorkspaceID: "10104801",
+		ID:          "1010104801214991279",
+		Options:     "开发|测试|产品|运营",
+	})
+	if err != nil {
+		t.Fatalf("UpdateBugSelectFieldOptions() unexpected error: %v", err)
+	}
+}
+
+func TestUpdateStorySelectFieldOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/custom_field_configs/update_story_select_field_options" {
+			t.Errorf("unexpected path: %s, want /custom_field_configs/update_story_select_field_options", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"status":1},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.UpdateStorySelectFieldOptions(context.Background(), &model.UpdateSelectFieldOptionsRequest{
+		WorkspaceID: "10104801",
+		ID:          "1010104801214991280",
+		Options:     "高|中|低",
+	})
+	if err != nil {
+		t.Fatalf("UpdateStorySelectFieldOptions() unexpected error: %v", err)
+	}
+}
+
+func TestUpdateCascadeFieldOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/custom_field_configs/update_cascade_field_options" {
+			t.Errorf("unexpected path: %s, want /custom_field_configs/update_cascade_field_options", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"status":1},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.UpdateCascadeFieldOptions(context.Background(), &model.UpdateCascadeFieldOptionsRequest{
+		WorkspaceID: "10104801",
+		ID:          "1010104801214991281",
+		Options:     `[{"name":"1","children":[{"name":"11"}]},{"name":"2","children":[{"name":"21"}]}]`,
+	})
+	if err != nil {
+		t.Fatalf("UpdateCascadeFieldOptions() unexpected error: %v", err)
+	}
+}
+
+func TestGetWorkspaceSetting(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/settings/get_workspace_setting" {
+			t.Errorf("unexpected path: %s, want /settings/get_workspace_setting", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "10104801" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "10104801")
+		}
+		if r.URL.Query().Get("type") != "workspace_metrology" {
+			t.Errorf("type = %q, want %q", r.URL.Query().Get("type"), "workspace_metrology")
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"workspace_metrology":"day"},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.GetWorkspaceSetting(context.Background(), &model.GetWorkspaceSettingRequest{
+		WorkspaceID: "10104801",
+		Type:        "workspace_metrology",
+	})
+	if err != nil {
+		t.Fatalf("GetWorkspaceSetting() unexpected error: %v", err)
+	}
+	if result["workspace_metrology"] != "day" {
+		t.Errorf("workspace_metrology = %q, want %q", result["workspace_metrology"], "day")
+	}
+}
+
+func TestUpdateSelectFieldOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/custom_field_configs/update_select_field_options" {
+			t.Errorf("unexpected path: %s, want /custom_field_configs/update_select_field_options", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"status":1},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.UpdateSelectFieldOptions(context.Background(), &model.UpdateSelectFieldOptionsUnifiedRequest{
+		WorkspaceID: "10104801",
+		ID:          "1010104801214991282",
+		Options:     "选项A|选项B|选项C",
+	})
+	if err != nil {
+		t.Fatalf("UpdateSelectFieldOptions() unexpected error: %v", err)
+	}
+}
+
+func TestCopyWorkitemTypeSetting(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/stories/copy_workitem_type_setting" {
+			t.Errorf("unexpected path: %s, want /stories/copy_workitem_type_setting", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"data":{"WorkitemType":{"id":"1010104801000061611","workspace_id":"10104801","entity_type":"story","name":"技术需求","english_name":"TSTORY","status":"3","color":"#5c88c5","workflow_id":"1010104801001087491","creator":"v_xuanfang","created":"2020-12-02 15:47:02","modified_by":"v_xuanfang","modified":"2021-01-21 10:49:57"}},"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	wt, err := c.CopyWorkitemTypeSetting(context.Background(), &model.CopyWorkitemTypeSettingRequest{
+		SrcWorkspaceID:    "755",
+		SrcWorkitemTypeID: "1020358527000067037",
+		WorkspaceID:       "10104801",
+	})
+	if err != nil {
+		t.Fatalf("CopyWorkitemTypeSetting() unexpected error: %v", err)
+	}
+	if wt.ID != "1010104801000061611" {
+		t.Errorf("ID = %q, want %q", wt.ID, "1010104801000061611")
+	}
+	if wt.Name != "技术需求" {
+		t.Errorf("Name = %q, want %q", wt.Name, "技术需求")
+	}
+	if wt.EntityType != "story" {
+		t.Errorf("EntityType = %q, want %q", wt.EntityType, "story")
+	}
+	if wt.WorkspaceID != "10104801" {
+		t.Errorf("WorkspaceID = %q, want %q", wt.WorkspaceID, "10104801")
+	}
+	if wt.Color != "#5c88c5" {
+		t.Errorf("Color = %q, want %q", wt.Color, "#5c88c5")
+	}
+}
+
+func TestCopyBugSetting(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/bugs/copy_settings" {
+			t.Errorf("unexpected path: %s, want /bugs/copy_settings", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprint(w, `{"status":1,"info":"success"}`)
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	err := c.CopyBugSetting(context.Background(), &model.CopyBugSettingRequest{
+		SrcWorkspaceID:    "10104801",
+		TargetWorkspaceID: "755",
+	})
+	if err != nil {
+		t.Fatalf("CopyBugSetting() unexpected error: %v", err)
+	}
+}

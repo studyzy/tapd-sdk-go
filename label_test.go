@@ -91,3 +91,48 @@ func TestCountLabels(t *testing.T) {
 		t.Errorf("count = %d, want 5", count)
 	}
 }
+
+func TestUpdateLabel(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/label" {
+			t.Errorf("unexpected path: %s, want /label", r.URL.Path)
+		}
+		if r.Method != http.MethodPost {
+			t.Errorf("unexpected method: %s, want POST", r.Method)
+		}
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("ParseForm: %v", err)
+		}
+		if r.Form.Get("workspace_id") != "20358527" {
+			t.Errorf("workspace_id = %q, want 20358527", r.Form.Get("workspace_id"))
+		}
+		if r.Form.Get("id") != "1220358527000001577" {
+			t.Errorf("id = %q, want 1220358527000001577", r.Form.Get("id"))
+		}
+		if r.Form.Get("color") != "3" {
+			t.Errorf("color = %q, want 3", r.Form.Get("color"))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"LabelPool":{"id":"1220358527000001577","workspace_id":"20358527","name":"创建标签","color":"3","creator":"","modifier":"","created":"2022-09-26 20:25:02","modified":"2022-09-26 20:25:02"}},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	label, err := c.UpdateLabel(context.Background(), &model.UpdateLabelRequest{
+		WorkspaceID: "20358527",
+		ID:          "1220358527000001577",
+		Color:       "3",
+	})
+	if err != nil {
+		t.Fatalf("UpdateLabel() unexpected error: %v", err)
+	}
+	if label.ID != "1220358527000001577" {
+		t.Errorf("label id = %q, want %q", label.ID, "1220358527000001577")
+	}
+	if label.Color != "3" {
+		t.Errorf("label color = %q, want %q", label.Color, "3")
+	}
+	if label.Name != "创建标签" {
+		t.Errorf("label name = %q, want %q", label.Name, "创建标签")
+	}
+}

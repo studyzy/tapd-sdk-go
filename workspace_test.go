@@ -313,3 +313,293 @@ func TestGetMiniProjectList(t *testing.T) {
 		t.Errorf("second project name = %q, want %q", projects[1].Name, "Space2")
 	}
 }
+
+func TestEnableWorkCalendar(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/enable_work_calendar" {
+			t.Errorf("unexpected path: %s, want /workspaces/enable_work_calendar", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"success":true},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.EnableWorkCalendar(context.Background(), &model.EnableWorkCalendarRequest{
+		WorkspaceID: "48464494",
+		Type:        "system",
+	})
+	if err != nil {
+		t.Fatalf("EnableWorkCalendar() unexpected error: %v", err)
+	}
+	if !result.Success {
+		t.Errorf("expected success=true, got false")
+	}
+}
+
+func TestGetCustomWorkCalendar(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/get_custom_work_calendar" {
+			t.Errorf("unexpected path: %s, want /workspaces/get_custom_work_calendar", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "48464494" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "48464494")
+		}
+		if r.URL.Query().Get("year") != "2025" {
+			t.Errorf("year = %q, want %q", r.URL.Query().Get("year"), "2025")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"weekdays":["1","2","3","4","5","6","7"],"holidays":["2025-01-01"],"workdays":["2025-01-02","2025-01-03","2025-01-04"]},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	cal, err := c.GetCustomWorkCalendar(context.Background(), &model.GetCustomWorkCalendarRequest{
+		WorkspaceID: "48464494",
+		Year:        "2025",
+	})
+	if err != nil {
+		t.Fatalf("GetCustomWorkCalendar() unexpected error: %v", err)
+	}
+	if len(cal.Weekdays) != 7 {
+		t.Fatalf("expected 7 weekdays, got %d", len(cal.Weekdays))
+	}
+	if cal.Weekdays[0] != "1" {
+		t.Errorf("weekdays[0] = %q, want %q", cal.Weekdays[0], "1")
+	}
+	if len(cal.Holidays) != 1 || cal.Holidays[0] != "2025-01-01" {
+		t.Errorf("holidays = %v, want [2025-01-01]", cal.Holidays)
+	}
+	if len(cal.Workdays) != 3 {
+		t.Errorf("expected 3 workdays, got %d", len(cal.Workdays))
+	}
+}
+
+func TestSetCustomWorkCalendar(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/set_custom_work_calendar" {
+			t.Errorf("unexpected path: %s, want /workspaces/set_custom_work_calendar", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"success":true},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.SetCustomWorkCalendar(context.Background(), &model.SetCustomWorkCalendarRequest{
+		WorkspaceID: "48464494",
+		Year:        "2025",
+		Weekdays:    []string{"1", "2", "3", "4", "5"},
+		Holidays:    []string{"2025-01-01"},
+		Workdays:    []string{"2025-01-04"},
+	})
+	if err != nil {
+		t.Fatalf("SetCustomWorkCalendar() unexpected error: %v", err)
+	}
+	if !result.Success {
+		t.Errorf("expected success=true, got false")
+	}
+}
+
+func TestGetWorkCalendarSettings(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/get_work_calendar_settings" {
+			t.Errorf("unexpected path: %s, want /workspaces/get_work_calendar_settings", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "48464494" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "48464494")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"name":"中国大陆法定工作日","type":"system","enable":true},{"name":"自定义工作日","type":"custom","enable":false}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	settings, err := c.GetWorkCalendarSettings(context.Background(), "48464494")
+	if err != nil {
+		t.Fatalf("GetWorkCalendarSettings() unexpected error: %v", err)
+	}
+	if len(settings) != 2 {
+		t.Fatalf("expected 2 settings, got %d", len(settings))
+	}
+	if settings[0].Name != "中国大陆法定工作日" {
+		t.Errorf("settings[0].Name = %q, want %q", settings[0].Name, "中国大陆法定工作日")
+	}
+	if settings[0].Type != "system" {
+		t.Errorf("settings[0].Type = %q, want %q", settings[0].Type, "system")
+	}
+	if !settings[0].Enable {
+		t.Errorf("settings[0].Enable = false, want true")
+	}
+	if settings[1].Enable {
+		t.Errorf("settings[1].Enable = true, want false")
+	}
+}
+
+func TestGetWorkitemsLongIDByShortIDs(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/get_workitems_long_id_by_short_ids" {
+			t.Errorf("unexpected path: %s, want /workspaces/get_workitems_long_id_by_short_ids", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "48464494" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "48464494")
+		}
+		if r.URL.Query().Get("entity_type") != "story" {
+			t.Errorf("entity_type = %q, want %q", r.URL.Query().Get("entity_type"), "story")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":{"valid_id_map":[{"short_id":"1000276","long_id":"1148464494001000276","entity_type":"story","workspace_id":"48464494","company_id":"39418254"},{"short_id":"1000277","long_id":"1148464494001000277","entity_type":"story","workspace_id":"48464494","company_id":"39418254"}],"invalid_long_ids":["1000104"],"invalid_short_ids":[]},"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	result, err := c.GetWorkitemsLongIDByShortIDs(context.Background(), &model.GetWorkitemsLongIDByShortIDsRequest{
+		WorkspaceID: "48464494",
+		EntityType:  "story",
+		ShortIDs:    "1000276;1000277;1000104",
+	})
+	if err != nil {
+		t.Fatalf("GetWorkitemsLongIDByShortIDs() unexpected error: %v", err)
+	}
+	if len(result.ValidIDMap) != 2 {
+		t.Fatalf("expected 2 valid id maps, got %d", len(result.ValidIDMap))
+	}
+	if result.ValidIDMap[0].ShortID != "1000276" {
+		t.Errorf("ValidIDMap[0].ShortID = %q, want %q", result.ValidIDMap[0].ShortID, "1000276")
+	}
+	if result.ValidIDMap[0].LongID != "1148464494001000276" {
+		t.Errorf("ValidIDMap[0].LongID = %q, want %q", result.ValidIDMap[0].LongID, "1148464494001000276")
+	}
+	if result.ValidIDMap[1].CompanyID != "39418254" {
+		t.Errorf("ValidIDMap[1].CompanyID = %q, want %q", result.ValidIDMap[1].CompanyID, "39418254")
+	}
+	if len(result.InvalidLongIDs) != 1 || result.InvalidLongIDs[0] != "1000104" {
+		t.Errorf("InvalidLongIDs = %v, want [1000104]", result.InvalidLongIDs)
+	}
+}
+
+func TestGetWorkspaceDocuments(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/documents/get_workspace_documents" {
+			t.Errorf("unexpected path: %s, want /documents/get_workspace_documents", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "47043561" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "47043561")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"Document":{"id":"1147043561001001330","workspace_id":"47043561","name":"熟悉思维导图","type":"mindmap","folder_id":"1147043561001000694","creator":"TAPD","modifier":"TAPD","created":"2021-09-09 16:08:52","modified":"2021-09-09 16:08:52"}},{"Document":{"id":"1147043561001001329","workspace_id":"47043561","name":"文档功能使用秘籍","type":"word","folder_id":"1147043561001000694","creator":"TAPD","modifier":"TAPD","created":"2021-09-09 16:08:51","modified":"2021-09-09 16:08:51"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	docs, err := c.GetWorkspaceDocuments(context.Background(), &model.GetWorkspaceDocumentsRequest{
+		WorkspaceID: "47043561",
+	})
+	if err != nil {
+		t.Fatalf("GetWorkspaceDocuments() unexpected error: %v", err)
+	}
+	if len(docs) != 2 {
+		t.Fatalf("expected 2 documents, got %d", len(docs))
+	}
+	if docs[0].ID != "1147043561001001330" {
+		t.Errorf("docs[0].ID = %q, want %q", docs[0].ID, "1147043561001001330")
+	}
+	if docs[0].Name != "熟悉思维导图" {
+		t.Errorf("docs[0].Name = %q, want %q", docs[0].Name, "熟悉思维导图")
+	}
+	if docs[0].Type != "mindmap" {
+		t.Errorf("docs[0].Type = %q, want %q", docs[0].Type, "mindmap")
+	}
+	if docs[1].Name != "文档功能使用秘籍" {
+		t.Errorf("docs[1].Name = %q, want %q", docs[1].Name, "文档功能使用秘籍")
+	}
+	if docs[1].Creator != "TAPD" {
+		t.Errorf("docs[1].Creator = %q, want %q", docs[1].Creator, "TAPD")
+	}
+}
+
+func TestUpdateWorkspaceInfo(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/update_workspace_info" {
+			t.Errorf("unexpected path: %s, want /workspaces/update_workspace_info", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":"update workspace success","info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	msg, err := c.UpdateWorkspaceInfo(context.Background(), &model.UpdateWorkspaceInfoRequest{
+		WorkspaceID: "69999237",
+		Field:       "end_date",
+		Value:       "2025-03-03",
+	})
+	if err != nil {
+		t.Fatalf("UpdateWorkspaceInfo() unexpected error: %v", err)
+	}
+	if msg != "update workspace success" {
+		t.Errorf("message = %q, want %q", msg, "update workspace success")
+	}
+}
+
+func TestGetWorkspaceCustomFieldSettings(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Errorf("expected GET, got %s", r.Method)
+		}
+		if r.URL.Path != "/workspaces/workspace_custom_field_settings" {
+			t.Errorf("unexpected path: %s, want /workspaces/workspace_custom_field_settings", r.URL.Path)
+		}
+		if r.URL.Query().Get("workspace_id") != "20001871" {
+			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "20001871")
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":1,"data":[{"CustomFieldConfig":{"id":"1010158231215016293","workspace_id":"20001871","entry_type":"story","custom_field":"custom_field_three","type":"text","name":"自定义字段1","options":"","enabled":"1"}},{"CustomFieldConfig":{"id":"1010158231215016295","workspace_id":"20001871","entry_type":"bug","custom_field":"custom_field_four","type":"select","name":"自定义字段2","options":"{\"1\":\"选项A\",\"2\":\"选项B\"}","enabled":"1"}}],"info":"success"}`))
+	}))
+	defer srv.Close()
+
+	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
+	configs, err := c.GetWorkspaceCustomFieldSettings(context.Background(), "20001871")
+	if err != nil {
+		t.Fatalf("GetWorkspaceCustomFieldSettings() unexpected error: %v", err)
+	}
+	if len(configs) != 2 {
+		t.Fatalf("expected 2 configs, got %d", len(configs))
+	}
+	if configs[0].ID != "1010158231215016293" {
+		t.Errorf("configs[0].ID = %q, want %q", configs[0].ID, "1010158231215016293")
+	}
+	if configs[0].EntryType != "story" {
+		t.Errorf("configs[0].EntryType = %q, want %q", configs[0].EntryType, "story")
+	}
+	if configs[0].Name != "自定义字段1" {
+		t.Errorf("configs[0].Name = %q, want %q", configs[0].Name, "自定义字段1")
+	}
+	if configs[1].Type != "select" {
+		t.Errorf("configs[1].Type = %q, want %q", configs[1].Type, "select")
+	}
+	if configs[1].Enabled != "1" {
+		t.Errorf("configs[1].Enabled = %q, want %q", configs[1].Enabled, "1")
+	}
+}
