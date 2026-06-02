@@ -36,12 +36,12 @@ func TestAddCodeCommitInfo(t *testing.T) {
 			t.Errorf("workspace_id = %v, want 11111111", m["workspace_id"])
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"msg":"success"},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"id":"1001","hook_user_name":"admin","commit_id":"abc123","workspace_id":"11111111","message":"fix bug #100"},"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.AddCodeCommitInfo(context.Background(), &model.AddCodeCommitInfoRequest{
+	result, err := c.AddCodeCommitInfo(context.Background(), &model.AddCodeCommitInfoRequest{
 		WorkspaceID: "11111111",
 		Message:     "fix bug #100",
 		Author:      "admin",
@@ -56,8 +56,11 @@ func TestAddCodeCommitInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("AddCodeCommitInfo() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if result == nil {
+		t.Fatal("expected non-nil result")
+	}
+	if result.ID != "1001" {
+		t.Errorf("id = %q, want %q", result.ID, "1001")
 	}
 }
 
@@ -70,12 +73,12 @@ func TestGetCodeCommitInfos(t *testing.T) {
 			t.Errorf("workspace_id = %q, want %q", r.URL.Query().Get("workspace_id"), "11111111")
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":[{"CodeCommitInfo":{"id":"1001","workspace_id":"11111111","message":"fix bug #100","author":"admin","created":"2026-01-01 10:00:00"}}],"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"id":"1001","workspace_id":"11111111","message":"fix bug #100","user_name":"admin","commit_id":"abc123"}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.GetCodeCommitInfos(context.Background(), &model.GetCodeCommitInfosRequest{
+	result, err := c.GetCodeCommitInfos(context.Background(), &model.GetCodeCommitInfosRequest{
 		WorkspaceID: "11111111",
 		Limit:       10,
 		Page:        1,
@@ -83,11 +86,11 @@ func TestGetCodeCommitInfos(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetCodeCommitInfos() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if len(result) != 1 {
+		t.Fatalf("expected 1 commit info, got %d", len(result))
 	}
-	if string(data) == "" {
-		t.Error("expected non-empty data")
+	if result[0].ID != "1001" {
+		t.Errorf("id = %q, want %q", result[0].ID, "1001")
 	}
 }
 

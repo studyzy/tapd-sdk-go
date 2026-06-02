@@ -3,6 +3,7 @@ package tapd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -67,14 +68,32 @@ func (c *Client) UnlockIteration(ctx context.Context, req *model.UnlockIteration
 
 // GetCustomDashBoardContent 获取迭代仪表盘自定义卡片内容
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_custom_dash_board_content.html
-func (c *Client) GetCustomDashBoardContent(ctx context.Context, req *model.GetCustomDashBoardContentRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/iterations/get_custom_dash_board_content", req.ToParams())
+func (c *Client) GetCustomDashBoardContent(ctx context.Context, req *model.GetCustomDashBoardContentRequest) ([]model.DashBoardCard, error) {
+	data, err := c.doGet(ctx, "/iterations/get_custom_dash_board_content", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result []model.DashBoardCard
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse dashboard cards: %w", err)
+	}
+	return result, nil
 }
 
 // UpdateCustomDashBoardContent 修改迭代仪表盘自定义卡片内容
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/update_custom_dash_board_content.html
-func (c *Client) UpdateCustomDashBoardContent(ctx context.Context, req *model.UpdateCustomDashBoardContentRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/iterations/update_custom_dash_board_content", req.ToParams())
+func (c *Client) UpdateCustomDashBoardContent(ctx context.Context, req *model.UpdateCustomDashBoardContentRequest) (string, error) {
+	data, err := c.doPost(ctx, "/iterations/update_custom_dash_board_content", req.ToParams())
+	if err != nil {
+		return "", err
+	}
+	var result struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(data, &result); err != nil {
+		return "", fmt.Errorf("failed to parse dashboard card id: %w", err)
+	}
+	return result.ID, nil
 }
 
 // GetIterationTemplateList 获取迭代模板列表

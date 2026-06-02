@@ -1,5 +1,25 @@
-// Package model 中的 tcase_instance.go 定义 TAPD 测试用例执行（tcase_instance）相关请求参数
+// Package model 中的 tcase_instance.go 定义 TAPD 测试用例执行（tcase_instance）相关数据模型及请求参数
 package model
+
+// TCaseResultBug 测试用例执行结果关联的缺陷
+type TCaseResultBug struct {
+	ID       string `json:"id,omitempty"`
+	Title    string `json:"title,omitempty"`
+	Severity string `json:"severity,omitempty"`
+	Priority string `json:"priority,omitempty"`
+	Status   string `json:"status,omitempty"`
+}
+
+// TCaseResultItem 单条测试用例执行结果
+type TCaseResultItem struct {
+	ID           string           `json:"id,omitempty"`
+	ExecutedAt   string           `json:"executed_at,omitempty"`
+	Executor     string           `json:"executor,omitempty"`
+	ResultStatus string           `json:"result_status,omitempty"`
+	ResultRemark string           `json:"result_remark,omitempty"`
+	BugID        []string         `json:"bug_id,omitempty"`
+	Bug          []TCaseResultBug `json:"Bug,omitempty"`
+}
 
 // AssignTCaseInstanceRequest 分配测试用例的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/assign_tcase_instance.html

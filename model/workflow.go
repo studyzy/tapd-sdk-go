@@ -2,6 +2,19 @@
 
 package model
 
+// WorkflowStep 工作流步骤
+type WorkflowStep struct {
+	Name  string `json:"name,omitempty"`
+	Label string `json:"label,omitempty"`
+}
+
+// WorkflowStepGroup 工作流步骤组（状态与步骤的对应关系）
+type WorkflowStepGroup struct {
+	Name  string         `json:"name,omitempty"`
+	Label string         `json:"label,omitempty"`
+	Steps []WorkflowStep `json:"steps,omitempty"`
+}
+
 // WorkflowTransition 表示工作流状态流转规则
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_all_transitions.html
 type WorkflowTransition struct {

@@ -150,7 +150,13 @@ func TestGetTCaseFieldsInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetTCaseFieldsInfo() unexpected error: %v", err)
 	}
-	if result == nil {
-		t.Error("expected non-nil result")
+	if len(result) != 2 {
+		t.Fatalf("expected 2 fields, got %d", len(result))
+	}
+	if result["id"].Label != "ID" {
+		t.Errorf("id label = %q, want %q", result["id"].Label, "ID")
+	}
+	if result["name"].Label != "用例名称" {
+		t.Errorf("name label = %q, want %q", result["name"].Label, "用例名称")
 	}
 }

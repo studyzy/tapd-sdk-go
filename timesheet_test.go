@@ -192,7 +192,7 @@ func TestDeleteTimesheets(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	data, err := c.DeleteTimesheets(context.Background(), &model.DeleteTimesheetsRequest{
+	result, err := c.DeleteTimesheets(context.Background(), &model.DeleteTimesheetsRequest{
 		WorkspaceID: "1",
 		EntityType:  "story",
 		EntityID:    "200",
@@ -201,10 +201,10 @@ func TestDeleteTimesheets(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DeleteTimesheets() unexpected error: %v", err)
 	}
-	if data == nil {
-		t.Fatal("expected non-nil data")
+	if result == nil {
+		t.Fatal("expected non-nil result")
 	}
-	if string(data) == "" {
-		t.Error("expected non-empty data")
+	if result.Msg != "delete completed" {
+		t.Errorf("msg = %q, want %q", result.Msg, "delete completed")
 	}
 }

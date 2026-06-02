@@ -212,12 +212,18 @@ func (c *Client) UpdateStoryParent(ctx context.Context, req *model.UpdateStoryPa
 	return parseOne[model.Story](data, "Story")
 }
 
-// ChangeWorkitemType 更新需求的需求类别。
-// 该接口返回 data 为非 Story 包裹的扁平对象，且字段非常多（含 markdown_description 等），
-// 因此返回 json.RawMessage 由调用方按需解析。
+// ChangeWorkitemType 更新需求的需求类别
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/change_workitem_type.html
-func (c *Client) ChangeWorkitemType(ctx context.Context, req *model.ChangeWorkitemTypeRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/stories/change_workitem_type", req.ToParams())
+func (c *Client) ChangeWorkitemType(ctx context.Context, req *model.ChangeWorkitemTypeRequest) (*model.Story, error) {
+	data, err := c.doPost(ctx, "/stories/change_workitem_type", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.Story
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse story: %w", err)
+	}
+	return &result, nil
 }
 
 // GetStoriesByViewConfID 获取视图对应的需求列表

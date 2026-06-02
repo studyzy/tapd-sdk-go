@@ -158,3 +158,18 @@ type DeleteTimesheetsRequest struct {
 	EntityID    string   // 必填：对象 ID
 	CostIDs     []string // 必填：工时记录 ID 列表
 }
+
+// DeleteTimesheetsResultItem 删除工时结果项
+type DeleteTimesheetsResultItem struct {
+	CostIDs []string `json:"cost_ids,omitempty"`
+	Msg     string   `json:"msg,omitempty"`
+}
+
+// DeleteTimesheetsResult 删除工时花费的返回结果
+type DeleteTimesheetsResult struct {
+	Msg  string `json:"msg,omitempty"`
+	Data struct {
+		Success DeleteTimesheetsResultItem   `json:"success"`
+		Failed  []DeleteTimesheetsResultItem `json:"failed,omitempty"`
+	} `json:"data"`
+}

@@ -3,6 +3,7 @@ package tapd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
 
 	"github.com/studyzy/tapd-sdk-go/model"
@@ -61,7 +62,7 @@ func (c *Client) CountTimesheets(ctx context.Context, req *model.CountTimesheets
 
 // DeleteTimesheets 删除工时花费
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/timesheet/delete_timesheets.html
-func (c *Client) DeleteTimesheets(ctx context.Context, req *model.DeleteTimesheetsRequest) (json.RawMessage, error) {
+func (c *Client) DeleteTimesheets(ctx context.Context, req *model.DeleteTimesheetsRequest) (*model.DeleteTimesheetsResult, error) {
 	form := url.Values{}
 	form.Set("workspace_id", req.WorkspaceID)
 	form.Set("entity_type", req.EntityType)
@@ -69,5 +70,13 @@ func (c *Client) DeleteTimesheets(ctx context.Context, req *model.DeleteTimeshee
 	for _, id := range req.CostIDs {
 		form.Add("cost_ids[]", id)
 	}
-	return c.doPostForm(ctx, "/timesheets/delete_timesheets", form)
+	data, err := c.doPostForm(ctx, "/timesheets/delete_timesheets", form)
+	if err != nil {
+		return nil, err
+	}
+	var result model.DeleteTimesheetsResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse delete timesheets result: %w", err)
+	}
+	return &result, nil
 }

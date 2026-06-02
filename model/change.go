@@ -6,24 +6,42 @@ import "encoding/json"
 // WorkitemChange 表示需求/任务的变更记录，适用于 Story 和 Task 的变更历史
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_changes.html
 type WorkitemChange struct {
-	ID               string          `json:"id,omitempty"`
-	WorkspaceID      string          `json:"workspace_id,omitempty"`
-	AppID            string          `json:"app_id,omitempty"`
-	WorkitemTypeID   string          `json:"workitem_type_id,omitempty"`
-	Creator          string          `json:"creator,omitempty"`
-	Created          string          `json:"created,omitempty"`
-	ChangeSummary    string          `json:"change_summary,omitempty"`
-	Comment          string          `json:"comment,omitempty"`
-	Changes          string          `json:"changes,omitempty"`
-	EntityType       string          `json:"entity_type,omitempty"`
-	ChangeType       string          `json:"change_type,omitempty"`
-	ChangeTypeDetail string          `json:"change_type_detail,omitempty"`
-	ChangeTypeText   string          `json:"change_type_text,omitempty"`
-	Updated          string          `json:"updated,omitempty"`
-	StoryID          string          `json:"story_id,omitempty"`
-	TaskID           string          `json:"task_id,omitempty"`
-	MiniItemID       string          `json:"mini_item_id,omitempty"`
-	FieldChanges     json.RawMessage `json:"field_changes,omitempty"`
+	ID               string        `json:"id,omitempty"`
+	WorkspaceID      string        `json:"workspace_id,omitempty"`
+	AppID            string        `json:"app_id,omitempty"`
+	WorkitemTypeID   string        `json:"workitem_type_id,omitempty"`
+	Creator          string        `json:"creator,omitempty"`
+	Created          string        `json:"created,omitempty"`
+	ChangeSummary    string        `json:"change_summary,omitempty"`
+	Comment          string        `json:"comment,omitempty"`
+	Changes          string        `json:"changes,omitempty"`
+	EntityType       string        `json:"entity_type,omitempty"`
+	ChangeType       string        `json:"change_type,omitempty"`
+	ChangeTypeDetail string        `json:"change_type_detail,omitempty"`
+	ChangeTypeText   string        `json:"change_type_text,omitempty"`
+	Updated          string        `json:"updated,omitempty"`
+	StoryID          string        `json:"story_id,omitempty"`
+	TaskID           string        `json:"task_id,omitempty"`
+	MiniItemID       string        `json:"mini_item_id,omitempty"`
+	FieldChanges     []FieldChange `json:"field_changes,omitempty"`
+}
+
+// UnmarshalJSON 自定义反序列化，处理 field_changes 可能为空字符串或 null 的情况
+func (w *WorkitemChange) UnmarshalJSON(data []byte) error {
+	type Alias WorkitemChange
+	aux := &struct {
+		FieldChanges json.RawMessage `json:"field_changes,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(w),
+	}
+	if err := json.Unmarshal(data, aux); err != nil {
+		return err
+	}
+	if len(aux.FieldChanges) > 0 && aux.FieldChanges[0] == '[' {
+		_ = json.Unmarshal(aux.FieldChanges, &w.FieldChanges)
+	}
+	return nil
 }
 
 // FieldChange 表示单个字段的变更详情，用于解析 WorkitemChange.FieldChanges

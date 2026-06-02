@@ -1,5 +1,40 @@
 package model
 
+// CodeCommitRelated 表示 commit 关联的业务对象
+type CodeCommitRelated struct {
+	Type        string `json:"type,omitempty"`
+	ObjectID    string `json:"object_id,omitempty"`
+	CommitID    string `json:"commit_id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	Code        string `json:"code,omitempty"`
+}
+
+// CodeCommitInfo 表示 GIT 提交信息
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/get_code_commit_infos.html
+type CodeCommitInfo struct {
+	ID              string              `json:"id,omitempty"`
+	UserName        string              `json:"user_name,omitempty"`
+	UserID          string              `json:"user_id,omitempty"`
+	HookUserName    string              `json:"hook_user_name,omitempty"`
+	CommitID        string              `json:"commit_id,omitempty"`
+	WorkspaceID     string              `json:"workspace_id,omitempty"`
+	Message         string              `json:"message,omitempty"`
+	Author          string              `json:"author,omitempty"`
+	Path            string              `json:"path,omitempty"`
+	WebURL          string              `json:"web_url,omitempty"`
+	HookProjectName string              `json:"hook_project_name,omitempty"`
+	CommitTime      string              `json:"commit_time,omitempty"`
+	Created         string              `json:"created,omitempty"`
+	Ref             string              `json:"ref,omitempty"`
+	RefStatus       string              `json:"ref_status,omitempty"`
+	GitEnv          string              `json:"git_env,omitempty"`
+	FileCommit      string              `json:"file_commit,omitempty"`
+	RepoID          string              `json:"repo_id,omitempty"`
+	BranchID        string              `json:"branch_id,omitempty"`
+	FileSort        map[string]int      `json:"file_sort,omitempty"`
+	Related         []CodeCommitRelated `json:"related,omitempty"`
+}
+
 // GetCodeCommitObjectsRequest 获取指定 commit 关联的 TAPD 业务对象的请求参数
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/source/get_commit_objects.html
 type GetCodeCommitObjectsRequest struct {

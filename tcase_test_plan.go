@@ -3,6 +3,7 @@ package tapd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -53,8 +54,12 @@ func (c *Client) CountTestPlans(ctx context.Context, req *model.ListTestPlansReq
 
 // GetTestPlanDetails 获取测试计划测试结果
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_details.html
-func (c *Client) GetTestPlanDetails(ctx context.Context, req *model.TestPlanIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/test_plans/details", req.ToParams())
+func (c *Client) GetTestPlanDetails(ctx context.Context, req *model.TestPlanIDRequest) ([]model.TCaseWithResult, error) {
+	data, err := c.doGet(ctx, "/test_plans/details", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.TCaseWithResult](data, "Tcase")
 }
 
 // GetTestPlanFieldsInfo 获取测试计划所有字段及候选值
@@ -89,8 +94,16 @@ func (c *Client) GetTestPlanProgress(ctx context.Context, req *model.TestPlanIDR
 
 // GetTestPlanRelativeStories 获取测试计划关联的需求
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_relative_stories.html
-func (c *Client) GetTestPlanRelativeStories(ctx context.Context, req *model.TestPlanRelativeStoriesRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/test_plans/get_relative_stories", req.ToParams())
+func (c *Client) GetTestPlanRelativeStories(ctx context.Context, req *model.TestPlanRelativeStoriesRequest) ([]string, error) {
+	data, err := c.doGet(ctx, "/test_plans/get_relative_stories", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result model.TestPlanRelativeStories
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse test plan relative stories: %w", err)
+	}
+	return result.StoryIDs, nil
 }
 
 // ListTestPlanTCaseRelations 获取测试计划与测试用例关联关系
@@ -106,30 +119,49 @@ func (c *Client) ListTestPlanTCaseRelations(ctx context.Context, req *model.Test
 
 // GetTestPlanBugs 获取测试计划关联 bug
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_bugs.html
-func (c *Client) GetTestPlanBugs(ctx context.Context, req *model.TestPlanIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/test_plans/result_relation_bugs", req.ToParams())
+func (c *Client) GetTestPlanBugs(ctx context.Context, req *model.TestPlanIDRequest) ([]model.TestPlanBugItem, error) {
+	data, err := c.doGet(ctx, "/test_plans/result_relation_bugs", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result []model.TestPlanBugItem
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse test plan bugs: %w", err)
+	}
+	return result, nil
 }
 
 // ListTestPlansByIterationID 获取迭代下测试计划
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_by_iteration_id.html
-func (c *Client) ListTestPlansByIterationID(ctx context.Context, req *model.TestPlansByIterationIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/test_plans/get_by_iteration_id", req.ToParams())
+func (c *Client) ListTestPlansByIterationID(ctx context.Context, req *model.TestPlansByIterationIDRequest) ([]model.IterationTestPlan, error) {
+	data, err := c.doGet(ctx, "/test_plans/get_by_iteration_id", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result []model.IterationTestPlan
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse iteration test plans: %w", err)
+	}
+	return result, nil
 }
 
 // CreateTestPlanStoryRelation 创建测试计划和需求关联关系
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/create_story_relation.html
-func (c *Client) CreateTestPlanStoryRelation(ctx context.Context, req *model.TestPlanStoryRelationRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/test_plans/create_story_relation", req.ToParams())
+func (c *Client) CreateTestPlanStoryRelation(ctx context.Context, req *model.TestPlanStoryRelationRequest) error {
+	_, err := c.doPost(ctx, "/test_plans/create_story_relation", req.ToParams())
+	return err
 }
 
 // DeleteTestPlanStoryRelation 解除测试计划和需求关联关系
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/delete_story_relation.html
-func (c *Client) DeleteTestPlanStoryRelation(ctx context.Context, req *model.TestPlanStoryRelationRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/test_plans/delete_story_relation", req.ToParams())
+func (c *Client) DeleteTestPlanStoryRelation(ctx context.Context, req *model.TestPlanStoryRelationRequest) error {
+	_, err := c.doPost(ctx, "/test_plans/delete_story_relation", req.ToParams())
+	return err
 }
 
 // CreateTestPlanTCaseRelation 创建测试计划和测试用例关联关系
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/create_tcase_relation.html
-func (c *Client) CreateTestPlanTCaseRelation(ctx context.Context, req *model.TestPlanTCaseRelationRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/test_plans/create_tcase_relation", req.ToParams())
+func (c *Client) CreateTestPlanTCaseRelation(ctx context.Context, req *model.TestPlanTCaseRelationRequest) error {
+	_, err := c.doPost(ctx, "/test_plans/create_tcase_relation", req.ToParams())
+	return err
 }

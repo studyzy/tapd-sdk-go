@@ -569,12 +569,3 @@ type LifeTime struct {
 	Operator    string `json:"operator,omitempty"`
 	ChangeFrom  string `json:"change_from,omitempty"`
 }
-
-// CodeCommitInfo 表示 GIT 提交信息
-type CodeCommitInfo struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Message     string `json:"message,omitempty"`
-	Author      string `json:"author,omitempty"`
-	Created     string `json:"created,omitempty"`
-}

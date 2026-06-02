@@ -128,8 +128,16 @@ func (c *Client) GetTasksByViewConfID(ctx context.Context, req *model.GetTasksBy
 
 // GetTaskFieldsInfo 获取任务所有字段及候选值
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/task/get_task_fields_info.html
-func (c *Client) GetTaskFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/tasks/get_fields_info", req.ToParams())
+func (c *Client) GetTaskFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (map[string]model.FieldInfo, error) {
+	data, err := c.doGet(ctx, "/tasks/get_fields_info", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var fields map[string]model.FieldInfo
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return nil, fmt.Errorf("failed to parse task fields info: %w", err)
+	}
+	return fields, nil
 }
 
 // GetTaskCustomFieldsSettings 获取任务自定义字段配置

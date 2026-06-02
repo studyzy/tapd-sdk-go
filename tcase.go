@@ -3,6 +3,7 @@ package tapd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -100,8 +101,16 @@ func (c *Client) CreateTCaseCategory(ctx context.Context, req *model.CreateTCase
 
 // GetStoryByTCaseID 获取测试用例关联的需求
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_story_by_tcase_id.html
-func (c *Client) GetStoryByTCaseID(ctx context.Context, req *model.GetStoryByTCaseIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/tcases/get_story_by_tcase_id", req.ToParams())
+func (c *Client) GetStoryByTCaseID(ctx context.Context, req *model.GetStoryByTCaseIDRequest) ([]model.TCaseStoryRelation, error) {
+	data, err := c.doGet(ctx, "/tcases/get_story_by_tcase_id", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result []model.TCaseStoryRelation
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse tcase story relations: %w", err)
+	}
+	return result, nil
 }
 
 // GetTCaseCustomFieldsSettings 获取测试用例自定义字段配置
@@ -116,6 +125,14 @@ func (c *Client) GetTCaseCustomFieldsSettings(ctx context.Context, req *model.Wo
 
 // GetTCaseFieldsInfo 获取测试用例所有字段及候选值
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_fields_info.html
-func (c *Client) GetTCaseFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/tcases/get_fields_info", req.ToParams())
+func (c *Client) GetTCaseFieldsInfo(ctx context.Context, req *model.WorkspaceIDRequest) (map[string]model.FieldInfo, error) {
+	data, err := c.doGet(ctx, "/tcases/get_fields_info", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var fields map[string]model.FieldInfo
+	if err := json.Unmarshal(data, &fields); err != nil {
+		return nil, fmt.Errorf("failed to parse tcase fields info: %w", err)
+	}
+	return fields, nil
 }

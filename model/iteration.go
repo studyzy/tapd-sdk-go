@@ -246,6 +246,25 @@ func (r *CountIterationsRequest) ToParams() map[string]string {
 	return params
 }
 
+// DashBoardCardData 仪表盘卡片数据
+type DashBoardCardData struct {
+	Content         string `json:"content,omitempty"`
+	DescriptionType string `json:"description_type,omitempty"`
+	Value           string `json:"value,omitempty"`
+}
+
+// DashBoardCard 迭代仪表盘自定义卡片
+type DashBoardCard struct {
+	ID            string             `json:"id,omitempty"`
+	Template      string             `json:"template,omitempty"`
+	Title         string             `json:"title,omitempty"`
+	ComponentData string             `json:"component_data,omitempty"`
+	Width         string             `json:"width,omitempty"`
+	Height        string             `json:"height,omitempty"`
+	CardType      string             `json:"card_type,omitempty"`
+	Data          *DashBoardCardData `json:"data,omitempty"`
+}
+
 // GetCustomDashBoardContentRequest 获取迭代仪表盘自定义卡片内容的请求参数
 type GetCustomDashBoardContentRequest struct {
 	WorkspaceID string // 必填：项目 ID

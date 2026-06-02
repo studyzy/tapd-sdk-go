@@ -360,3 +360,11 @@ func (r *GetStoryByTCaseIDRequest) ToParams() map[string]string {
 		"tcase_ids":    r.TCaseIDs,
 	}
 }
+
+// TCaseStoryRelation 测试用例与需求的关联关系
+type TCaseStoryRelation struct {
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	TCaseID     string `json:"tcase_id,omitempty"`
+	StoryID     string `json:"story_id,omitempty"`
+	TestPlanID  string `json:"test_plan_id,omitempty"`
+}

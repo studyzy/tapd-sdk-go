@@ -96,8 +96,16 @@ func (c *Client) GetWorkflows(ctx context.Context, req *model.WorkflowRequest) (
 
 // GetWorkflowStepMap 获取工作流步骤映射
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/get_workflow_step_map.html
-func (c *Client) GetWorkflowStepMap(ctx context.Context, req *model.WorkflowRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/workflows/step_map", req.ToParams())
+func (c *Client) GetWorkflowStepMap(ctx context.Context, req *model.WorkflowRequest) ([]model.WorkflowStepGroup, error) {
+	data, err := c.doGet(ctx, "/workflows/step_map", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	var result []model.WorkflowStepGroup
+	if err := json.Unmarshal(data, &result); err != nil {
+		return nil, fmt.Errorf("failed to parse workflow step map: %w", err)
+	}
+	return result, nil
 }
 
 // AddNewStepForBug 新增 Bug 工作流步骤

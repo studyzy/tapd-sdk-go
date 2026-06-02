@@ -330,3 +330,32 @@ func (r *TestPlanTCaseRelationRequest) ToParams() map[string]string {
 		"creator":      r.Creator,
 	}
 }
+
+// ---------------------------------------------------------------------------
+// 响应结构体
+// ---------------------------------------------------------------------------
+
+// TCaseWithResult 测试计划详情中的用例（含执行结果）
+type TCaseWithResult struct {
+	TCase
+	TcaseResult *TCaseResultItem `json:"TcaseResult,omitempty"`
+}
+
+// TestPlanRelativeStories 测试计划关联的需求 ID 列表
+type TestPlanRelativeStories struct {
+	StoryIDs []string `json:"story_ids,omitempty"`
+}
+
+// TestPlanBugItem 测试计划关联 bug 的用例维度信息
+type TestPlanBugItem struct {
+	ID                    json.Number                `json:"id"`
+	Name                  string                     `json:"name,omitempty"`
+	TCaseResultRelateBugs map[string]TCaseResultItem `json:"tcase_result_relate_bugs,omitempty"`
+}
+
+// IterationTestPlan 迭代下的测试计划关联
+type IterationTestPlan struct {
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	IterationID string `json:"iteration_id,omitempty"`
+	TestPlanID  string `json:"test_plan_id,omitempty"`
+}
