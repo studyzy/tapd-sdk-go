@@ -398,6 +398,7 @@ type CountStoriesRequest struct {
 	PriorityLabel       string            // 可选：优先级标签
 	BusinessValue       string            // 可选：业务价值
 	VStatus             string            // 可选：中文状态名
+	WithVStatus         string            // 可选：带中文状态名返回
 	Status              string            // 可选：状态
 	Owner               string            // 可选：处理人
 	Creator             string            // 可选：创建人
@@ -432,6 +433,10 @@ type CountStoriesRequest struct {
 	IncludeSubCategory  string            // 可选：是否包含子分类
 	IncludeSubIteration string            // 可选：是否包含子迭代
 	IncludeLeafStories  string            // 可选：是否包含叶子需求
+	Limit               int               // 可选：返回数量限制
+	Page                int               // 可选：页码
+	Order               string            // 可选：排序规则
+	Fields              string            // 可选：返回字段
 	CustomFields        map[string]string // 可选：自定义字段
 }
 
@@ -446,6 +451,7 @@ func (r *CountStoriesRequest) ToParams() map[string]string {
 	setOptional(params, "priority_label", r.PriorityLabel)
 	setOptional(params, "business_value", r.BusinessValue)
 	setOptional(params, "v_status", r.VStatus)
+	setOptional(params, "with_v_status", r.WithVStatus)
 	setOptional(params, "status", r.Status)
 	setOptional(params, "owner", r.Owner)
 	setOptional(params, "creator", r.Creator)
@@ -480,6 +486,10 @@ func (r *CountStoriesRequest) ToParams() map[string]string {
 	setOptional(params, "include_sub_category", r.IncludeSubCategory)
 	setOptional(params, "include_sub_iteration", r.IncludeSubIteration)
 	setOptional(params, "include_leaf_stories", r.IncludeLeafStories)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

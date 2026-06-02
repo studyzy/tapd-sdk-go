@@ -97,10 +97,24 @@ func (c *Client) GetIterationTemplateFields(ctx context.Context, req *model.GetI
 	return parseList[model.WorkitemTemplateField](data, "WorkitemTemplateField")
 }
 
+// GetIterationCustomFieldsSettings 获取迭代自定义字段配置
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/get_iteration_custom_fields_settings.html
+func (c *Client) GetIterationCustomFieldsSettings(ctx context.Context, req *model.WorkspaceIDRequest) ([]model.CustomFieldConfig, error) {
+	data, err := c.doGet(ctx, "/iterations/custom_fields_settings", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
+}
+
 // GetIterationWorkitemTypes 获取迭代类别列表
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/iteration/workitem_types.html
-func (c *Client) GetIterationWorkitemTypes(ctx context.Context, req *model.WorkspaceIDRequest) (json.RawMessage, error) {
-	return c.doGet(ctx, "/iterations/workitem_types", req.ToParams())
+func (c *Client) GetIterationWorkitemTypes(ctx context.Context, req *model.WorkspaceIDRequest) ([]model.WorkitemType, error) {
+	data, err := c.doGet(ctx, "/iterations/workitem_types", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.WorkitemType](data, "WorkitemType")
 }
 
 // GetDefaultTemplateFieldsByWorkitemTypeID 获取迭代类别默认模板字段配置

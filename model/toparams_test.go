@@ -474,24 +474,29 @@ func TestCreateTCaseRequest_ToParams(t *testing.T) {
 	}
 }
 
-func TestBatchCreateTCasesRequest_ToParams(t *testing.T) {
+func TestBatchCreateTCasesRequest_ToJSON(t *testing.T) {
 	req := &BatchCreateTCasesRequest{
-		WorkspaceID: "40",
-		Data:        `[{"name":"case1"}]`,
+		Items: []BatchCreateTCaseItem{
+			{WorkspaceID: "40", Name: "case1"},
+			{WorkspaceID: "40", Name: "case2", Priority: "high"},
+		},
 	}
-	params := req.ToParams()
-	if params["workspace_id"] != "40" {
-		t.Errorf("workspace_id: got %q", params["workspace_id"])
+	body, err := req.ToJSON()
+	if err != nil {
+		t.Fatalf("ToJSON() error: %v", err)
 	}
-	if params["data"] != `[{"name":"case1"}]` {
-		t.Errorf("data: got %q", params["data"])
+	if len(body) == 0 {
+		t.Error("expected non-empty JSON body")
 	}
 
-	// 无 data
-	req2 := &BatchCreateTCasesRequest{WorkspaceID: "40"}
-	params2 := req2.ToParams()
-	if _, ok := params2["data"]; ok {
-		t.Error("empty data should not be in params")
+	// 空 items
+	req2 := &BatchCreateTCasesRequest{}
+	body2, err := req2.ToJSON()
+	if err != nil {
+		t.Fatalf("ToJSON() error: %v", err)
+	}
+	if string(body2) != "null" {
+		t.Errorf("expected null for empty items, got %q", string(body2))
 	}
 }
 

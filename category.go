@@ -8,8 +8,8 @@ import (
 
 // ListCategories 查询需求分类列表
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_categories.html
-func (c *Client) ListCategories(ctx context.Context, params map[string]string) ([]model.Category, error) {
-	data, err := c.doGet(ctx, "/story_categories", params)
+func (c *Client) ListCategories(ctx context.Context, req *model.ListStoryCategoriesRequest) ([]model.Category, error) {
+	data, err := c.doGet(ctx, "/story_categories", req.ToParams())
 	if err != nil {
 		return nil, err
 	}

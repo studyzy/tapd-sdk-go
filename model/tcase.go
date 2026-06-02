@@ -210,19 +210,29 @@ func (r *CreateTCaseRequest) ToParams() map[string]string {
 	return params
 }
 
-// BatchCreateTCasesRequest 批量创建测试用例的请求参数
-type BatchCreateTCasesRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	Data        string // 必填：批量数据
+// BatchCreateTCaseItem 批量创建测试用例时的单条数据
+type BatchCreateTCaseItem struct {
+	WorkspaceID  string `json:"workspace_id"`           // 必填：项目 ID
+	Name         string `json:"name"`                   // 必填：用例名称
+	Steps        string `json:"steps,omitempty"`        // 可选：用例步骤
+	CategoryID   string `json:"category_id,omitempty"`  // 可选：用例目录 ID
+	Status       string `json:"status,omitempty"`       // 可选：用例状态
+	Precondition string `json:"precondition,omitempty"` // 可选：前置条件
+	Expectation  string `json:"expectation,omitempty"`  // 可选：预期结果
+	Type         string `json:"type,omitempty"`         // 可选：用例类型
+	Priority     string `json:"priority,omitempty"`     // 可选：用例等级
+	Creator      string `json:"creator,omitempty"`      // 可选：创建人
 }
 
-// ToParams 将请求结构体转换为 TAPD API 参数 map
-func (r *BatchCreateTCasesRequest) ToParams() map[string]string {
-	params := map[string]string{
-		"workspace_id": r.WorkspaceID,
-	}
-	setOptional(params, "data", r.Data)
-	return params
+// BatchCreateTCasesRequest 批量创建测试用例的请求参数
+// 请求体为 JSON 数组格式
+type BatchCreateTCasesRequest struct {
+	Items []BatchCreateTCaseItem // 必填：要创建的测试用例列表，最多 200 条
+}
+
+// ToJSON 将请求序列化为 JSON 数组格式的 []byte
+func (r *BatchCreateTCasesRequest) ToJSON() ([]byte, error) {
+	return json.Marshal(r.Items)
 }
 
 // UpdateTCaseRequest 更新测试用例的请求参数

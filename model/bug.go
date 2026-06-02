@@ -475,11 +475,10 @@ type UpdateBugRequest struct {
 	Deadline       string // 可选：解决期限
 
 	// 关联与分类
-	IterationID string // 可选：迭代 ID
-	Module      string // 可选：模块
-	Feature     string // 可选：特性
-	ReleaseID   string // 可选：发布计划
-	Label       string // 可选：标签，多个以竖线分隔
+	Module    string // 可选：模块
+	Feature   string // 可选：特性
+	ReleaseID string // 可选：发布计划
+	Label     string // 可选：标签，多个以竖线分隔
 
 	// 版本相关
 	VersionReport string // 可选：发现版本
@@ -549,7 +548,6 @@ func (r *UpdateBugRequest) ToParams() map[string]string {
 	setOptional(params, "begin", r.Begin)
 	setOptional(params, "due", r.Due)
 	setOptional(params, "deadline", r.Deadline)
-	setOptional(params, "iteration_id", r.IterationID)
 	setOptional(params, "module", r.Module)
 	setOptional(params, "feature", r.Feature)
 	setOptional(params, "release_id", r.ReleaseID)
@@ -624,7 +622,6 @@ type CountBugsRequest struct {
 	// 关联与分类筛选
 	IterationID string // 可选：迭代 ID
 	Module      string // 可选：模块，支持枚举查询
-	Feature     string // 可选：特性
 	ReleaseID   string // 可选：发布计划
 	Label       string // 可选：标签，支持枚举查询
 
@@ -695,7 +692,6 @@ func (r *CountBugsRequest) ToParams() map[string]string {
 	setOptional(params, "deadline", r.Deadline)
 	setOptional(params, "iteration_id", r.IterationID)
 	setOptional(params, "module", r.Module)
-	setOptional(params, "feature", r.Feature)
 	setOptional(params, "release_id", r.ReleaseID)
 	setOptional(params, "label", r.Label)
 	setOptional(params, "version_report", r.VersionReport)

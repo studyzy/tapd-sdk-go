@@ -49,6 +49,40 @@ func (r *UpdateStoryCategoryRequest) ToParams() map[string]string {
 	return params
 }
 
+// ListStoryCategoriesRequest 查询需求分类列表的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_categories.html
+type ListStoryCategoriesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：分类 ID（多 ID 用逗号分隔）
+	Name        string // 可选：分类名称（模糊匹配）
+	Description string // 可选：分类描述
+	ParentID    string // 可选：父分类 ID
+	Created     string // 可选：创建时间
+	Modified    string // 可选：修改时间
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
+	Order       string // 可选：排序规则
+	Fields      string // 可选：返回字段
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *ListStoryCategoriesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "parent_id", r.ParentID)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "modified", r.Modified)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
+	return params
+}
+
 // CountStoryCategoriesRequest 查询需求分类数量的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_categories_count.html
 type CountStoryCategoriesRequest struct {

@@ -120,6 +120,8 @@ type ListTasksRequest struct {
 	EffortCompleted string            // 可选：完成工时
 	Exceed          string            // 可选：超出工时
 	Remain          string            // 可选：剩余工时
+	ReleaseID       string            // 可选：发布计划 ID
+	HasAttachment   string            // 可选：是否有附件
 	Fields          string            // 可选：返回字段列表
 	Limit           int               // 可选：返回数量限制（默认 30，最大 200）
 	Page            int               // 可选：页码
@@ -154,6 +156,8 @@ func (r *ListTasksRequest) ToParams() map[string]string {
 	setOptional(params, "effort_completed", r.EffortCompleted)
 	setOptional(params, "exceed", r.Exceed)
 	setOptional(params, "remain", r.Remain)
+	setOptional(params, "release_id", r.ReleaseID)
+	setOptional(params, "has_attachment", r.HasAttachment)
 	setOptional(params, "fields", r.Fields)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
@@ -366,6 +370,8 @@ type CountTasksRequest struct {
 	EffortCompleted string            // 可选：完成工时
 	Exceed          string            // 可选：超出工时
 	Remain          string            // 可选：剩余工时
+	ReleaseID       string            // 可选：发布计划 ID
+	HasAttachment   string            // 可选：是否有附件
 	CustomFields    map[string]string // 可选：自定义字段
 }
 
@@ -396,6 +402,8 @@ func (r *CountTasksRequest) ToParams() map[string]string {
 	setOptional(params, "effort_completed", r.EffortCompleted)
 	setOptional(params, "exceed", r.Exceed)
 	setOptional(params, "remain", r.Remain)
+	setOptional(params, "release_id", r.ReleaseID)
+	setOptional(params, "has_attachment", r.HasAttachment)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

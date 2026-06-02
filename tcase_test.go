@@ -108,22 +108,27 @@ func TestBatchCreateTCases(t *testing.T) {
 		if r.URL.Path != "/tcases/batch_save" {
 			t.Errorf("unexpected path: %s, want /tcases/batch_save", r.URL.Path)
 		}
+		if ct := r.Header.Get("Content-Type"); ct != "application/json" {
+			t.Errorf("Content-Type = %q, want application/json", ct)
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"result":"ok"},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"Tcase":{"id":"1001","name":"TC1"}},{"Tcase":{"id":"1002","name":"TC2"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	req := &model.BatchCreateTCasesRequest{
-		WorkspaceID: "1",
-		Data:        `[{"name":"TC1"},{"name":"TC2"}]`,
+		Items: []model.BatchCreateTCaseItem{
+			{WorkspaceID: "1", Name: "TC1"},
+			{WorkspaceID: "1", Name: "TC2"},
+		},
 	}
 	result, err := c.BatchCreateTCases(context.Background(), req)
 	if err != nil {
 		t.Fatalf("BatchCreateTCases() unexpected error: %v", err)
 	}
-	if result == nil {
-		t.Error("expected non-nil result")
+	if len(result) != 2 {
+		t.Errorf("expected 2 tcases, got %d", len(result))
 	}
 }
 

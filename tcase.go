@@ -41,8 +41,17 @@ func (c *Client) CreateTCase(ctx context.Context, req *model.CreateTCaseRequest)
 }
 
 // BatchCreateTCases 批量创建测试用例
-func (c *Client) BatchCreateTCases(ctx context.Context, req *model.BatchCreateTCasesRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/tcases/batch_save", req.ToParams())
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/batch_add_tcase.html
+func (c *Client) BatchCreateTCases(ctx context.Context, req *model.BatchCreateTCasesRequest) ([]model.TCase, error) {
+	body, err := req.ToJSON()
+	if err != nil {
+		return nil, err
+	}
+	data, err := c.doPostJSONBody(ctx, "/tcases/batch_save", body)
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.TCase](data, "Tcase")
 }
 
 // UpdateTCase 更新测试用例
@@ -93,6 +102,16 @@ func (c *Client) CreateTCaseCategory(ctx context.Context, req *model.CreateTCase
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_story_by_tcase_id.html
 func (c *Client) GetStoryByTCaseID(ctx context.Context, req *model.GetStoryByTCaseIDRequest) (json.RawMessage, error) {
 	return c.doGet(ctx, "/tcases/get_story_by_tcase_id", req.ToParams())
+}
+
+// GetTCaseCustomFieldsSettings 获取测试用例自定义字段配置
+// API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_custom_fields_settings.html
+func (c *Client) GetTCaseCustomFieldsSettings(ctx context.Context, req *model.WorkspaceIDRequest) ([]model.CustomFieldConfig, error) {
+	data, err := c.doGet(ctx, "/tcases/custom_fields_settings", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseList[model.CustomFieldConfig](data, "CustomFieldConfig")
 }
 
 // GetTCaseFieldsInfo 获取测试用例所有字段及候选值

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/studyzy/tapd-sdk-go/model"
 )
 
 func TestListCategories_Success(t *testing.T) {
@@ -21,7 +23,7 @@ func TestListCategories_Success(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token123", "", "")
-	categories, err := c.ListCategories(context.Background(), map[string]string{"workspace_id": "12345"})
+	categories, err := c.ListCategories(context.Background(), &model.ListStoryCategoriesRequest{WorkspaceID: "12345"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -44,7 +46,7 @@ func TestListCategories_Empty(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token123", "", "")
-	categories, err := c.ListCategories(context.Background(), map[string]string{"workspace_id": "12345"})
+	categories, err := c.ListCategories(context.Background(), &model.ListStoryCategoriesRequest{WorkspaceID: "12345"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -64,7 +66,7 @@ func TestListCategories_WithNameFilter(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token123", "", "")
-	categories, err := c.ListCategories(context.Background(), map[string]string{"workspace_id": "12345", "name": "前端"})
+	categories, err := c.ListCategories(context.Background(), &model.ListStoryCategoriesRequest{WorkspaceID: "12345", Name: "前端"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -81,7 +83,7 @@ func TestListCategories_APIError(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "token123", "", "")
-	_, err := c.ListCategories(context.Background(), map[string]string{"workspace_id": "invalid"})
+	_, err := c.ListCategories(context.Background(), &model.ListStoryCategoriesRequest{WorkspaceID: "invalid"})
 	if err == nil {
 		t.Fatal("expected error, got nil")
 	}
