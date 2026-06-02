@@ -2,7 +2,6 @@ package tapd
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -76,7 +75,7 @@ func TestCreateRelation(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /relations", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"id":"5001","source_type":"story","target_type":"bug","source_id":"100","target_id":"200"},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":{"Relation":{"id":"5001","workspace_id":"1","source_type":"story","target_type":"bug","source_id":"100","target_id":"200","created":"2021-05-20 15:10:59","modified":"2021-05-20 15:10:59"}},"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -92,15 +91,14 @@ func TestCreateRelation(t *testing.T) {
 		t.Fatalf("CreateRelation() unexpected error: %v", err)
 	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal(result, &data); err != nil {
-		t.Fatalf("failed to parse result: %v", err)
+	if result.ID != "5001" {
+		t.Errorf("id = %q, want %q", result.ID, "5001")
 	}
-	if data["id"] != "5001" {
-		t.Errorf("id = %v, want %q", data["id"], "5001")
+	if result.SourceType != "story" {
+		t.Errorf("source_type = %q, want %q", result.SourceType, "story")
 	}
-	if data["source_type"] != "story" {
-		t.Errorf("source_type = %v, want %q", data["source_type"], "story")
+	if result.TargetType != "bug" {
+		t.Errorf("target_type = %q, want %q", result.TargetType, "bug")
 	}
 }
 

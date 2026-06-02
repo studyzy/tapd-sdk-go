@@ -6,6 +6,17 @@ import (
 	"github.com/studyzy/tapd-sdk-go/model"
 )
 
+// ListReleases 查询发布计划列表
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_new_releases.html
+func (c *Client) ListReleases(ctx context.Context, req *model.ListReleasesRequest) ([]model.Release, error) {
+	data, err := c.doGet(ctx, "/new_releases", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return parseList[model.Release](data, "Release")
+}
+
 // CreateRelease 创建发布计划
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/add_new_release.html
 func (c *Client) CreateRelease(ctx context.Context, req *model.CreateReleaseRequest) (*model.Release, error) {

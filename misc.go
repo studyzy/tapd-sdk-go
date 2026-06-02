@@ -23,17 +23,6 @@ func (c *Client) GetCommitMsg(ctx context.Context, req *model.GetCommitMsgReques
 	return result, nil
 }
 
-// ListReleases 查询发布计划列表
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_new_releases.html
-func (c *Client) ListReleases(ctx context.Context, req *model.ListReleasesRequest) ([]model.Release, error) {
-	data, err := c.doGet(ctx, "/new_releases", req.ToParams())
-	if err != nil {
-		return nil, err
-	}
-
-	return parseList[model.Release](data, "Release")
-}
-
 // GetTodoStories 获取用户待办需求，返回强类型 Story 切片
 func (c *Client) GetTodoStories(ctx context.Context, req *model.GetTodoRequest) ([]model.Story, error) {
 	data, err := c.doGet(ctx, "/user_oauth/get_user_todo_story", req.ToParams())

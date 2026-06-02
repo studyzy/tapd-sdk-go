@@ -510,12 +510,13 @@ func (r *ChangeWorkitemTypeRequest) ToParams() map[string]string {
 // GetStoriesByViewConfIDRequest 获取视图对应的需求列表的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_stories_by_view_conf_id.html
 type GetStoriesByViewConfIDRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	ViewConfID  string // 必填：视图 ID
-	CurrentUser string // 可选：当前登录用户
-	Limit       int    // 可选：返回数量限制
-	Page        int    // 可选：页码
-	Fields      string // 可选：返回字段
+	WorkspaceID  string            // 必填：项目 ID
+	ViewConfID   string            // 必填：视图 ID
+	CurrentUser  string            // 可选：当前登录用户
+	Limit        int               // 可选：返回数量限制
+	Page         int               // 可选：页码
+	Fields       string            // 可选：返回字段
+	CustomFields map[string]string // 可选：需求字段均可参与基于视图的二次过滤
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -528,6 +529,7 @@ func (r *GetStoriesByViewConfIDRequest) ToParams() map[string]string {
 	setOptional(params, "fields", r.Fields)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
+	MergeCustomFields(params, r.CustomFields)
 	return params
 }
 

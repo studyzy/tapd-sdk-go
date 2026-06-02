@@ -72,8 +72,19 @@ type Story struct {
 	SecretRootID string `json:"secret_root_id,omitempty"`
 
 	// 附加信息
-	LastModify string `json:"lastmodify,omitempty"`
-	URL        string `json:"url,omitempty"`
+	Sort                string `json:"sort,omitempty"`
+	Participator        string `json:"participator,omitempty"`
+	Follower            string `json:"follower,omitempty"`
+	Confidential        string `json:"confidential,omitempty"`
+	EntityType          string `json:"entity_type,omitempty"`
+	AttachmentCount     string `json:"attachment_count,omitempty"`
+	DescriptionType     string `json:"description_type,omitempty"`
+	MarkdownDescription string `json:"markdown_description,omitempty"`
+	PredecessorCount    string `json:"predecessor_count,omitempty"`
+	SuccessorCount      string `json:"successor_count,omitempty"`
+	SyncType            string `json:"sync_type,omitempty"`
+	LastModify          string `json:"lastmodify,omitempty"`
+	URL                 string `json:"url,omitempty"`
 
 	// 自定义字段，key 为 custom_field_one、custom_field_9 等
 	CustomFields map[string]string `json:"-"`

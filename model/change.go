@@ -166,9 +166,9 @@ func (r *CountStoryChangesRequest) ToParams() map[string]string {
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/get_bug_changes.html
 type GetBugChangesRequest struct {
 	WorkspaceID   string // 必填：项目 ID
-	BugID         string // 可选：缺陷 ID
+	BugID         string // 条件必填（与 Created 二选一）：缺陷 ID
 	Author        string // 可选：变更人
-	Created       string // 可选：创建时间
+	Created       string // 条件必填（与 BugID 二选一）：创建时间
 	Field         string // 可选：变更字段
 	ID            string // 可选：变更 ID
 	OldValue      string // 可选：旧值

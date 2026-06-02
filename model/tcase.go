@@ -248,6 +248,7 @@ type UpdateTCaseRequest struct {
 	Expectation  string            // 可选：预期结果
 	Type         string            // 可选：用例类型
 	Priority     string            // 可选：用例等级
+	Creator      string            // 可选：创建人
 	CustomFields map[string]string // 可选：自定义字段
 }
 
@@ -265,6 +266,7 @@ func (r *UpdateTCaseRequest) ToParams() map[string]string {
 	setOptional(params, "expectation", r.Expectation)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "priority", r.Priority)
+	setOptional(params, "creator", r.Creator)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }

@@ -124,7 +124,7 @@ func TestGetWorkitemTypes(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	req := &model.WorkspaceIDRequest{
+	req := &model.GetWorkitemTypesRequest{
 		WorkspaceID: "1",
 	}
 	types, err := c.GetWorkitemTypes(context.Background(), req)

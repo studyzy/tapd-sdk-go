@@ -23,8 +23,12 @@ func (c *Client) GetRelatedBugs(ctx context.Context, req *model.GetRelatedBugsRe
 	return relations, nil
 }
 
-// CreateRelation 创建实体关联关系，返回 API 原始响应
-// 该接口为内部接口，响应格式不固定
-func (c *Client) CreateRelation(ctx context.Context, req *model.CreateRelationRequest) (json.RawMessage, error) {
-	return c.doPost(ctx, "/relations", req.ToParams())
+// CreateRelation 创建实体关联关系
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/create_story_bug.html
+func (c *Client) CreateRelation(ctx context.Context, req *model.CreateRelationRequest) (*model.Relation, error) {
+	data, err := c.doPost(ctx, "/relations", req.ToParams())
+	if err != nil {
+		return nil, err
+	}
+	return parseOne[model.Relation](data, "Relation")
 }

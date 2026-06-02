@@ -86,6 +86,9 @@ type Bug struct {
 	Frequency        string `json:"frequency,omitempty"`
 	RegressionNumber string `json:"regression_number,omitempty"`
 
+	// 规模
+	Size string `json:"size,omitempty"`
+
 	// 工时相关
 	Effort          string `json:"effort,omitempty"`
 	EffortCompleted string `json:"effort_completed,omitempty"`

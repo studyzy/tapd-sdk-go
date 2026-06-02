@@ -17,7 +17,7 @@ func (r *GetCustomFieldsRequest) ToParams() map[string]string {
 }
 
 // WorkspaceIDRequest 仅需项目 ID 的通用请求参数
-// 适用于 GetStoryFieldsLabel、GetStoryFieldsInfo、GetWorkitemTypes、
+// 适用于 GetStoryFieldsLabel、GetStoryFieldsInfo、
 // ListCategories 等仅需 workspace_id 的接口
 type WorkspaceIDRequest struct {
 	WorkspaceID string // 必填：项目 ID
@@ -28,6 +28,44 @@ func (r *WorkspaceIDRequest) ToParams() map[string]string {
 	return map[string]string{
 		"workspace_id": r.WorkspaceID,
 	}
+}
+
+// GetWorkitemTypesRequest 获取需求类别列表的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_workitem_types.html
+type GetWorkitemTypesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：支持多 ID 查询
+	Name        string // 可选：支持模糊匹配
+	EntityType  string // 可选：类别别名
+	EnglishName string // 可选：英文名称
+	WorkflowID  string // 可选：工作流 ID
+	Status      string // 可选：状态
+	Created     string // 可选：创建时间
+	Creator     string // 可选：创建人
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
+	Order       string // 可选：排序
+	Fields      string // 可选：返回字段
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetWorkitemTypesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "entity_type", r.EntityType)
+	setOptional(params, "english_name", r.EnglishName)
+	setOptional(params, "workflow_id", r.WorkflowID)
+	setOptional(params, "status", r.Status)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "creator", r.Creator)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
+	setOptional(params, "order", r.Order)
+	setOptional(params, "fields", r.Fields)
+	return params
 }
 
 // WorkflowRequest 工作流相关接口的请求参数
@@ -160,6 +198,19 @@ func (r *CreateRelationRequest) ToParams() map[string]string {
 		"source_id":    r.SourceID,
 		"target_id":    r.TargetID,
 	}
+}
+
+// Relation 表示实体关联关系
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/create_story_bug.html
+type Relation struct {
+	ID          string `json:"id,omitempty"`
+	WorkspaceID string `json:"workspace_id,omitempty"`
+	SourceType  string `json:"source_type,omitempty"`
+	SourceID    string `json:"source_id,omitempty"`
+	TargetType  string `json:"target_type,omitempty"`
+	TargetID    string `json:"target_id,omitempty"`
+	Created     string `json:"created,omitempty"`
+	Modified    string `json:"modified,omitempty"`
 }
 
 // GetSubWorkspacesRequest 获取子项目信息的请求参数
@@ -415,8 +466,8 @@ type GetLifeTimesRequest struct {
 	EntityType  string // 必填：对象类型（story/bug/task）
 	EntityID    string // 必填：实体 ID
 	Created     string // 可选：创建时间
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Order       string // 可选：排序
 	Fields      string // 可选：返回字段
 }
@@ -429,8 +480,8 @@ func (r *GetLifeTimesRequest) ToParams() map[string]string {
 		"entity_id":    r.EntityID,
 	}
 	setOptional(params, "created", r.Created)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params

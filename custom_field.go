@@ -86,7 +86,7 @@ func (c *Client) GetBugFieldsInfo(ctx context.Context, req *model.GetBugFieldsIn
 
 // GetWorkitemTypes 获取需求类别列表，返回强类型 []model.WorkitemType
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_workitem_types.html
-func (c *Client) GetWorkitemTypes(ctx context.Context, req *model.WorkspaceIDRequest) ([]model.WorkitemType, error) {
+func (c *Client) GetWorkitemTypes(ctx context.Context, req *model.GetWorkitemTypesRequest) ([]model.WorkitemType, error) {
 	data, err := c.doGet(ctx, "/workitem_types", req.ToParams())
 	if err != nil {
 		return nil, err
