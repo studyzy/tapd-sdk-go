@@ -90,11 +90,10 @@ type GetImageRequest struct {
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *GetImageRequest) ToParams() map[string]string {
-	params := map[string]string{
+	return map[string]string{
 		"workspace_id": r.WorkspaceID,
+		"image_path":   r.ImagePath,
 	}
-	setOptional(params, "image_path", r.ImagePath)
-	return params
 }
 
 // GetAttachmentsRequest 获取附件列表的请求参数

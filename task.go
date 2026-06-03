@@ -90,6 +90,9 @@ func (c *Client) CountTasks(ctx context.Context, req *model.CountTasksRequest) (
 // BatchUpdateTask 批量更新任务，最多 50 条，返回服务端 msg
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/batch_update_task.html
 func (c *Client) BatchUpdateTask(ctx context.Context, req *model.BatchUpdateTaskRequest) (string, error) {
+	if len(req.Workitems) > 50 {
+		return "", fmt.Errorf("batch_update_task: workitems count %d exceeds limit 50", len(req.Workitems))
+	}
 	data, err := c.doPost(ctx, "/tasks/batch_update_task", req.ToParams())
 	if err != nil {
 		return "", err

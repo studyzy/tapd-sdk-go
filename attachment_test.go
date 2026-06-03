@@ -164,7 +164,7 @@ func TestGetAttachments_APIError(t *testing.T) {
 	}
 }
 
-func TestGetOneAttachment(t *testing.T) {
+func TestDownloadAttachment_WithQuery(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/attachments/down" {
 			t.Errorf("unexpected path: %s, want /attachments/down", r.URL.Path)
@@ -181,12 +181,12 @@ func TestGetOneAttachment(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	att, err := c.GetOneAttachment(context.Background(), &model.GetOneAttachmentRequest{
+	att, err := c.DownloadAttachment(context.Background(), &model.DownloadAttachmentRequest{
 		WorkspaceID: "11111111",
 		ID:          "1001",
 	})
 	if err != nil {
-		t.Fatalf("GetOneAttachment() unexpected error: %v", err)
+		t.Fatalf("DownloadAttachment() unexpected error: %v", err)
 	}
 	if att.ID != "1001" {
 		t.Errorf("attachment id = %q, want %q", att.ID, "1001")
@@ -199,7 +199,7 @@ func TestGetOneAttachment(t *testing.T) {
 	}
 }
 
-func TestGetOneAttachment_MissingAttachment(t *testing.T) {
+func TestDownloadAttachment_MissingAttachment(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":1,"data":{"other":"value"},"info":"success"}`))
@@ -207,7 +207,7 @@ func TestGetOneAttachment_MissingAttachment(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	_, err := c.GetOneAttachment(context.Background(), &model.GetOneAttachmentRequest{
+	_, err := c.DownloadAttachment(context.Background(), &model.DownloadAttachmentRequest{
 		WorkspaceID: "11111111",
 		ID:          "1001",
 	})

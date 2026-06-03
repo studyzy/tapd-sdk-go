@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -52,7 +53,11 @@ func (c *Client) CountBugChanges(ctx context.Context, req *model.CountBugChanges
 
 // GetTaskChanges 查询任务变更历史列表
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_task_changes.html
+// 注意：task_id 与 created 参数二选一必填
 func (c *Client) GetTaskChanges(ctx context.Context, req *model.GetTaskChangesRequest) ([]model.WorkitemChange, error) {
+	if req.TaskID == "" && req.Created == "" {
+		return nil, fmt.Errorf("get_task_changes: task_id and created cannot both be empty, at least one is required")
+	}
 	data, err := c.doGet(ctx, "/task_changes", req.ToParams())
 	if err != nil {
 		return nil, err

@@ -50,8 +50,7 @@ func TestAddCodeCommitInfo(t *testing.T) {
 		Repo:        "my-repo",
 		RepoID:      "repo-001",
 		CommitTime:  "2026-01-01 10:00:00",
-		HookURL:     "https://example.com/hook",
-		Ref:         "refs/heads/main",
+		CommitURL:   "https://example.com/commit/abc123",
 	})
 	if err != nil {
 		t.Fatalf("AddCodeCommitInfo() unexpected error: %v", err)

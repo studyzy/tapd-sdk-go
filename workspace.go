@@ -8,14 +8,12 @@ import (
 	"github.com/studyzy/tapd-sdk-go/model"
 )
 
-// ListWorkspaces 获取当前用户参与的项目列表，自动过滤 category 为 organization 的条目
+// ListWorkspaces 获取用户参与的项目列表
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/workspace/user_participant_projects.html
-func (c *Client) ListWorkspaces(ctx context.Context, companyID string) ([]model.Workspace, error) {
+func (c *Client) ListWorkspaces(ctx context.Context, companyID, nick string) ([]model.Workspace, error) {
 	params := map[string]string{
 		"company_id": companyID,
-	}
-	if nick := c.GetNick(); nick != "" {
-		params["nick"] = nick
+		"nick":       nick,
 	}
 	data, err := c.doGet(ctx, "/workspaces/user_participant_projects", params)
 	if err != nil {
@@ -23,18 +21,7 @@ func (c *Client) ListWorkspaces(ctx context.Context, companyID string) ([]model.
 	}
 
 	// TAPD 返回格式: [{"Workspace": {...}}, ...]
-	all, err := parseList[model.Workspace](data, "Workspace")
-	if err != nil {
-		return nil, err
-	}
-
-	workspaces := make([]model.Workspace, 0, len(all))
-	for _, ws := range all {
-		if ws.Category != "organization" {
-			workspaces = append(workspaces, ws)
-		}
-	}
-	return workspaces, nil
+	return parseList[model.Workspace](data, "Workspace")
 }
 
 // GetWorkspaceInfo 获取指定工作区的详细信息

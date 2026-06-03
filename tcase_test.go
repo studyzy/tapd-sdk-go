@@ -234,7 +234,7 @@ func TestCountTCaseCategories(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	req := &model.ListTCaseCategoriesRequest{WorkspaceID: "10158231"}
+	req := &model.CountTCaseCategoriesRequest{WorkspaceID: "10158231"}
 	count, err := c.CountTCaseCategories(context.Background(), req)
 	if err != nil {
 		t.Fatalf("CountTCaseCategories() unexpected error: %v", err)
@@ -652,7 +652,7 @@ func TestGetTestPlanProgress(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	req := &model.TestPlanIDRequest{
+	req := &model.GetTestPlanProgressRequest{
 		WorkspaceID: "10158231",
 		ID:          "1010158231077233617",
 	}

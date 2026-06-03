@@ -7,6 +7,8 @@
 // 用的结构体与解析助手，不主动调用任何 TAPD 接口。
 package model
 
+import "encoding/json"
+
 // Webhook 事件名常量。文档列出了需求/缺陷/任务/发布评审的创建、更新、状态
 // 变更、删除以及前后置对象绑定/解绑事件。
 const (
@@ -59,4 +61,37 @@ type WebhookEvent struct {
 	// 对于 form 编码请求，值为字符串原文；对于 json 请求，非字符串值会
 	// 以其 JSON 文本形式保存。
 	OldFields map[string]string `json:"-"`
+}
+
+// UnmarshalJSON 自定义解码，兼容 workspace_id/event_id/id 返回为 JSON 数字的情况
+func (e *WebhookEvent) UnmarshalJSON(data []byte) error {
+	type shadow WebhookEvent
+	aux := struct {
+		WorkspaceID json.RawMessage `json:"workspace_id,omitempty"`
+		EventID     json.RawMessage `json:"event_id,omitempty"`
+		ID          json.RawMessage `json:"id,omitempty"`
+		*shadow
+	}{shadow: (*shadow)(e)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	e.WorkspaceID = rawToString(aux.WorkspaceID)
+	e.EventID = rawToString(aux.EventID)
+	e.ID = rawToString(aux.ID)
+	return nil
+}
+
+// rawToString 将 json.RawMessage 转换为 string，兼容数字和字符串两种形态
+func rawToString(raw json.RawMessage) string {
+	if len(raw) == 0 || string(raw) == "null" {
+		return ""
+	}
+	if raw[0] == '"' {
+		var s string
+		if err := json.Unmarshal(raw, &s); err == nil {
+			return s
+		}
+	}
+	// 数字形态：直接用原始字面量
+	return string(raw)
 }

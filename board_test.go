@@ -18,7 +18,7 @@ func TestCreateBoardCard(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_cards", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"新看板项","b_board_id":"2001","b_column_id":"3001","description":"test","owner":"admin","priority":"medium","created":"2026-01-01 10:00:00"}},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"新看板项","b_board_id":"2001","b_column_id":"3001","description":"test","owner":"admin","priority":"medium","created":"2026-01-01 10:00:00"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
@@ -92,7 +92,7 @@ func TestUpdateBoardCard(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /board_cards", r.URL.Path)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":1,"data":{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"已更新","b_column_id":"3002"}},"info":"success"}`))
+		w.Write([]byte(`{"status":1,"data":[{"BoardCard":{"id":"1001","workspace_id":"11111111","name":"已更新","b_column_id":"3002"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 

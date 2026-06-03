@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -126,7 +125,7 @@ func (c *Client) TestxCreatePlan(ctx context.Context, req *model.TestxCreatePlan
 // TestxUpdatePlan 更新计划
 // https://open.tapd.cn/document/api-doc/API文档/api_reference/testx/plan/update_plan.html
 func (c *Client) TestxUpdatePlan(ctx context.Context, req *model.TestxUpdatePlanRequest) (*model.TestxPlan, error) {
-	path := fmt.Sprintf("/api/testx/plan/v1/namespaces/%s/plans/%s", req.Namespace, req.Uid)
+	path := fmt.Sprintf("/api/testx/plan/v1/namespaces/%s/plans", req.Namespace)
 	resp, err := c.doTestxPut(ctx, path, req)
 	if err != nil {
 		return nil, err
@@ -311,8 +310,8 @@ func (c *Client) TestxListPlanBugs(ctx context.Context, req *model.TestxListPlan
 		q.Set("PageInfo.Offset", strconv.FormatUint(uint64(req.PageInfo.Offset), 10))
 		q.Set("PageInfo.Limit", strconv.FormatUint(uint64(req.PageInfo.Limit), 10))
 	}
-	if len(req.RelatedTypes) > 0 {
-		q.Set("RelatedTypes", strings.Join(req.RelatedTypes, ","))
+	for _, rt := range req.RelatedTypes {
+		q.Add("RelatedTypes", rt)
 	}
 	if req.Status != "" {
 		q.Set("Status", req.Status)

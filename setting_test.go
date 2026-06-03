@@ -366,7 +366,7 @@ func TestCreateFeature(t *testing.T) {
 			t.Errorf("unexpected path: %s, want /features", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Fprint(w, `{"status":1,"data":{"Feature":{"id":"3001","workspace_id":"11111111","name":"特性1","description":"第一个特性"}},"info":"success"}`)
+		fmt.Fprint(w, `{"status":1,"data":[{"Feature":{"id":"3001","workspace_id":"11111111","name":"特性1","description":"第一个特性"}}],"info":"success"}`)
 	}))
 	defer srv.Close()
 

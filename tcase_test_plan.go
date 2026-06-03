@@ -79,7 +79,7 @@ func (c *Client) GetTestPlanFieldsInfo(ctx context.Context, req *model.Workspace
 
 // GetTestPlanProgress 获取测试计划执行进度
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_progress.html
-func (c *Client) GetTestPlanProgress(ctx context.Context, req *model.TestPlanIDRequest) (*model.TestPlanProgress, error) {
+func (c *Client) GetTestPlanProgress(ctx context.Context, req *model.GetTestPlanProgressRequest) (*model.TestPlanProgress, error) {
 	data, err := c.doGet(ctx, "/test_plans/progress", req.ToParams())
 	if err != nil {
 		return nil, err

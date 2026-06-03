@@ -282,11 +282,8 @@ func (c *Client) GetSecretStories(ctx context.Context, req *model.GetSecretStori
 
 // CountSecretStories 获取保密需求数量
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_secret_stories_count.html
-func (c *Client) CountSecretStories(ctx context.Context, workspaceID string) (int, error) {
-	params := map[string]string{
-		"workspace_id": workspaceID,
-	}
-	data, err := c.doGet(ctx, "/secret_stories/count", params)
+func (c *Client) CountSecretStories(ctx context.Context, req *model.CountSecretStoriesRequest) (int, error) {
+	data, err := c.doGet(ctx, "/secret_stories/count", req.ToParams())
 	if err != nil {
 		return 0, err
 	}
@@ -295,19 +292,16 @@ func (c *Client) CountSecretStories(ctx context.Context, workspaceID string) (in
 
 // BatchUpdateSecretInfo 批量修改需求的保密信息
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/batch_update_secret_info.html
-func (c *Client) BatchUpdateSecretInfo(ctx context.Context, req *model.BatchUpdateSecretInfoRequest) (string, error) {
+func (c *Client) BatchUpdateSecretInfo(ctx context.Context, req *model.BatchUpdateSecretInfoRequest) (*model.BatchUpdateSecretInfoResponse, error) {
 	data, err := c.doPost(ctx, "/stories/batch_update_secret_info", req.ToParams())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	var r struct {
-		Code string `json:"code"`
-		Msg  string `json:"msg"`
-	}
+	var r model.BatchUpdateSecretInfoResponse
 	if err := json.Unmarshal(data, &r); err != nil {
-		return "", fmt.Errorf("failed to parse batch_update_secret_info response: %w", err)
+		return nil, fmt.Errorf("failed to parse batch_update_secret_info response: %w", err)
 	}
-	return r.Msg, nil
+	return &r, nil
 }
 
 // StoryFilterToQueryToken 将需求过滤条件转换成 QueryToken

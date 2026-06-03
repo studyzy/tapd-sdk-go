@@ -1,5 +1,7 @@
 package model
 
+import "encoding/json"
+
 // CodeCommitRelated 表示 commit 关联的业务对象
 type CodeCommitRelated struct {
 	Type        string `json:"type,omitempty"`
@@ -7,6 +9,30 @@ type CodeCommitRelated struct {
 	CommitID    string `json:"commit_id,omitempty"`
 	WorkspaceID string `json:"workspace_id,omitempty"`
 	Code        string `json:"code,omitempty"`
+}
+
+// UnmarshalJSON 自定义解码，兼容 workspace_id 返回为 JSON 数字的情况
+func (r *CodeCommitRelated) UnmarshalJSON(data []byte) error {
+	type shadow CodeCommitRelated
+	aux := struct {
+		WorkspaceID json.RawMessage `json:"workspace_id,omitempty"`
+		*shadow
+	}{shadow: (*shadow)(r)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if len(aux.WorkspaceID) == 0 || string(aux.WorkspaceID) == "null" {
+		return nil
+	}
+	if aux.WorkspaceID[0] == '"' {
+		return json.Unmarshal(aux.WorkspaceID, &r.WorkspaceID)
+	}
+	var n json.Number
+	if err := json.Unmarshal(aux.WorkspaceID, &n); err != nil {
+		return err
+	}
+	r.WorkspaceID = n.String()
+	return nil
 }
 
 // CodeCommitInfo 表示 GIT 提交信息
@@ -33,6 +59,30 @@ type CodeCommitInfo struct {
 	BranchID        string              `json:"branch_id,omitempty"`
 	FileSort        map[string]int      `json:"file_sort,omitempty"`
 	Related         []CodeCommitRelated `json:"related,omitempty"`
+}
+
+// UnmarshalJSON 自定义解码，兼容 workspace_id 返回为 JSON 数字的情况
+func (c *CodeCommitInfo) UnmarshalJSON(data []byte) error {
+	type shadow CodeCommitInfo
+	aux := struct {
+		WorkspaceID json.RawMessage `json:"workspace_id,omitempty"`
+		*shadow
+	}{shadow: (*shadow)(c)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if len(aux.WorkspaceID) == 0 || string(aux.WorkspaceID) == "null" {
+		return nil
+	}
+	if aux.WorkspaceID[0] == '"' {
+		return json.Unmarshal(aux.WorkspaceID, &c.WorkspaceID)
+	}
+	var n json.Number
+	if err := json.Unmarshal(aux.WorkspaceID, &n); err != nil {
+		return err
+	}
+	c.WorkspaceID = n.String()
+	return nil
 }
 
 // GetCodeCommitObjectsRequest 获取指定 commit 关联的 TAPD 业务对象的请求参数

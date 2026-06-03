@@ -168,26 +168,19 @@ type Document struct {
 }
 
 // UpdateWorkspaceInfoRequest 更新项目信息的请求参数
+// 只能通过 field+value 模式更新单个字段，field 可选值：description/begin_date/end_date/begin_end
 type UpdateWorkspaceInfoRequest struct {
 	WorkspaceID string // 必填：项目 ID
-	PrettyName  string // 可选：项目名称
-	Description string // 可选：项目描述
-	BeginDate   string // 可选：开始日期
-	EndDate     string // 可选：结束日期
-	Field       string // 可选：通用字段名（field+value 模式）
-	Value       string // 可选：通用字段值（field+value 模式）
+	Field       string // 必填：字段名（description/begin_date/end_date/begin_end）
+	Value       string // 必填：字段值
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *UpdateWorkspaceInfoRequest) ToParams() map[string]string {
 	params := map[string]string{
 		"workspace_id": r.WorkspaceID,
+		"field":        r.Field,
+		"value":        r.Value,
 	}
-	setOptional(params, "pretty_name", r.PrettyName)
-	setOptional(params, "description", r.Description)
-	setOptional(params, "begin_date", r.BeginDate)
-	setOptional(params, "end_date", r.EndDate)
-	setOptional(params, "field", r.Field)
-	setOptional(params, "value", r.Value)
 	return params
 }

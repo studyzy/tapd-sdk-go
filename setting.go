@@ -129,13 +129,21 @@ func (c *Client) CountBaselines(ctx context.Context, req *model.CountBaselinesRe
 }
 
 // CreateFeature 创建特性
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/add_feature.html
 func (c *Client) CreateFeature(ctx context.Context, req *model.CreateFeatureRequest) (*model.Feature, error) {
 	data, err := c.doPost(ctx, "/features", req.ToParams())
 	if err != nil {
 		return nil, err
 	}
 
-	return parseOne[model.Feature](data, "Feature")
+	list, err := parseList[model.Feature](data, "Feature")
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, fmt.Errorf("empty response from create feature")
+	}
+	return &list[0], nil
 }
 
 // UpdateFeature 更新特性

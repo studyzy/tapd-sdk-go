@@ -149,6 +149,10 @@ func (c *Client) BugIDsToQueryToken(ctx context.Context, req *model.BugIDsToQuer
 // UpdateBugSystemSelectFieldOptions 更新缺陷系统下拉字段选项
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/update_system_select_field_options.html
 func (c *Client) UpdateBugSystemSelectFieldOptions(ctx context.Context, req *model.UpdateBugSystemSelectFieldOptionsRequest) error {
-	_, err := c.doPost(ctx, "/bugs/update_system_select_field_options", req.ToParams())
+	body, err := req.ToJSON()
+	if err != nil {
+		return err
+	}
+	_, err = c.doPostJSONBody(ctx, "/bugs/update_system_select_field_options", body)
 	return err
 }

@@ -72,8 +72,8 @@ func (r *GetWorkitemTypesRequest) ToParams() map[string]string {
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/workflow/
 type WorkflowRequest struct {
 	WorkspaceID    string // 必填：项目 ID
-	System         string // 可选：系统名（story/bug），用于 status_map/first_step/last_steps 等接口
-	WorkitemTypeID string // 可选：需求类别 ID
+	System         string // 必填（大多数接口）：系统名（story/bug），first_step/last_steps/all_last_steps/all_transitions/status_map/step_map 接口必填
+	WorkitemTypeID string // 必填（step_map 接口）：需求类别 ID
 	ID             string // 可选：工作流 ID
 	Name           string // 可选：工作流名称
 	Description    string // 可选：工作流描述
@@ -428,38 +428,6 @@ type ColorOption struct {
 	Label string `json:"label,omitempty"` // 显示名称
 }
 
-// WorkitemType 表示 TAPD 需求类别
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_workitem_types.html
-type WorkitemType struct {
-	ID             string `json:"id,omitempty"`
-	WorkspaceID    string `json:"workspace_id,omitempty"`
-	AppID          string `json:"app_id,omitempty"`
-	EntityType     string `json:"entity_type,omitempty"`      // 类别别名
-	Name           string `json:"name,omitempty"`             // 类别名称
-	EnglishName    string `json:"english_name,omitempty"`     // 英文名称
-	Status         string `json:"status,omitempty"`           // 状态（1=未完成，2=未启用，3=已启用）
-	Color          string `json:"color,omitempty"`            // 颜色
-	WorkflowID     string `json:"workflow_id,omitempty"`      // 关联工作流 ID
-	ChildrenIDs    string `json:"children_ids,omitempty"`     // 允许的子需求类别
-	ParentIDs      string `json:"parent_ids,omitempty"`       // 允许的父需求类别
-	Icon           string `json:"icon,omitempty"`             // 图标路径
-	IconSmall      string `json:"icon_small,omitempty"`       // 小图标路径
-	Creator        string `json:"creator,omitempty"`          // 创建人
-	Created        string `json:"created,omitempty"`          // 创建时间
-	ModifiedBy     string `json:"modified_by,omitempty"`      // 最后修改人
-	Modified       string `json:"modified,omitempty"`         // 最后修改时间
-	IconViper      string `json:"icon_viper,omitempty"`       // 图标完整 URL
-	IconSmallViper string `json:"icon_small_viper,omitempty"` // 小图标完整 URL
-}
-
-// StoryBugRelation 表示需求与缺陷的关联关系
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/story/get_story_related_bugs.html
-type StoryBugRelation struct {
-	WorkspaceID int    `json:"workspace_id,omitempty"` // 项目 ID
-	StoryID     string `json:"story_id,omitempty"`     // 需求 ID
-	BugID       string `json:"bug_id,omitempty"`       // 缺陷 ID
-}
-
 // GetLifeTimesRequest 获取状态流转时间的请求参数
 type GetLifeTimesRequest struct {
 	WorkspaceID string // 必填：项目 ID
@@ -498,11 +466,9 @@ type AddCodeCommitInfoRequest struct {
 	Repo        string   // 必填：仓库名
 	RepoID      string   // 必填：仓库 ID
 	CommitTime  string   // 必填：提交时间
-	HookURL     string   // 可选：Hook URL（保留兼容）
-	Ref         string   // 可选：分支引用（保留兼容）
-	GitEnv      string   // 可选：信息来源
+	GitEnv      string   // 可选：信息来源（github/gitlab/svn/p4，默认 gitlab）
 	RepoURL     string   // 可选：仓库链接
-	CommitURL   string   // 可选：提交链接
+	CommitURL   string   // 可选：提交链接，用户界面上 commit 提交跳转
 }
 
 // ToJSON 将请求结构体序列化为 JSON 字节（该 API 使用 JSON Body 提交）
@@ -512,18 +478,10 @@ func (r *AddCodeCommitInfoRequest) ToJSON() ([]byte, error) {
 		"message":      r.Message,
 		"author":       r.Author,
 		"commit_id":    r.CommitID,
+		"files":        r.Files,
 		"repo":         r.Repo,
 		"repo_id":      r.RepoID,
 		"commit_time":  r.CommitTime,
-	}
-	if len(r.Files) > 0 {
-		m["files"] = r.Files
-	}
-	if r.HookURL != "" {
-		m["hook_url"] = r.HookURL
-	}
-	if r.Ref != "" {
-		m["ref"] = r.Ref
 	}
 	if r.GitEnv != "" {
 		m["git_env"] = r.GitEnv
@@ -569,17 +527,14 @@ func (r *GetCodeCommitInfosRequest) ToParams() map[string]string {
 type GetOneAttachmentRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	ID          string // 必填：附件 ID
-	FileName    string // 可选：文件名
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
 func (r *GetOneAttachmentRequest) ToParams() map[string]string {
-	params := map[string]string{
+	return map[string]string{
 		"workspace_id": r.WorkspaceID,
 		"id":           r.ID,
 	}
-	setOptional(params, "file_name", r.FileName)
-	return params
 }
 
 // DownloadDocumentRequest 获取单个文档下载链接的请求参数
@@ -596,27 +551,19 @@ func (r *DownloadDocumentRequest) ToParams() map[string]string {
 	}
 }
 
-// Report 表示 TAPD 项目报告
-type Report struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	Name        string `json:"name,omitempty"`
-	Created     string `json:"created,omitempty"`
-}
-
 // LifeTime 表示状态流转时间
 type LifeTime struct {
-	ID          string `json:"id,omitempty"`
-	WorkspaceID string `json:"workspace_id,omitempty"`
-	EntityType  string `json:"entity_type,omitempty"`
-	EntityID    string `json:"entity_id,omitempty"`
-	Status      string `json:"status,omitempty"`
-	BeginDate   string `json:"begin_date,omitempty"`
-	EndDate     string `json:"end_date,omitempty"`
-	TimeCost    string `json:"time_cost,omitempty"`
-	Owner       string `json:"owner,omitempty"`
-	IsRepeated  string `json:"is_repeated,omitempty"`
-	Created     string `json:"created,omitempty"`
-	Operator    string `json:"operator,omitempty"`
-	ChangeFrom  string `json:"change_from,omitempty"`
+	ID          string  `json:"id,omitempty"`
+	WorkspaceID string  `json:"workspace_id,omitempty"`
+	EntityType  string  `json:"entity_type,omitempty"`
+	EntityID    string  `json:"entity_id,omitempty"`
+	Status      string  `json:"status,omitempty"`
+	BeginDate   string  `json:"begin_date,omitempty"`
+	EndDate     string  `json:"end_date,omitempty"`
+	TimeCost    string  `json:"time_cost,omitempty"`
+	Owner       string  `json:"owner,omitempty"`
+	IsRepeated  string  `json:"is_repeated,omitempty"`
+	Created     string  `json:"created,omitempty"`
+	Operator    *string `json:"operator,omitempty"`
+	ChangeFrom  string  `json:"change_from,omitempty"`
 }

@@ -191,10 +191,9 @@ type GetVersionsRequest struct {
 	Creator     string // 可选：提交人
 	Name        string // 可选：版本标题（支持模糊匹配）
 	Created     string // 可选：创建时间（支持时间查询）
-	Status      string // 可选：状态（Closed/Unclosed）
+	Status      string // 可选：状态，enum(0,1)：0=未关闭, 1=已关闭
 	Limit       int    // 可选：返回数量限制
 	Page        int    // 可选：页码
-	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段，多个以英文逗号隔开
 }
 
@@ -211,7 +210,6 @@ func (r *GetVersionsRequest) ToParams() map[string]string {
 	setOptional(params, "status", r.Status)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
-	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
 }
@@ -544,6 +542,7 @@ func (r *UpdateSelectFieldOptionsRequest) ToParams() map[string]string {
 
 // UpdateCascadeFieldOptionsRequest 更新级联自定义字段候选值的请求参数
 // API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/setting/update_cascade_field_options.html
+// 注意：文档参数表定义字段名为 "options"，但 curl 示例中使用 "option"，此处以参数表为准。
 type UpdateCascadeFieldOptionsRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	ID          string // 必填：自定义字段配置 ID（19 位长度）

@@ -698,7 +698,7 @@ func TestCountSecretStories(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	count, err := c.CountSecretStories(context.Background(), "10104801")
+	count, err := c.CountSecretStories(context.Background(), &model.CountSecretStoriesRequest{WorkspaceID: "10104801"})
 	if err != nil {
 		t.Fatalf("CountSecretStories() unexpected error: %v", err)
 	}
@@ -721,7 +721,7 @@ func TestBatchUpdateSecretInfo(t *testing.T) {
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	msg, err := c.BatchUpdateSecretInfo(context.Background(), &model.BatchUpdateSecretInfoRequest{
+	resp, err := c.BatchUpdateSecretInfo(context.Background(), &model.BatchUpdateSecretInfoRequest{
 		WorkspaceID:          "10104801",
 		StoryIDList:          "100|200",
 		SecretScope:          "secret",
@@ -732,8 +732,8 @@ func TestBatchUpdateSecretInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BatchUpdateSecretInfo() unexpected error: %v", err)
 	}
-	if msg != "success" {
-		t.Errorf("msg = %q, want %q", msg, "success")
+	if resp.Msg != "success" {
+		t.Errorf("msg = %q, want %q", resp.Msg, "success")
 	}
 }
 

@@ -212,16 +212,38 @@ func (r *CreateTCaseRequest) ToParams() map[string]string {
 
 // BatchCreateTCaseItem 批量创建测试用例时的单条数据
 type BatchCreateTCaseItem struct {
-	WorkspaceID  string `json:"workspace_id"`           // 必填：项目 ID
-	Name         string `json:"name"`                   // 必填：用例名称
-	Steps        string `json:"steps,omitempty"`        // 可选：用例步骤
-	CategoryID   string `json:"category_id,omitempty"`  // 可选：用例目录 ID
-	Status       string `json:"status,omitempty"`       // 可选：用例状态
-	Precondition string `json:"precondition,omitempty"` // 可选：前置条件
-	Expectation  string `json:"expectation,omitempty"`  // 可选：预期结果
-	Type         string `json:"type,omitempty"`         // 可选：用例类型
-	Priority     string `json:"priority,omitempty"`     // 可选：用例等级
-	Creator      string `json:"creator,omitempty"`      // 可选：创建人
+	WorkspaceID  string            `json:"workspace_id"`           // 必填：项目 ID
+	Name         string            `json:"name"`                   // 必填：用例名称
+	Steps        string            `json:"steps,omitempty"`        // 可选：用例步骤
+	CategoryID   string            `json:"category_id,omitempty"`  // 可选：用例目录 ID
+	Status       string            `json:"status,omitempty"`       // 可选：用例状态
+	Precondition string            `json:"precondition,omitempty"` // 可选：前置条件
+	Expectation  string            `json:"expectation,omitempty"`  // 可选：预期结果
+	Type         string            `json:"type,omitempty"`         // 可选：用例类型
+	Priority     string            `json:"priority,omitempty"`     // 可选：用例等级
+	Creator      string            `json:"creator,omitempty"`      // 可选：创建人
+	CustomFields map[string]string `json:"-"`                      // 可选：自定义字段（custom_field_* 等），序列化时展开为顶层键
+}
+
+// MarshalJSON 自定义序列化，将 CustomFields 展开为顶层键
+func (item BatchCreateTCaseItem) MarshalJSON() ([]byte, error) {
+	type shadow BatchCreateTCaseItem
+	data, err := json.Marshal(shadow(item))
+	if err != nil {
+		return nil, err
+	}
+	if len(item.CustomFields) == 0 {
+		return data, nil
+	}
+	// 合并自定义字段到 JSON 对象
+	var m map[string]interface{}
+	if err := json.Unmarshal(data, &m); err != nil {
+		return nil, err
+	}
+	for k, v := range item.CustomFields {
+		m[k] = v
+	}
+	return json.Marshal(m)
 }
 
 // BatchCreateTCasesRequest 批量创建测试用例的请求参数
@@ -248,7 +270,6 @@ type UpdateTCaseRequest struct {
 	Expectation  string            // 可选：预期结果
 	Type         string            // 可选：用例类型
 	Priority     string            // 可选：用例等级
-	Creator      string            // 可选：创建人
 	CustomFields map[string]string // 可选：自定义字段
 }
 
@@ -266,7 +287,6 @@ func (r *UpdateTCaseRequest) ToParams() map[string]string {
 	setOptional(params, "expectation", r.Expectation)
 	setOptional(params, "type", r.Type)
 	setOptional(params, "priority", r.Priority)
-	setOptional(params, "creator", r.Creator)
 	MergeCustomFields(params, r.CustomFields)
 	return params
 }
@@ -323,6 +343,38 @@ func (r *ListTCaseCategoriesRequest) ToParams() map[string]string {
 	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
+	return params
+}
+
+// CountTCaseCategoriesRequest 查询测试用例目录数量的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_tcase_categories_count.html
+type CountTCaseCategoriesRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 可选：目录 ID，支持多 ID
+	Name        string // 可选：目录名称，支持模糊匹配
+	Description string // 可选：目录描述
+	ParentID    string // 可选：父目录 ID
+	Modified    string // 可选：最后修改时间，支持时间查询
+	Created     string // 可选：创建时间，支持时间查询
+	Creator     string // 可选：创建人
+	Modifier    string // 可选：最后修改人
+	Sorting     int    // 可选：排序序号
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *CountTCaseCategoriesRequest) ToParams() map[string]string {
+	params := map[string]string{
+		"workspace_id": r.WorkspaceID,
+	}
+	setOptional(params, "id", r.ID)
+	setOptional(params, "name", r.Name)
+	setOptional(params, "description", r.Description)
+	setOptional(params, "parent_id", r.ParentID)
+	setOptional(params, "modified", r.Modified)
+	setOptional(params, "created", r.Created)
+	setOptional(params, "creator", r.Creator)
+	setOptional(params, "modifier", r.Modifier)
+	setOptionalInt(params, "sorting", r.Sorting)
 	return params
 }
 

@@ -71,6 +71,9 @@ func (c *Client) TestxListCaseRepos(ctx context.Context, req *model.TestxListCas
 	if req.Search != "" {
 		q.Set("Search", req.Search)
 	}
+	for _, uid := range req.Uids {
+		q.Add("Uids", uid)
+	}
 	if req.Reverse {
 		q.Set("Reverse", "true")
 	}
@@ -269,8 +272,17 @@ func (c *Client) TestxListCaseReviews(ctx context.Context, req *model.TestxListC
 	if req.SourceUid != "" {
 		q.Set("SourceUid", req.SourceUid)
 	}
+	for _, uid := range req.MainUids {
+		q.Add("MainUids", uid)
+	}
 	if req.IsLastReview {
 		q.Set("IsLastReview", "true")
+	}
+	for _, uid := range req.CaseUids {
+		q.Add("CaseUids", uid)
+	}
+	for _, uid := range req.SourceUids {
+		q.Add("SourceUids", uid)
 	}
 	resp, err := c.doTestxGet(ctx, path, q)
 	if err != nil {
@@ -308,6 +320,9 @@ func (c *Client) TestxListCaseBugs(ctx context.Context, req *model.TestxListCase
 	}
 	if req.Name != "" {
 		q.Set("Name", req.Name)
+	}
+	for _, st := range req.SourceTypes {
+		q.Add("SourceTypes", st)
 	}
 	resp, err := c.doTestxGet(ctx, path, q)
 	if err != nil {

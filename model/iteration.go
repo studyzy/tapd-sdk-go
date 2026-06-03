@@ -385,8 +385,8 @@ type CountPlanAppsRequest struct {
 	PlanIDField string // 可选：计划 ID
 	Modifier    string // 可选：最后修改人
 	Modified    string // 可选：最后修改时间
-	Limit       string // 可选：返回数量限制
-	Page        string // 可选：页码
+	Limit       int    // 可选：返回数量限制
+	Page        int    // 可选：页码
 	Order       string // 可选：排序规则
 	Fields      string // 可选：返回字段列表
 }
@@ -403,8 +403,8 @@ func (r *CountPlanAppsRequest) ToParams() map[string]string {
 	setOptional(params, "plan_id_field", r.PlanIDField)
 	setOptional(params, "modifier", r.Modifier)
 	setOptional(params, "modified", r.Modified)
-	setOptional(params, "limit", r.Limit)
-	setOptional(params, "page", r.Page)
+	setOptionalInt(params, "limit", r.Limit)
+	setOptionalInt(params, "page", r.Page)
 	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params

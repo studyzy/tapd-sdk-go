@@ -273,7 +273,7 @@ func TestTestxListFolderChildren(t *testing.T) {
 
 func TestTestxUpdatePlan(t *testing.T) {
 	srv := newMockServer(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/api/testx/plan/v1/namespaces/ns1/plans/plan1" {
+		if r.URL.Path != "/api/testx/plan/v1/namespaces/ns1/plans" {
 			t.Errorf("unexpected path: %s", r.URL.Path)
 		}
 		if r.Method != http.MethodPut {

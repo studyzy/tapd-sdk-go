@@ -239,7 +239,6 @@ type GetLaunchFormsRequest struct {
 	ChangeNotifier string // 可选：变更通知人
 	Limit          int    // 可选：返回数量限制
 	Page           int    // 可选：页码
-	Order          string // 可选：排序规则
 	Fields         string // 可选：返回字段
 }
 
@@ -266,7 +265,6 @@ func (r *GetLaunchFormsRequest) ToParams() map[string]string {
 	setOptional(params, "change_notifier", r.ChangeNotifier)
 	setOptionalInt(params, "limit", r.Limit)
 	setOptionalInt(params, "page", r.Page)
-	setOptional(params, "order", r.Order)
 	setOptional(params, "fields", r.Fields)
 	return params
 }
@@ -440,17 +438,18 @@ func (r *GetLaunchFormsActivityLogsRequest) ToParams() map[string]string {
 
 // LaunchFormActivityLog 表示发布评审活动日志
 type LaunchFormActivityLog struct {
-	ID             string `json:"id,omitempty"`
-	WorkspaceID    string `json:"workspace_id,omitempty"`
-	FormID         string `json:"form_id,omitempty"`
-	Type           string `json:"type,omitempty"`             // 活动类型
-	ActivityFormID string `json:"activity_form_id,omitempty"` // 上线活动单ID
-	Field          string `json:"field,omitempty"`            // 变更字段
-	OldValue       string `json:"old_value,omitempty"`        // 变更前值
-	NewValue       string `json:"new_value,omitempty"`        // 变更后值
-	Operation      string `json:"operation,omitempty"`        // 操作状态
-	CreatedBy      string `json:"created_by,omitempty"`       // 创建人
-	Created        string `json:"created,omitempty"`          // 创建时间
+	ID             string          `json:"id,omitempty"`
+	WorkspaceID    string          `json:"workspace_id,omitempty"`
+	FormID         string          `json:"form_id,omitempty"`
+	Type           string          `json:"type,omitempty"`             // 活动类型
+	ActivityFormID string          `json:"activity_form_id,omitempty"` // 上线活动单ID
+	FactorResult   json.RawMessage `json:"factor_result,omitempty"`    // 评审要素
+	Field          string          `json:"field,omitempty"`            // 变更字段
+	OldValue       json.RawMessage `json:"old_value,omitempty"`        // 变更前值（可能为字符串或对象）
+	NewValue       json.RawMessage `json:"new_value,omitempty"`        // 变更后值（可能为字符串或对象）
+	Operation      string          `json:"operation,omitempty"`        // 操作状态
+	CreatedBy      string          `json:"created_by,omitempty"`       // 创建人
+	Created        string          `json:"created,omitempty"`          // 创建时间
 }
 
 // CreateLaunchAccessoryRequest 创建发布评审附件的请求参数

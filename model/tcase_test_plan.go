@@ -232,6 +232,21 @@ func (r *TestPlanIDRequest) ToParams() map[string]string {
 	return params
 }
 
+// GetTestPlanProgressRequest 获取测试计划执行进度的请求参数
+// 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_test_plan_progress.html
+type GetTestPlanProgressRequest struct {
+	WorkspaceID string // 必填：项目 ID
+	ID          string // 必填：测试计划 ID
+}
+
+// ToParams 将请求结构体转换为 TAPD API 参数 map
+func (r *GetTestPlanProgressRequest) ToParams() map[string]string {
+	return map[string]string{
+		"workspace_id": r.WorkspaceID,
+		"id":           r.ID,
+	}
+}
+
 // TestPlanRelativeStoriesRequest 获取测试计划关联需求的请求参数
 // 参考：https://open.tapd.cn/document/api-doc/API文档/api_reference/tcase/get_test_plan_relative_stories.html
 type TestPlanRelativeStoriesRequest struct {

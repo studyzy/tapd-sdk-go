@@ -101,7 +101,7 @@ func (c *Client) GetLaunchFormsTemplates(ctx context.Context, req *model.GetLaun
 }
 
 // GetLaunchFormsActivityLogs 获取发布评审活动日志
-// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_launch_forms_activity_logs.html
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/release/get_lauch_forms_activity_logs.html
 func (c *Client) GetLaunchFormsActivityLogs(ctx context.Context, req *model.GetLaunchFormsActivityLogsRequest) ([]model.LaunchFormActivityLog, error) {
 	data, err := c.doGet(ctx, "/launch_forms/get_activity_logs", req.ToParams())
 	if err != nil {

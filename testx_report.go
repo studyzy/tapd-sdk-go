@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/studyzy/tapd-sdk-go/model"
 )
@@ -29,11 +28,11 @@ func (c *Client) TestxListReports(ctx context.Context, req *model.TestxListRepor
 	if req.EndAt != "" {
 		q.Set("EndAt", req.EndAt)
 	}
-	if len(req.Creators) > 0 {
-		q.Set("Creators", strings.Join(req.Creators, ","))
+	for _, c := range req.Creators {
+		q.Add("Creators", c)
 	}
-	if len(req.PlanUids) > 0 {
-		q.Set("PlanUids", strings.Join(req.PlanUids, ","))
+	for _, uid := range req.PlanUids {
+		q.Add("PlanUids", uid)
 	}
 	if req.WithAssociated {
 		q.Set("WithAssociated", "true")
@@ -44,8 +43,8 @@ func (c *Client) TestxListReports(ctx context.Context, req *model.TestxListRepor
 	if req.Source != "" {
 		q.Set("Source", req.Source)
 	}
-	if len(req.Sources) > 0 {
-		q.Set("Sources", strings.Join(req.Sources, ","))
+	for _, s := range req.Sources {
+		q.Add("Sources", s)
 	}
 	resp, err := c.doTestxGet(ctx, path, q)
 	if err != nil {

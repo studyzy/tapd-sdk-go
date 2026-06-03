@@ -448,9 +448,8 @@ func TestUpdateBugSystemSelectFieldOptions(t *testing.T) {
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	err := c.UpdateBugSystemSelectFieldOptions(context.Background(), &model.UpdateBugSystemSelectFieldOptionsRequest{
 		WorkspaceID: "10104801",
-		Field:       "severity",
-		Options:     `["critical","major","minor"]`,
-		Value:       "critical",
+		Field:       "bugtype",
+		Options:     []model.BugFieldOption{{Value: "critical"}, {Value: "major"}, {Value: "minor"}},
 	})
 	if err != nil {
 		t.Fatalf("UpdateBugSystemSelectFieldOptions() unexpected error: %v", err)

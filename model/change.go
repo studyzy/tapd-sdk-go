@@ -142,7 +142,6 @@ type CountStoryChangesRequest struct {
 	Comment       string // 可选：评论
 	Changes       string // 可选：变更内容
 	EntityType    string // 可选：实体类型
-	ChangeType    string // 可选：变更类型
 }
 
 // ToParams 将请求结构体转换为 TAPD API 参数 map
@@ -158,7 +157,6 @@ func (r *CountStoryChangesRequest) ToParams() map[string]string {
 	setOptional(params, "comment", r.Comment)
 	setOptional(params, "changes", r.Changes)
 	setOptional(params, "entity_type", r.EntityType)
-	setOptional(params, "change_type", r.ChangeType)
 	return params
 }
 

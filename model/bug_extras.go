@@ -149,7 +149,6 @@ type BatchUpdateBugItem struct {
 	BugType        string            `json:"bugtype,omitempty"`          // 可选：缺陷类型
 	CurrentOwner   string            `json:"current_owner,omitempty"`    // 可选：处理人
 	CurrentUser    string            `json:"current_user,omitempty"`     // 可选：变更人
-	IterationID    string            `json:"iteration_id,omitempty"`     // 可选：迭代 ID
 	Module         string            `json:"module,omitempty"`           // 可选：模块
 	Label          string            `json:"label,omitempty"`            // 可选：标签
 	Begin          string            `json:"begin,omitempty"`            // 可选：预计开始
@@ -190,7 +189,7 @@ type BatchUpdateBugItem struct {
 	Resolution     string            `json:"resolution,omitempty"`       // 可选：解决方法
 	Estimate       string            `json:"estimate,omitempty"`         // 可选：预计解决时间
 	Effort         string            `json:"effort,omitempty"`           // 可选：工时
-	KeepOwner      string            `json:"keep_owner,omitempty"`       // 可选：是否保持处理人
+	KeepOwner      int               `json:"keep_owner,omitempty"`       // 可选：是否保持处理人（1=是）
 	CustomFields   map[string]string `json:"-"`                          // 可选：自定义字段
 }
 
@@ -316,20 +315,25 @@ func (r *BugIDsToQueryTokenRequest) ToParams() map[string]string {
 	}
 }
 
-// UpdateBugSystemSelectFieldOptionsRequest 更新缺陷系统下拉字段选项的请求参数
-type UpdateBugSystemSelectFieldOptionsRequest struct {
-	WorkspaceID string // 必填：项目 ID
-	Field       string // 必填：字段名
-	Options     string // 必填：选项列表（JSON 格式）
-	Value       string // 必填：选项对应 value
+// BugFieldOption 缺陷系统字段选项
+type BugFieldOption struct {
+	Value string `json:"value"`
 }
 
-// ToParams 将请求结构体转换为 TAPD API 参数 map
-func (r *UpdateBugSystemSelectFieldOptionsRequest) ToParams() map[string]string {
-	return map[string]string{
+// UpdateBugSystemSelectFieldOptionsRequest 更新缺陷系统下拉字段选项的请求参数
+// API 文档：https://open.tapd.cn/document/api-doc/API文档/api_reference/bug/update_system_select_field_options.html
+type UpdateBugSystemSelectFieldOptionsRequest struct {
+	WorkspaceID string           // 必填：项目 ID
+	Field       string           // 必填：字段名（目前支持 bugtype）
+	Options     []BugFieldOption // 必填：选项列表
+}
+
+// ToJSON 将请求结构体序列化为 JSON 字节（该 API 使用 JSON Body 提交）
+func (r *UpdateBugSystemSelectFieldOptionsRequest) ToJSON() ([]byte, error) {
+	m := map[string]interface{}{
 		"workspace_id": r.WorkspaceID,
 		"field":        r.Field,
 		"options":      r.Options,
-		"value":        r.Value,
 	}
+	return json.Marshal(m)
 }

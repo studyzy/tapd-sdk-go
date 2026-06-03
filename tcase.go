@@ -79,7 +79,7 @@ func (c *Client) ListTCaseCategories(ctx context.Context, req *model.ListTCaseCa
 
 // CountTCaseCategories 查询测试用例目录数量
 // API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_categories_count.html
-func (c *Client) CountTCaseCategories(ctx context.Context, req *model.ListTCaseCategoriesRequest) (int, error) {
+func (c *Client) CountTCaseCategories(ctx context.Context, req *model.CountTCaseCategoriesRequest) (int, error) {
 	data, err := c.doGet(ctx, "/tcase_categories/count", req.ToParams())
 	if err != nil {
 		return 0, err

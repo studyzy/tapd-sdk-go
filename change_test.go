@@ -150,6 +150,7 @@ func TestGetTaskChanges(t *testing.T) {
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
 	req := &model.GetTaskChangesRequest{
 		WorkspaceID: "10158231",
+		TaskID:      "1010158231500600411",
 	}
 	changes, err := c.GetTaskChanges(context.Background(), req)
 	if err != nil {

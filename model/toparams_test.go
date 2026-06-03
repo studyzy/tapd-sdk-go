@@ -755,11 +755,11 @@ func TestGetImageRequest_ToParams(t *testing.T) {
 		t.Errorf("image_path: got %q", params["image_path"])
 	}
 
-	// 无 image_path
+	// image_path 是必填字段，即使为空也会在 params 中
 	req2 := &GetImageRequest{WorkspaceID: "80"}
 	params2 := req2.ToParams()
-	if _, ok := params2["image_path"]; ok {
-		t.Error("empty image_path should not be in params")
+	if params2["image_path"] != "" {
+		t.Errorf("expected empty image_path, got %q", params2["image_path"])
 	}
 }
 
@@ -1393,8 +1393,7 @@ func TestAddCodeCommitInfoRequest_ToJSON(t *testing.T) {
 		Repo:        "my-repo",
 		RepoID:      "repo-001",
 		CommitTime:  "2026-01-01 10:00:00",
-		HookURL:     "https://example.com/hook",
-		Ref:         "refs/heads/main",
+		CommitURL:   "https://example.com/commit/abc123",
 	}
 	data, err := req.ToJSON()
 	if err != nil {
@@ -1413,11 +1412,8 @@ func TestAddCodeCommitInfoRequest_ToJSON(t *testing.T) {
 	if m["author"] != "admin" {
 		t.Errorf("author: got %v", m["author"])
 	}
-	if m["hook_url"] != "https://example.com/hook" {
-		t.Errorf("hook_url: got %v", m["hook_url"])
-	}
-	if m["ref"] != "refs/heads/main" {
-		t.Errorf("ref: got %v", m["ref"])
+	if m["commit_url"] != "https://example.com/commit/abc123" {
+		t.Errorf("commit_url: got %v", m["commit_url"])
 	}
 	files, ok := m["files"].([]interface{})
 	if !ok || len(files) != 2 {
@@ -1450,7 +1446,6 @@ func TestGetOneAttachmentRequest_ToParams(t *testing.T) {
 	req := &GetOneAttachmentRequest{
 		WorkspaceID: "100",
 		ID:          "att1",
-		FileName:    "test.pdf",
 	}
 	params := req.ToParams()
 	if params["workspace_id"] != "100" {
@@ -1458,15 +1453,6 @@ func TestGetOneAttachmentRequest_ToParams(t *testing.T) {
 	}
 	if params["id"] != "att1" {
 		t.Errorf("id: got %q", params["id"])
-	}
-	if params["file_name"] != "test.pdf" {
-		t.Errorf("file_name: got %q", params["file_name"])
-	}
-
-	req2 := &GetOneAttachmentRequest{WorkspaceID: "100", ID: "att1"}
-	params2 := req2.ToParams()
-	if _, ok := params2["file_name"]; ok {
-		t.Error("empty file_name should not be in params")
 	}
 }
 

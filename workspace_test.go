@@ -15,27 +15,27 @@ func TestListWorkspaces(t *testing.T) {
 		if r.URL.Path != "/workspaces/user_participant_projects" {
 			t.Errorf("unexpected path: %s, want /workspaces/user_participant_projects", r.URL.Path)
 		}
+		if r.URL.Query().Get("nick") != "testuser" {
+			t.Errorf("nick = %q, want %q", r.URL.Query().Get("nick"), "testuser")
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":1,"data":[{"Workspace":{"id":"1","name":"Project1","status":"active","category":"project"}},{"Workspace":{"id":"2","name":"Org","status":"active","category":"organization"}}],"info":"success"}`))
 	}))
 	defer srv.Close()
 
 	c := NewClientWithBaseURL(srv.URL, "", "test-token", "", "")
-	workspaces, err := c.ListWorkspaces(context.Background(), "12345")
+	workspaces, err := c.ListWorkspaces(context.Background(), "12345", "testuser")
 	if err != nil {
 		t.Fatalf("ListWorkspaces() unexpected error: %v", err)
 	}
-	if len(workspaces) != 1 {
-		t.Fatalf("expected 1 workspace after filtering organization, got %d", len(workspaces))
+	if len(workspaces) != 2 {
+		t.Fatalf("expected 2 workspaces, got %d", len(workspaces))
 	}
 	if workspaces[0].ID != "1" {
 		t.Errorf("workspace ID = %q, want %q", workspaces[0].ID, "1")
 	}
 	if workspaces[0].Name != "Project1" {
 		t.Errorf("workspace Name = %q, want %q", workspaces[0].Name, "Project1")
-	}
-	if workspaces[0].Category != "project" {
-		t.Errorf("workspace Category = %q, want %q", workspaces[0].Category, "project")
 	}
 }
 
