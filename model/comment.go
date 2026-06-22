@@ -35,7 +35,7 @@ type ListCommentsRequest struct {
 	Title       string // 可选：标题
 	Description string // 可选：内容
 	Author      string // 可选：评论人
-	EntryType   string // 可选：评论类型（bug|bug_remark|stories|tasks，多个以竖线隔开）
+	EntryType   string // 可选：评论类型（bug|bug_remark|stories|tasks|wiki，多个以竖线隔开）
 	EntryID     string // 可选：评论所依附的业务对象实体 ID
 	RootID      string // 可选：根评论 ID
 	ReplyID     string // 可选：评论回复的 ID
@@ -75,7 +75,7 @@ type AddCommentRequest struct {
 	WorkspaceID string // 必填：项目 ID
 	Description string // 必填：评论内容
 	Author      string // 必填：评论人
-	EntryType   string // 必填：评论类型（bug|bug_remark|stories|tasks）
+	EntryType   string // 必填：评论类型（bug|bug_remark|stories|tasks|wiki）
 	EntryID     string // 必填：评论所依附的业务对象实体 ID
 	RootID      string // 可选：根评论 ID
 	ReplyID     string // 可选：评论回复的 ID
@@ -123,7 +123,7 @@ type CountCommentsRequest struct {
 	Title       string // 可选：标题
 	Description string // 可选：内容
 	Author      string // 可选：评论人
-	EntryType   string // 可选：评论类型（bug|bug_remark|stories|tasks，多个以竖线隔开）
+	EntryType   string // 可选：评论类型（bug|bug_remark|stories|tasks|wiki，多个以竖线隔开）
 	EntryID     string // 可选：评论所依附的业务对象实体 ID
 	Created     string // 可选：创建时间，支持时间查询
 	Modified    string // 可选：最后更改时间，支持时间查询
